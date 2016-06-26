@@ -7,10 +7,10 @@
 
 # Site Settings
 locale                   : "en-US"
-title                    : "Site Title"
+title                    : "Home"
 title_separator          : "-"
-name                     : "Your Name"
-description              : "An amazing website."
+name                     : "Francisco Menéndez Moya"
+description              : "My personal website with all my projects and blogs."
 url                      : # the base hostname & protocol for your site e.g. "https://mmistakes.github.io"
 baseurl                  : # the subpath of your site, e.g. "/blog"
 gh_repo                  :
@@ -37,7 +37,7 @@ yandex_site_verification :
 
 # Social Sharing
 twitter:
-  username               :
+  username               : FMenendez994
 facebook:
   username               :
   app_id                 :
@@ -65,7 +65,7 @@ google_ad_slot           :
 author:
   name             : "Francisco Menéndez Moya"
   avatar           : "bio-photo.jpg"
-  bio              : "Bio"
+  bio              : "Trying to learn something new everyday"
   location         : "Zaragoza, Spain"
   email            :
   uri              :
@@ -80,13 +80,13 @@ author:
   keybase          :
   instagram        :
   lastfm           :
-  linkedin         :
+  linkedin         : 
   pinterest        :
   soundcloud       :
   stackoverflow    : # http://stackoverflow.com/users/123456/username
   steam            :
   tumblr           :
-  twitter          :
+  twitter          : FMenendez994
   vine             :
   weibo            :
   xing             :
