@@ -1,8 +1,8 @@
 ---
-layout: default
+layout: archive
+author_profile: true
 title: "About me"
 permalink: /about/
-author_profile: false
 ---
 {% include base_path %}
 
