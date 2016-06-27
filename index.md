@@ -9,11 +9,8 @@ author_profile: true
 
 {% capture current_year %}{{ site.time | date: '%Y' }}{% endcapture %}
 
-<h3 class="archive__subtitle">current_year</h3>
-
-{% for post in site.posts %}
+{% for post in site.posts limit:10 %}
   {% capture year %}{{ post.date | date: '%Y' }}{% endcapture %}
-  <h3 class="archive__subtitle">year</h3>
   {% if year == current_year %}
     {% include archive-single.html %}
   {% endif %}
