@@ -4,8 +4,6 @@ excerpt: "Small implementation of a Broker using Java RMI."
 header:
   teaser: broker-rmi.png
 sidebar:
-  - title: "Author"
-    text: "Francisco Menéndez Moya"
   - title: "Category"
     text: "Software Architecture"
   - title: "Language used"
