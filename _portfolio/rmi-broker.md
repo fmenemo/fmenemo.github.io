@@ -11,6 +11,7 @@ gallery:
     image_path: broker-rmi.png
     alt: "C&C View"
 ---
+{% include base_path %}
 
 This project contains a fully working version of a Broker implemented in Java using the RMI framework. In the project, two servers register their services in the Broker, and afterwards a Client connects to the Broker to perform a chosen operation. The entire system is secured via RMI's security manager.{: .text-justify}
 
