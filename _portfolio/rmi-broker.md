@@ -10,10 +10,6 @@ sidebar:
     text: "Software Architecture"
   - title: "Language used"
     text: "Java"
-gallery:
-  - url: broker-rmi.png
-    image_path: broker-rmi.png
-    alt: "C&C View"
 ---
 
 {% include base_path %}
@@ -30,6 +26,6 @@ In order to fully test the system, execute LanzarRMI class, which launches an in
 **Note:** This basic implementation doesn't take into account whenever a server is closed after being registered in the Broker, so it is possible that the Broker offers services (methods) that aren't currently available since the server might have been accidentally destroyed.
 {: .notice--info .text-justify} 
 
-{% include gallery caption="Abstract Component & Conector View." %}
+![image-center]({{ site.url }}{{ site.baseurl }}/images/broker-rmi.png){: .align-center}
 
 [View the project source code](https://github.com/M3tax/BrokerRMI){: .btn .btn--info}
