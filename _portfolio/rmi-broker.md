@@ -24,7 +24,7 @@ The benefit of using a Broker instead of directly connecting to the servers (alt
 
 In order to fully test the system, execute LanzarRMI class, which launches an instance of Java's RMI framework. By default it uses port 1099, although you can pass an alternate port through the class parameter. Afterwards launch an instance of a Broker with the class Lanzador and argument "-broker" so that every server that tries to register has something to register to. With these two pieces working you can already try to connect like a normal user would, using class Lanzador with parameter "-cliente", although no services will be available since no servers have been registered. To "fix" this, just execute server A, B, or both with class Lanzador and parameters "-serverA" or "-serverB" respectively.{: .text-justify}
 
-**Note:** This basic implementation doesn't take into account whenever a server is closed after being registered in the Broker, so it is possible that the Broker offers services (methods) that aren't currently available since the server might have been accidentally destroyed.{: .notice--info} 
+**Note:** This basic implementation doesn't take into account whenever a server is closed after being registered in the Broker, so it is possible that the Broker offers services (methods) that aren't currently available since the server might have been accidentally destroyed.{: .notice} 
 
 {% include gallery caption="Abstract Component & Conector View." %}
 
