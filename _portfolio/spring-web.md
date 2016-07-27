@@ -44,4 +44,5 @@ I'm the responsible of the webpage hosted on [www.samperfotografos.com](www.samp
 {: .notice--info .text-justify} 
 
 ![image-center]({{ site.url }}{{ site.baseurl }}/images/ContactoSamper.png){: .align-center}
+
 ![image-center]({{ site.url }}{{ site.baseurl }}/images/CitaSamper.png){: .align-center}
