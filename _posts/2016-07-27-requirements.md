@@ -24,5 +24,5 @@ Now you've probably beginning to understand the importance of given document. It
 Finally remember that problems are very likely to happen, and that the first projects will be much more difficult to manage than the last ones, but that's okay, that's what experience is for: learning about your mistakes and making sure that you don't make them again in the future.
 {: .text-justify}
 
-This covers the basics of avoiding some problems whenever your project is in the last stage, as problems are more likely to happen in given stage rather than in the early phases. Also be sure to have an open mind, and treat your clients respectfully, no one likes someone that is complaining all the time and after all they're the ones that are going to pay you for your work (another thing that should be stated clearly in the requirements document that you're going to create :wink: ).
+This covers the basics of avoiding some problems whenever your project is in the last stage, as problems are more likely to happen in given stage rather than in the early phases. Also be sure to have an open mind, and treat your clients respectfully, no one likes someone that is complaining all the time and after all they're the ones that are going to pay you for your work (another thing that should be stated clearly in the requirements document that you're going to create :wink:).
 {: .text-justify}
