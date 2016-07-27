@@ -19,7 +19,7 @@ sidebar:
 
 {% include base_path %}
 
-This big project has been a challenge of uniting great technologies together with the goal of creating a professional fully functional webpage that can substitute and improve substantially the current page my clients are offering to the public. The goal of this page is to offer my clients a way to show their work and how people can contact with them as well as way for University students to sign-up and make an appointment to have their graduation photographies taken.
+This big project has been a challenge of uniting great technologies together with the goal of creating a professional fully functional webpage that can replace and improve substantially the current page my clients are offering to the public. The goal of this page is to offer my clients a way to show their work and how people can contact with them as well as way for University students to sign-up and make an appointment to have their graduation photographies taken.
 {: .text-justify}
 
 Although the pages that are offered to a normal user are quite simple, the administrator panel is quite complex and has helped me progress as a webdeveloper and a developer in general striving to come up with the easiest and most efficient solution possible.
