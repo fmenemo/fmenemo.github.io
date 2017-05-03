@@ -1,11 +1,11 @@
 ---
 title:  "NASA SpaceApps 2017 experience"
 categories: 
-  - hackaton
-  - achievements
+  - hackathon
 tags:
-  - hackaton
+  - hackathon
   - achievements
+  - experiences
 ---
 
 Last weekend, the NASA SpaceApps challenge took place. In particular, I participated in the Zaragoza hub of said challenge. I will try to summarize my experience as best as I can, but *spoiler alert* it was a blast!
