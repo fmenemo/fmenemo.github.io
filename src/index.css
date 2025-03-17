@@ -23,6 +23,13 @@
     overflow-x: hidden;
     line-height: 1.5;
     letter-spacing: -0.015em;
+    background-color: #fbfbfd;
+    color: #000000;
+  }
+
+  .dark {
+    background-color: #000000;
+    color: #ffffff;
   }
 
   h1,
@@ -131,4 +138,18 @@
 
 .dark ::-webkit-scrollbar-thumb:hover {
   background: #0066cc;
+}
+
+/* Force dark mode styles */
+.dark body {
+  background-color: #000000;
+  color: #ffffff;
+}
+
+.dark main {
+  background-color: #000000;
+}
+
+.dark section {
+  background-color: #000000;
 }
