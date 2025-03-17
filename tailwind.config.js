@@ -4,15 +4,15 @@ export default {
   theme: {
     extend: {
       colors: {
-        'primary': '#3b82f6',
-        'secondary': '#ec4899',
-        'dark': '#111827',
-        'dark-700': '#374151',
-        'dark-800': '#1f2937',
-        'light': '#f9fafb',
+        'primary': '#0066cc',
+        'secondary': '#ac39ff',
+        'dark': '#000000',
+        'dark-700': '#1d1d1f',
+        'dark-800': '#121214',
+        'light': '#fbfbfd',
       },
       fontFamily: {
-        sans: ['Inter', 'sans-serif'],
+        sans: ['SF Pro Display', 'Inter', 'sans-serif'],
       },
     },
   },

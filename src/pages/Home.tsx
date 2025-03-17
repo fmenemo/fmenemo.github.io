@@ -2,30 +2,42 @@ import { motion } from 'framer-motion';
 import React from 'react';
 
 const Home: React.FC = () => {
+  const isDarkMode = document.documentElement.classList.contains('dark');
+
   return (
-    <section className='min-h-screen flex flex-col justify-center items-center bg-light dark:bg-dark text-dark dark:text-light p-4 relative overflow-hidden'>
-      {/* Background pattern */}
-      <div className='absolute inset-0 z-0 opacity-10 dark:opacity-20'>
-        <div className='absolute top-0 left-0 w-full h-full bg-[radial-gradient(#3b82f6_1px,transparent_1px)] [background-size:20px_20px]'></div>
-      </div>
+    <section
+      className='min-h-screen flex flex-col justify-center items-center p-4 relative overflow-hidden'
+      style={{
+        backgroundColor: isDarkMode ? '#000000' : '#fbfbfd',
+        color: isDarkMode ? '#ffffff' : '#000000',
+      }}
+    >
+      {/* Subtle gradient background */}
+      <div
+        className='absolute inset-0 bg-gradient-to-b z-0'
+        style={{
+          backgroundImage: isDarkMode ? 'linear-gradient(to bottom, #000000, #1d1d1f)' : 'linear-gradient(to bottom, #fbfbfd, #f5f5f7)',
+        }}
+      ></div>
 
       <div className='container relative z-10'>
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-          className='text-center max-w-3xl mx-auto'
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 1 }}
+          className='text-center max-w-4xl mx-auto'
         >
           <motion.h1
-            className='text-5xl md:text-7xl font-bold mb-6 bg-gradient-to-r from-primary to-secondary text-transparent bg-clip-text'
+            className='text-6xl md:text-8xl font-semibold mb-6 tracking-tight'
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.2 }}
           >
-            Hello, I'm <span className='block mt-2'>Francisco Menendez</span>
+            <span style={{ color: '#0066cc' }}>Hello,</span> I'm <span className='block mt-2'>Francisco Menendez</span>
           </motion.h1>
           <motion.h2
-            className='text-2xl md:text-3xl mb-8'
+            className='text-2xl md:text-3xl mb-8 font-normal'
+            style={{ color: isDarkMode ? '#9ca3af' : '#4b5563' }}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.8, delay: 0.4 }}
@@ -33,7 +45,8 @@ const Home: React.FC = () => {
             Full Stack Developer & Designer
           </motion.h2>
           <motion.p
-            className='text-lg md:text-xl mb-10 max-w-2xl mx-auto'
+            className='text-xl md:text-2xl mb-12 max-w-3xl mx-auto font-light'
+            style={{ color: isDarkMode ? '#9ca3af' : '#4b5563' }}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.8, delay: 0.6 }}
@@ -41,7 +54,7 @@ const Home: React.FC = () => {
             I build beautiful, responsive, and user-friendly web applications with modern technologies.
           </motion.p>
           <motion.div
-            className='flex flex-wrap justify-center gap-4'
+            className='flex flex-wrap justify-center gap-6'
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.8 }}
@@ -50,7 +63,7 @@ const Home: React.FC = () => {
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               href='#projects'
-              className='btn btn-primary rounded-full shadow-lg hover:shadow-xl'
+              className='btn btn-primary shadow-md hover:shadow-lg'
             >
               View My Work
             </motion.a>
@@ -58,13 +71,21 @@ const Home: React.FC = () => {
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               href='#contact'
-              className='btn btn-outline rounded-full shadow-lg hover:shadow-xl'
+              className='btn btn-outline shadow-md hover:shadow-lg'
             >
               Contact Me
             </motion.a>
           </motion.div>
         </motion.div>
       </div>
+
+      {/* Apple-style decorative element */}
+      <div
+        className='absolute bottom-0 left-0 right-0 h-32 z-0'
+        style={{
+          backgroundImage: isDarkMode ? 'linear-gradient(to top, #000000, transparent)' : 'linear-gradient(to top, #fbfbfd, transparent)',
+        }}
+      ></div>
     </section>
   );
 };

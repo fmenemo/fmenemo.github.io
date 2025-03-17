@@ -64,12 +64,12 @@ const Projects: React.FC = () => {
   };
 
   return (
-    <section id='projects' className='py-20 bg-light dark:bg-dark text-dark dark:text-light'>
+    <section id='projects' className='py-24 bg-gray-50 dark:bg-dark-700 text-dark dark:text-light'>
       <div className='container mx-auto px-4'>
-        <h2 className='text-4xl font-bold mb-12 text-center'>My Projects</h2>
+        <h2 className='section-title'>My Projects</h2>
 
         <motion.div
-          className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8'
+          className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10'
           variants={containerVariants}
           initial='hidden'
           animate='visible'
@@ -77,48 +77,54 @@ const Projects: React.FC = () => {
           {projects.map((project) => (
             <motion.div
               key={project.id}
-              className='bg-white/30 dark:bg-dark-800/50 backdrop-blur-sm rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-200/50 dark:border-gray-700/50'
+              className='apple-card overflow-hidden transition-all duration-300 group'
               variants={itemVariants}
-              whileHover={{ y: -5 }}
+              whileHover={{ y: -8, boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)' }}
             >
-              <img src={project.imageUrl} alt={project.title} className='w-full h-48 object-cover' />
-              <div className='p-6'>
-                <h3 className='text-xl font-bold mb-2'>{project.title}</h3>
-                <p className='text-gray-700 dark:text-gray-300 mb-4'>{project.description}</p>
+              <div className='relative overflow-hidden rounded-lg mb-6'>
+                <img
+                  src={project.imageUrl}
+                  alt={project.title}
+                  className='w-full h-56 object-cover transition-transform duration-700 group-hover:scale-105'
+                />
+                <div className='absolute inset-0 bg-gradient-to-t from-black to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300'></div>
+              </div>
 
-                <div className='flex flex-wrap gap-2 mb-4'>
-                  {project.technologies.map((tech, index) => (
-                    <span
-                      key={index}
-                      className='px-2 py-1 bg-white/20 dark:bg-dark-700/30 text-xs rounded-full border border-gray-200/50 dark:border-gray-700/50'
-                    >
-                      {tech}
-                    </span>
-                  ))}
-                </div>
+              <h3 className='text-xl font-medium mb-3'>{project.title}</h3>
+              <p className='text-gray-600 dark:text-gray-300 mb-5 font-light'>{project.description}</p>
 
-                <div className='flex justify-between'>
-                  {project.liveUrl && (
-                    <a
-                      href={project.liveUrl}
-                      target='_blank'
-                      rel='noopener noreferrer'
-                      className='text-primary hover:text-secondary transition-colors'
-                    >
-                      Live Demo
-                    </a>
-                  )}
-                  {project.githubUrl && (
-                    <a
-                      href={project.githubUrl}
-                      target='_blank'
-                      rel='noopener noreferrer'
-                      className='text-primary hover:text-secondary transition-colors'
-                    >
-                      GitHub
-                    </a>
-                  )}
-                </div>
+              <div className='flex flex-wrap gap-2 mb-5'>
+                {project.technologies.map((tech, index) => (
+                  <span
+                    key={index}
+                    className='px-3 py-1 bg-gray-100 dark:bg-dark-800 text-xs rounded-full text-gray-600 dark:text-gray-300'
+                  >
+                    {tech}
+                  </span>
+                ))}
+              </div>
+
+              <div className='flex justify-between'>
+                {project.liveUrl && (
+                  <a
+                    href={project.liveUrl}
+                    target='_blank'
+                    rel='noopener noreferrer'
+                    className='text-primary hover:text-primary hover:text-opacity-80 transition-colors font-medium'
+                  >
+                    Live Demo
+                  </a>
+                )}
+                {project.githubUrl && (
+                  <a
+                    href={project.githubUrl}
+                    target='_blank'
+                    rel='noopener noreferrer'
+                    className='text-primary hover:text-primary hover:text-opacity-80 transition-colors font-medium'
+                  >
+                    GitHub
+                  </a>
+                )}
               </div>
             </motion.div>
           ))}
