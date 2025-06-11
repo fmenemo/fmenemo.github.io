@@ -5,33 +5,44 @@ import { useDarkMode } from '../hooks/useDarkMode';
 const About: React.FC = () => {
   const { isDarkMode } = useDarkMode();
 
-  const frontendSkills = [
-    'React',
-    'TypeScript',
-    'JavaScript',
-    'Next.js',
-    'Vue.js',
-    'HTML5',
-    'CSS3',
-    'Tailwind CSS',
-    'Sass/SCSS',
-    'Responsive Design',
+  const leadershipSkills = [
+    'Team Leadership',
+    'Engineering Management',
+    'Technical Strategy',
+    'Agile/Scrum',
+    'Mentoring',
+    'Code Reviews',
+    'Architecture Design',
+    'Performance Optimization',
+    'DevOps Culture',
+    'Cross-functional Collaboration',
   ];
 
-  const backendSkills = [
+  const technicalSkills = [
+    'JavaScript/TypeScript',
+    'React/Vue.js',
     'Node.js',
-    'Express.js',
     'Python',
-    'Django',
-    'FastAPI',
-    'PostgreSQL',
-    'MongoDB',
-    'RESTful APIs',
-    'GraphQL',
+    'Cloud Platforms',
     'Microservices',
+    'CI/CD',
+    'Database Design',
+    'API Architecture',
+    'System Scalability',
   ];
 
-  const toolsSkills = ['Git & GitHub', 'Docker', 'AWS', 'Vercel', 'Netlify', 'Figma', 'VS Code', 'Postman', 'Linux', 'CI/CD'];
+  const toolsSkills = [
+    'AWS/Azure/GCP',
+    'Docker/Kubernetes',
+    'Git/GitHub',
+    'JIRA/Confluence',
+    'Jenkins/GitLab CI',
+    'Monitoring & Observability',
+    'Terraform',
+    'Security Best Practices',
+    'Performance Testing',
+    'Documentation',
+  ];
 
   const handleDownloadCV = () => {
     const link = document.createElement('a');
@@ -78,18 +89,19 @@ const About: React.FC = () => {
                 Who I Am
               </h3>
               <p className='text-lg mb-6 font-light leading-relaxed' style={{ color: isDarkMode ? '#9ca3af' : '#4b5563' }}>
-                I'm Francisco Menendez, a passionate Full Stack Developer with over 5 years of experience creating scalable web applications
-                and innovative digital solutions. I specialize in modern JavaScript frameworks and have a strong background in both frontend
-                and backend development.
+                I'm Francisco Menendez, a Principal Software Engineer with a passion for building exceptional teams and scalable technology
+                solutions. My journey in software engineering has evolved from hands-on development to leading complex technical initiatives
+                and fostering engineering excellence.
               </p>
               <p className='text-lg mb-6 font-light leading-relaxed' style={{ color: isDarkMode ? '#9ca3af' : '#4b5563' }}>
-                My expertise spans across the entire development lifecycle, from initial concept and design to deployment and maintenance.
-                I'm particularly passionate about creating user-centered applications that solve real-world problems through clean,
-                efficient code.
+                What drives me most is the intersection of technology and people - creating systems that not only perform flawlessly but
+                also empowering teams to do their best work. I believe that great software is built by great teams, and great teams are
+                built through mentorship, clear communication, and shared technical vision.
               </p>
               <p className='text-lg mb-8 font-light leading-relaxed' style={{ color: isDarkMode ? '#9ca3af' : '#4b5563' }}>
-                When I'm not coding, you'll find me exploring new technologies, contributing to open-source projects, reading tech blogs, or
-                enjoying outdoor activities. I believe in continuous learning and staying updated with the latest industry trends.
+                When I'm not architecting solutions or mentoring developers, you'll find me exploring emerging technologies, contributing to
+                open source projects, or enjoying the outdoors with my family. I'm always curious about the next challenge and how
+                technology can make a meaningful impact.
               </p>
 
               {/* CV Download Button */}
@@ -118,13 +130,13 @@ const About: React.FC = () => {
               transition={{ delay: 0.4, duration: 0.6 }}
               className='space-y-8'
             >
-              {/* Frontend Skills */}
+              {/* Leadership Skills */}
               <div className='apple-card'>
                 <h3 className='text-xl font-medium mb-4' style={{ color: isDarkMode ? '#ffffff' : '#000000' }}>
-                  Frontend Development
+                  Leadership & Management
                 </h3>
                 <div className='flex flex-wrap gap-2'>
-                  {frontendSkills.map((skill, index) => (
+                  {leadershipSkills.map((skill, index) => (
                     <motion.span
                       key={index}
                       className='px-3 py-1 rounded-full text-sm font-medium'
@@ -145,13 +157,13 @@ const About: React.FC = () => {
                 </div>
               </div>
 
-              {/* Backend Skills */}
+              {/* Technical Skills */}
               <div className='apple-card'>
                 <h3 className='text-xl font-medium mb-4' style={{ color: isDarkMode ? '#ffffff' : '#000000' }}>
-                  Backend Development
+                  Technical Expertise
                 </h3>
                 <div className='flex flex-wrap gap-2'>
-                  {backendSkills.map((skill, index) => (
+                  {technicalSkills.map((skill, index) => (
                     <motion.span
                       key={index}
                       className='px-3 py-1 rounded-full text-sm font-medium'
@@ -172,10 +184,10 @@ const About: React.FC = () => {
                 </div>
               </div>
 
-              {/* Tools & DevOps */}
+              {/* Tools & Platforms */}
               <div className='apple-card'>
                 <h3 className='text-xl font-medium mb-4' style={{ color: isDarkMode ? '#ffffff' : '#000000' }}>
-                  Tools & DevOps
+                  Tools & Platforms
                 </h3>
                 <div className='flex flex-wrap gap-2'>
                   {toolsSkills.map((skill, index) => (
@@ -210,29 +222,29 @@ const About: React.FC = () => {
             className='apple-card max-w-4xl mx-auto'
           >
             <h3 className='text-2xl font-medium mb-6 text-center' style={{ color: isDarkMode ? '#ffffff' : '#000000' }}>
-              Experience Highlights
+              Leadership Impact
             </h3>
             <div className='grid grid-cols-1 md:grid-cols-3 gap-8'>
               <div className='text-center'>
                 <div className='text-4xl font-bold mb-2' style={{ color: '#0066cc' }}>
-                  5+
+                  10+
                 </div>
                 <p className='text-lg font-medium mb-2' style={{ color: isDarkMode ? '#ffffff' : '#000000' }}>
                   Years Experience
                 </p>
                 <p className='text-sm' style={{ color: isDarkMode ? '#9ca3af' : '#4b5563' }}>
-                  Professional development across various industries
+                  Leading engineering teams and technical initiatives
                 </p>
               </div>
               <div className='text-center'>
                 <div className='text-4xl font-bold mb-2' style={{ color: '#0066cc' }}>
-                  20+
+                  50+
                 </div>
                 <p className='text-lg font-medium mb-2' style={{ color: isDarkMode ? '#ffffff' : '#000000' }}>
-                  Projects Completed
+                  Engineers Mentored
                 </p>
                 <p className='text-sm' style={{ color: isDarkMode ? '#9ca3af' : '#4b5563' }}>
-                  From startups to enterprise-level applications
+                  From junior developers to senior engineers
                 </p>
               </div>
               <div className='text-center'>
@@ -240,10 +252,10 @@ const About: React.FC = () => {
                   ∞
                 </div>
                 <p className='text-lg font-medium mb-2' style={{ color: isDarkMode ? '#ffffff' : '#000000' }}>
-                  Lines of Code
+                  Systems Scaled
                 </p>
                 <p className='text-sm' style={{ color: isDarkMode ? '#9ca3af' : '#4b5563' }}>
-                  Clean, efficient, and maintainable solutions
+                  From startup MVPs to enterprise platforms
                 </p>
               </div>
             </div>

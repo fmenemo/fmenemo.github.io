@@ -51,11 +51,11 @@ const Home: React.FC = () => {
             className='mb-8'
           >
             <p className='text-2xl md:text-3xl font-light mb-4' style={{ color: isDarkMode ? '#d1d5db' : '#6b7280' }}>
-              Full Stack Developer & Digital Craftsman
+              Principal Software Engineer
             </p>
             <p className='text-lg md:text-xl max-w-3xl mx-auto leading-relaxed' style={{ color: isDarkMode ? '#9ca3af' : '#4b5563' }}>
-              I create exceptional digital experiences through modern web technologies. Passionate about clean code, intuitive design, and
-              solving complex problems with elegant solutions.
+              Leading engineering teams and architecting scalable solutions. Passionate about building robust systems, mentoring talent, and
+              driving technical excellence across complex software initiatives.
             </p>
           </motion.div>
 
@@ -66,7 +66,7 @@ const Home: React.FC = () => {
             transition={{ delay: 0.7, duration: 0.6 }}
             className='flex flex-wrap justify-center gap-4 mb-12'
           >
-            {['React & TypeScript', 'Node.js & Python', 'Cloud Architecture', 'UI/UX Design'].map((specialty, index) => (
+            {['Engineering Leadership', 'System Architecture', 'Team Management', 'Technical Strategy'].map((specialty, index) => (
               <motion.span
                 key={index}
                 className='px-6 py-3 rounded-full text-sm font-medium border'
@@ -97,7 +97,7 @@ const Home: React.FC = () => {
             className='flex flex-col sm:flex-row gap-4 justify-center items-center'
           >
             <motion.a
-              href='#projects'
+              href='#about'
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               className='btn btn-primary text-lg px-8 py-4 shadow-lg hover:shadow-xl'
@@ -106,7 +106,7 @@ const Home: React.FC = () => {
                 border: 'none',
               }}
             >
-              View My Work
+              Learn More
             </motion.a>
 
             <motion.a
@@ -134,11 +134,11 @@ const Home: React.FC = () => {
             <div className='flex items-center gap-2'>
               <div className='w-3 h-3 bg-green-500 rounded-full animate-pulse'></div>
               <span className='text-sm' style={{ color: isDarkMode ? '#9ca3af' : '#6b7280' }}>
-                Available for freelance projects
+                Available for leadership opportunities
               </span>
             </div>
             <div className='text-sm' style={{ color: isDarkMode ? '#9ca3af' : '#6b7280' }}>
-              📍 Based in Spain • 🌍 Working globally
+              📍 Based in Spain • 🌍 Leading remote teams globally
             </div>
           </motion.div>
         </motion.div>
