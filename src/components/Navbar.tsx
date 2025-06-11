@@ -1,10 +1,11 @@
-import { motion } from 'framer-motion';
+import { AnimatePresence, motion } from 'framer-motion';
 import React, { useEffect, useState } from 'react';
+import { useDarkMode } from '../hooks/useDarkMode';
 
 const Navbar: React.FC = () => {
   const [scrolled, setScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [isDarkMode, setIsDarkMode] = useState(false);
+  const { isDarkMode, toggleDarkMode } = useDarkMode();
 
   const navLinks = [
     { name: 'Home', href: '#home' },
@@ -21,34 +22,9 @@ const Navbar: React.FC = () => {
       }
     };
 
-    const handleDarkMode = () => {
-      if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-        document.documentElement.classList.add('dark');
-        setIsDarkMode(true);
-      } else {
-        document.documentElement.classList.remove('dark');
-        setIsDarkMode(false);
-      }
-    };
-
-    handleDarkMode();
     window.addEventListener('scroll', handleScroll);
-    return () => {
-      window.removeEventListener('scroll', handleScroll);
-    };
+    return () => window.removeEventListener('scroll', handleScroll);
   }, [scrolled]);
-
-  const toggleDarkMode = () => {
-    if (isDarkMode) {
-      document.documentElement.classList.remove('dark');
-      localStorage.theme = 'light';
-      setIsDarkMode(false);
-    } else {
-      document.documentElement.classList.add('dark');
-      localStorage.theme = 'dark';
-      setIsDarkMode(true);
-    }
-  };
 
   return (
     <header
@@ -168,37 +144,42 @@ const Navbar: React.FC = () => {
       </div>
 
       {/* Mobile Menu */}
-      {isMobileMenuOpen && (
-        <motion.div
-          initial={{ opacity: 0, height: 0 }}
-          animate={{ opacity: 1, height: 'auto' }}
-          exit={{ opacity: 0, height: 0 }}
-          className='md:hidden backdrop-blur-xl shadow-lg'
-          style={{
-            backgroundColor: isDarkMode ? 'rgba(0, 0, 0, 0.9)' : 'rgba(251, 251, 253, 0.9)',
-          }}
-        >
-          <div className='container mx-auto px-4 py-6'>
-            <div className='flex flex-col space-y-6'>
-              {navLinks.map((link) => (
-                <a
-                  key={link.name}
-                  href={link.href}
-                  className='text-lg font-medium transition-colors'
-                  style={{
-                    color: isDarkMode ? 'rgba(255, 255, 255, 0.8)' : 'rgba(0, 0, 0, 0.8)',
-                  }}
-                  onMouseOver={(e) => (e.currentTarget.style.color = '#0066cc')}
-                  onMouseOut={(e) => (e.currentTarget.style.color = isDarkMode ? 'rgba(255, 255, 255, 0.8)' : 'rgba(0, 0, 0, 0.8)')}
-                  onClick={() => setIsMobileMenuOpen(false)}
-                >
-                  {link.name}
-                </a>
-              ))}
+      <AnimatePresence>
+        {isMobileMenuOpen && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{ duration: 0.3 }}
+            className='md:hidden w-full overflow-hidden'
+            style={{
+              backgroundColor: isDarkMode ? 'rgba(0, 0, 0, 0.95)' : 'rgba(251, 251, 253, 0.95)',
+              backdropFilter: 'blur(10px)',
+              boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
+            }}
+          >
+            <div className='container mx-auto px-4 py-6'>
+              <div className='flex flex-col space-y-6'>
+                {navLinks.map((link) => (
+                  <a
+                    key={link.name}
+                    href={link.href}
+                    className='text-lg font-medium transition-colors'
+                    style={{
+                      color: isDarkMode ? 'rgba(255, 255, 255, 0.9)' : 'rgba(0, 0, 0, 0.9)',
+                    }}
+                    onMouseOver={(e) => (e.currentTarget.style.color = '#0066cc')}
+                    onMouseOut={(e) => (e.currentTarget.style.color = isDarkMode ? 'rgba(255, 255, 255, 0.9)' : 'rgba(0, 0, 0, 0.9)')}
+                    onClick={() => setIsMobileMenuOpen(false)}
+                  >
+                    {link.name}
+                  </a>
+                ))}
+              </div>
             </div>
-          </div>
-        </motion.div>
-      )}
+          </motion.div>
+        )}
+      </AnimatePresence>
     </header>
   );
 };

@@ -1,27 +1,9 @@
 import { motion } from 'framer-motion';
-import React, { useEffect, useState } from 'react';
+import React from 'react';
+import { useDarkMode } from '../hooks/useDarkMode';
 
 const Home: React.FC = () => {
-  const [isDarkMode, setIsDarkMode] = useState(false);
-
-  useEffect(() => {
-    const checkDarkMode = () => {
-      setIsDarkMode(document.documentElement.classList.contains('dark'));
-    };
-
-    checkDarkMode();
-    // Listen for changes to the dark mode
-    const observer = new MutationObserver((mutations) => {
-      mutations.forEach((mutation) => {
-        if (mutation.attributeName === 'class') {
-          checkDarkMode();
-        }
-      });
-    });
-
-    observer.observe(document.documentElement, { attributes: true });
-    return () => observer.disconnect();
-  }, []);
+  const { isDarkMode } = useDarkMode();
 
   return (
     <section
@@ -41,70 +23,174 @@ const Home: React.FC = () => {
 
       <div className='container relative z-10'>
         <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 1 }}
-          className='text-center max-w-4xl mx-auto'
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, ease: 'easeOut' }}
+          className='text-center'
         >
-          <motion.h1
-            className='text-6xl md:text-8xl font-semibold mb-6 tracking-tight'
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.2 }}
-          >
-            <span style={{ color: '#0066cc' }}>Hello,</span> I'm <span className='block mt-2'>Francisco Menendez</span>
-          </motion.h1>
-          <motion.h2
-            className='text-2xl md:text-3xl mb-8 font-normal'
-            style={{ color: isDarkMode ? '#9ca3af' : '#4b5563' }}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.8, delay: 0.4 }}
-          >
-            Full Stack Developer & Designer
-          </motion.h2>
+          {/* Professional greeting */}
           <motion.p
-            className='text-xl md:text-2xl mb-12 max-w-3xl mx-auto font-light'
-            style={{ color: isDarkMode ? '#9ca3af' : '#4b5563' }}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ duration: 0.8, delay: 0.6 }}
+            transition={{ delay: 0.3, duration: 0.6 }}
+            className='text-lg mb-4 font-medium tracking-wide'
+            style={{ color: '#0066cc' }}
           >
-            I build beautiful, responsive, and user-friendly web applications with modern technologies.
+            Hello, I'm
           </motion.p>
+
+          <h1 className='text-6xl md:text-8xl font-bold mb-6 leading-none'>
+            <span className='block'>Francisco</span>
+            <span className='block mt-2'>Menendez</span>
+          </h1>
+
           <motion.div
-            className='flex flex-wrap justify-center gap-6'
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.8 }}
+            transition={{ delay: 0.5, duration: 0.6 }}
+            className='mb-8'
+          >
+            <p className='text-2xl md:text-3xl font-light mb-4' style={{ color: isDarkMode ? '#d1d5db' : '#6b7280' }}>
+              Full Stack Developer & Digital Craftsman
+            </p>
+            <p className='text-lg md:text-xl max-w-3xl mx-auto leading-relaxed' style={{ color: isDarkMode ? '#9ca3af' : '#4b5563' }}>
+              I create exceptional digital experiences through modern web technologies. Passionate about clean code, intuitive design, and
+              solving complex problems with elegant solutions.
+            </p>
+          </motion.div>
+
+          {/* Key specialties */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.7, duration: 0.6 }}
+            className='flex flex-wrap justify-center gap-4 mb-12'
+          >
+            {['React & TypeScript', 'Node.js & Python', 'Cloud Architecture', 'UI/UX Design'].map((specialty, index) => (
+              <motion.span
+                key={index}
+                className='px-6 py-3 rounded-full text-sm font-medium border'
+                style={{
+                  backgroundColor: isDarkMode ? 'rgba(31, 41, 55, 0.5)' : 'rgba(255, 255, 255, 0.8)',
+                  borderColor: isDarkMode ? 'rgba(75, 85, 99, 0.3)' : 'rgba(209, 213, 219, 0.8)',
+                  color: isDarkMode ? '#e5e7eb' : '#374151',
+                  backdropFilter: 'blur(10px)',
+                }}
+                whileHover={{
+                  scale: 1.05,
+                  backgroundColor: '#0066cc',
+                  borderColor: '#0066cc',
+                  color: '#ffffff',
+                }}
+                transition={{ duration: 0.2 }}
+              >
+                {specialty}
+              </motion.span>
+            ))}
+          </motion.div>
+
+          {/* CTA Buttons */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.9, duration: 0.6 }}
+            className='flex flex-col sm:flex-row gap-4 justify-center items-center'
           >
             <motion.a
+              href='#projects'
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              href='#projects'
-              className='btn btn-primary shadow-md hover:shadow-lg'
+              className='btn btn-primary text-lg px-8 py-4 shadow-lg hover:shadow-xl'
+              style={{
+                background: 'linear-gradient(135deg, #0066cc, #004499)',
+                border: 'none',
+              }}
             >
               View My Work
             </motion.a>
+
             <motion.a
+              href='#contact'
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              href='#contact'
-              className='btn btn-outline shadow-md hover:shadow-lg'
+              className='btn btn-secondary text-lg px-8 py-4 border-2 hover:shadow-lg'
+              style={{
+                backgroundColor: 'transparent',
+                borderColor: isDarkMode ? '#374151' : '#d1d5db',
+                color: isDarkMode ? '#e5e7eb' : '#374151',
+              }}
             >
-              Contact Me
+              Get In Touch
             </motion.a>
+          </motion.div>
+
+          {/* Social proof or achievements */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 1.1, duration: 0.6 }}
+            className='mt-16 flex flex-col sm:flex-row justify-center items-center gap-8 text-center'
+          >
+            <div className='flex items-center gap-2'>
+              <div className='w-3 h-3 bg-green-500 rounded-full animate-pulse'></div>
+              <span className='text-sm' style={{ color: isDarkMode ? '#9ca3af' : '#6b7280' }}>
+                Available for freelance projects
+              </span>
+            </div>
+            <div className='text-sm' style={{ color: isDarkMode ? '#9ca3af' : '#6b7280' }}>
+              📍 Based in Spain • 🌍 Working globally
+            </div>
           </motion.div>
         </motion.div>
       </div>
 
-      {/* Apple-style decorative element */}
-      <div
-        className='absolute bottom-0 left-0 right-0 h-32 z-0'
-        style={{
-          backgroundImage: isDarkMode ? 'linear-gradient(to top, #000000, transparent)' : 'linear-gradient(to top, #fbfbfd, transparent)',
+      {/* Floating elements for visual interest */}
+      <motion.div
+        className='absolute top-20 left-10 w-20 h-20 rounded-full opacity-20'
+        style={{ backgroundColor: '#0066cc' }}
+        animate={{
+          y: [0, -20, 0],
+          rotate: [0, 360],
         }}
-      ></div>
+        transition={{
+          duration: 8,
+          repeat: Infinity,
+          ease: 'easeInOut',
+        }}
+      ></motion.div>
+
+      <motion.div
+        className='absolute bottom-20 right-10 w-16 h-16 rounded-full opacity-20'
+        style={{ backgroundColor: '#0066cc' }}
+        animate={{
+          y: [0, 20, 0],
+          rotate: [360, 0],
+        }}
+        transition={{
+          duration: 6,
+          repeat: Infinity,
+          ease: 'easeInOut',
+        }}
+      ></motion.div>
+
+      {/* Scroll indicator */}
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 1.5, duration: 0.6 }}
+        className='absolute bottom-8 left-1/2 transform -translate-x-1/2'
+      >
+        <motion.div
+          animate={{ y: [0, 10, 0] }}
+          transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
+          className='flex flex-col items-center gap-2'
+        >
+          <span className='text-xs tracking-widest' style={{ color: isDarkMode ? '#6b7280' : '#9ca3af' }}>
+            SCROLL
+          </span>
+          <div className='w-px h-8' style={{ backgroundColor: isDarkMode ? '#374151' : '#d1d5db' }}></div>
+        </motion.div>
+      </motion.div>
     </section>
   );
 };
