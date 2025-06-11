@@ -46,7 +46,7 @@ const Navbar: React.FC = () => {
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
           >
-            Francisco Menendez
+            FM.
           </motion.div>
 
           {/* Desktop Navigation */}

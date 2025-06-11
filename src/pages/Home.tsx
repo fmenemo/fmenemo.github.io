@@ -66,7 +66,7 @@ const Home: React.FC = () => {
             transition={{ delay: 0.7, duration: 0.6 }}
             className='flex flex-wrap justify-center gap-4 mb-12'
           >
-            {['Engineering Leadership', 'System Architecture', 'Team Management', 'Technical Strategy'].map((specialty, index) => (
+            {['System Architecture', 'Cloud Infrastructure', 'Technical Leadership', 'Platform Engineering'].map((specialty, index) => (
               <motion.span
                 key={index}
                 className='px-6 py-3 rounded-full text-sm font-medium border'
