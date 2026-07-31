@@ -46,7 +46,7 @@ const About: React.FC = () => {
 
   const handleDownloadCV = () => {
     const link = document.createElement('a');
-    link.href = '/CV_20250611.pdf';
+    link.href = '/CV_Fran_Menendez_2026-07.pdf';
     link.download = 'Francisco_Menendez_CV.pdf';
     document.body.appendChild(link);
     link.click();
