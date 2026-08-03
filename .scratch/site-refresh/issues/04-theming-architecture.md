@@ -17,3 +17,22 @@ See ADR 0002 for why.
 - [ ] Body and heading fonts, plus a monospace face for metadata, are self-hosted as subset woff2 files
 - [ ] Existing tests still pass, and the theme toggle behaviour is covered at the existing seam
 - [ ] `npm run build` and `npm run lint` pass
+
+## Notes carried in from ticket 02
+
+Review of the ESLint 10 lint fix in `useDarkMode` surfaced three things to
+collapse when this ticket rewrites the hook, rather than patch in isolation now:
+
+- The rule for "what the theme is" is encoded in three shapes: the reader
+  (`prefersDarkMode`), the applier (`classList.toggle`), and the writer inside
+  `toggleDarkMode`, which sets the class and `localStorage` through a separate
+  path. The pre-paint inline script this ticket adds would make a fourth. One
+  `applyTheme(mode)` shared by all of them is the fix.
+- There is no `Theme = 'light' | 'dark'` type. The theme is a `localStorage`
+  string, a boolean and a class name, and `localStorage.theme` is untyped index
+  access, so a typo writes a silently invalid theme.
+- `prefersDarkMode()` now runs during render in every component using the hook,
+  and again in each mount effect, each re-deriving state from `localStorage`.
+  That is correct only because `toggleDarkMode` always writes both stores.
+- `checkDarkMode` does not check anything; it syncs React state from the DOM
+  class. Name it for that if it survives.

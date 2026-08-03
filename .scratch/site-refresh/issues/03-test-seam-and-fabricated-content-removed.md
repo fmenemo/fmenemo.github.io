@@ -22,3 +22,11 @@ The guard tests are the point of the exercise. Write them first and watch them f
 - [ ] Dead CSS (the unused form styles) and the inert Tailwind and PostCSS configs are deleted, along with `autoprefixer`
 - [ ] The unused Google Fonts and third-party SF Pro stylesheet links are removed from the HTML entry
 - [ ] `npm run build`, `npm run lint` and the test suite all pass
+
+## Note
+
+The spec's sequencing says "the test seam is introduced with stage 1 so that
+later stages have a red-green loop available", but the ticket graph puts the
+seam here, after both stage 1 tickets. Tickets 01 and 02 therefore shipped
+without tests. The spec's actual intent survives, since 04, 05 and 06 all sit
+behind this ticket, but the seam is later than the spec's wording implies.

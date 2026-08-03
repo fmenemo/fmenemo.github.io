@@ -12,7 +12,7 @@
 - [x] `npm audit` reports zero vulnerabilities
 - [x] `npm run build` succeeds after each upgrade commit, not only at the end
 - [x] `npm run lint` passes, with any new lint rules from major upgrades either satisfied or deliberately configured
-- [x] The rendered site is unchanged by this ticket: upgrades only, no behaviour or appearance changes
+- [x] The rendered site is unchanged by this ticket, with one behaviour change forced by the lint fix (see comments)
 
 ## Comments
 
@@ -38,6 +38,14 @@ state from the preference in the `useState` initialiser and having the effect
 only apply the class, not suppressed. The `MutationObserver` stays for now:
 removing it belongs to ticket 04. Side effect worth noting: the toggle icon no
 longer renders one frame in the wrong state on load.
+
+That side effect means "the rendered site is unchanged" is not strictly true, so
+the checklist item is annotated rather than ticked clean. The change is confined
+to a single frame of the toggle icon on load and improves on the old behaviour,
+but it is a behaviour change and the ticket should not pretend otherwise. It
+also lands a fragment of ticket 04's "system colour-scheme preference is
+respected on first visit" early. The `MutationObserver` and the rest of 04 are
+untouched.
 
 Vite 8 shrank the built CSS from 41.67 kB to 25.68 kB raw, but gzip moved only
 5.43 to 5.25 kB, which is a minifier change rather than lost styles.
