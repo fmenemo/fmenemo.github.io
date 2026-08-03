@@ -1,24 +1,18 @@
 import { useEffect, useState } from 'react';
 
+// Dark mode preference on initial load: an explicit choice wins, otherwise the system setting.
+const prefersDarkMode = () =>
+  localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches);
+
 export const useDarkMode = () => {
-  const [isDarkMode, setIsDarkMode] = useState(false);
+  const [isDarkMode, setIsDarkMode] = useState(prefersDarkMode);
 
   useEffect(() => {
     const checkDarkMode = () => {
       setIsDarkMode(document.documentElement.classList.contains('dark'));
     };
 
-    // Check for dark mode preference on initial load
-    const darkModeEnabled =
-      localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches);
-
-    if (darkModeEnabled) {
-      document.documentElement.classList.add('dark');
-      setIsDarkMode(true);
-    } else {
-      document.documentElement.classList.remove('dark');
-      setIsDarkMode(false);
-    }
+    document.documentElement.classList.toggle('dark', prefersDarkMode());
 
     // Listen for changes to the dark mode
     const observer = new MutationObserver((mutations) => {
