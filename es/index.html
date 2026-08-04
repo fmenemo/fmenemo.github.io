@@ -1,24 +1,28 @@
 <!doctype html>
-<html lang="en">
+<html lang="es">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    <!-- Every tag below is static markup on purpose. Slack, LinkedIn and
-         WhatsApp fetch this document and stop without running React, so a tag
-         written by a component exists too late to be read. -->
-    <title>Fran Menéndez | Software Engineer</title>
+    <!-- The Spanish edition is a document, not a mode of the English one
+         (ADR 0004). Every tag below is static markup for the same reason it is
+         static in the English document: Slack, LinkedIn and WhatsApp fetch this
+         file and stop without running React, so a tag written by a component
+         exists too late to be read (ADR 0003). The duplication between the two
+         documents is the price of that, and it is what the edition table in
+         `src/App.test.tsx` exists to hold together. -->
+    <title>Fran Menéndez | Ingeniero de Software</title>
     <meta
       name="description"
-      content="Software Engineer, 10+ years building platforms that serve millions of users, now working at the AI layer: semantic search, MCP tooling, agentic workflows."
+      content="Ingeniero de software, más de 10 años construyendo plataformas que dan servicio a millones de usuarios, trabajando en la capa de IA: búsqueda semántica, tooling MCP y flujos de desarrollo agéntico."
     />
     <meta name="author" content="Fran Menéndez" />
-    <link rel="canonical" href="https://fmenemo.github.io/" />
+    <link rel="canonical" href="https://fmenemo.github.io/es/" />
 
     <!-- Both documents carry the same alternate set, each including itself, so
          a crawler that finds either one finds the pair. `x-default` points at
          the English edition: it is the one place English legitimately leads,
-         and it is invisible to humans (ADR 0004). -->
+         and it is invisible to humans. -->
     <link rel="alternate" hreflang="en" href="https://fmenemo.github.io/" />
     <link rel="alternate" hreflang="es" href="https://fmenemo.github.io/es/" />
     <link rel="alternate" hreflang="x-default" href="https://fmenemo.github.io/" />
@@ -33,28 +37,40 @@
 
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="Fran Menéndez" />
-    <meta property="og:title" content="Fran Menéndez | Software Engineer" />
+    <meta property="og:title" content="Fran Menéndez | Ingeniero de Software" />
     <meta
       property="og:description"
-      content="Software Engineer, 10+ years building platforms that serve millions of users, now working at the AI layer: semantic search, MCP tooling, agentic workflows."
+      content="Ingeniero de software, más de 10 años construyendo plataformas que dan servicio a millones de usuarios, trabajando en la capa de IA: búsqueda semántica, tooling MCP y flujos de desarrollo agéntico."
     />
-    <meta property="og:url" content="https://fmenemo.github.io/" />
-    <!-- A scraper resolves this against nothing, so it has to be absolute. -->
+    <meta property="og:url" content="https://fmenemo.github.io/es/" />
+    <!-- A scraper resolves this against nothing, so it has to be absolute.
+         This is still the English edition's image: ticket 06 draws the Spanish
+         one and points these two tags at it. Leaving og:image off until then
+         would collapse the card to a link stub, which reads as a dead page. -->
     <meta property="og:image" content="https://fmenemo.github.io/og-image.png" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
+    <!-- The alt describes the picture, and the picture is still the English
+         card, so this is the English card's description. Ticket 06 draws the
+         Spanish one and this becomes Spanish with it. -->
     <meta property="og:image:alt" content="Fran Menéndez, Software Engineer, Zaragoza, Spain." />
 
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="Fran Menéndez | Software Engineer" />
+    <meta name="twitter:title" content="Fran Menéndez | Ingeniero de Software" />
     <meta
       name="twitter:description"
-      content="Software Engineer, 10+ years building platforms that serve millions of users, now working at the AI layer: semantic search, MCP tooling, agentic workflows."
+      content="Ingeniero de software, más de 10 años construyendo plataformas que dan servicio a millones de usuarios, trabajando en la capa de IA: búsqueda semántica, tooling MCP y flujos de desarrollo agéntico."
     />
     <meta name="twitter:image" content="https://fmenemo.github.io/og-image.png" />
     <script>
       // Set the theme class before first paint so a dark-mode visitor never
       // sees a light flash. Mirrors resolveTheme/applyTheme in src/theme.ts.
+      //
+      // Duplicated from the English document rather than imported: it has to
+      // run before any module loads, and a module is the only thing there
+      // would be to import. The key is the same in both editions and
+      // localStorage is per-origin, so a theme chosen on one edition is
+      // already in effect on the other.
       (function () {
         try {
           var stored = localStorage.getItem('theme');
@@ -73,6 +89,6 @@
   </head>
   <body>
     <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
+    <script type="module" src="/src/main.es.tsx"></script>
   </body>
 </html>

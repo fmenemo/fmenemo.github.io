@@ -14,6 +14,8 @@ See ADR 0004 and `CONTEXT.md` for the `edition` vocabulary.
 
 **Blocked by:** 03 (the Spanish edition exists). There is nothing to select between until it does.
 
+**Found while building 03:** loading a URL with a fragment does not scroll to the section, on either edition. `http://localhost:4173/#experience` and `/es/#experience` both sit at `scrollY: 0` with the hash in the address bar. The cause is timing rather than the anchors: the sections do not exist in the document when the browser processes the fragment, because React has not rendered yet. This is pre-existing and predates the Spanish edition, but it is the mechanism this ticket's fragment preservation depends on, so carrying the fragment across the selector will not be enough on its own. Confirm the landing behaviour in a browser rather than inferring it from the href.
+
 - [ ] Both mastheads carry an `EN / ES` control beside the theme toggle, present at every width
 - [ ] The current edition is marked and is not a link; the other is a plain anchor to the sibling document
 - [ ] The control is text. No flags

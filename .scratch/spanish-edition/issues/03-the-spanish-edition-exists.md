@@ -10,20 +10,24 @@ It is also where the test parameterisation cost lands. The suite gains one table
 
 See ADR 0003, ADR 0004, and the Testing Decisions in `spec.md`.
 
-**Status:** ready-for-agent
+**Status:** resolved
 
 **Blocked by:** 01 (content through a provider) and 02 (Spanish copy). The first supplies the seam, the second supplies the words.
 
-- [ ] The build emits two documents, the existing one at `/` and a second at `/es`, each booting the application with its own edition's content
-- [ ] `/es` serves the approved Spanish copy in full: hero, experience, independent work, recognitions, technologies and contact
-- [ ] The English edition is unchanged at its existing URL, with the same text, anchors and behaviour as before
-- [ ] Each document declares the language of its own edition
-- [ ] Each document carries its own title, description, Open Graph and Twitter tags, canonical link and theme colours as **static markup**. No metadata is written by a component, in either edition
-- [ ] Both documents cross-link with `hreflang` alternates, and `x-default` points at the English edition
-- [ ] The pre-paint theme script runs in both documents, so a dark-mode visitor sees no light flash on either. It is duplicated rather than imported, because it must run before any module loads
-- [ ] A visitor's theme choice persists across the two editions
-- [ ] The test suite defines one edition table, each row bundling that edition's content, entry document and share image source; the structural, content and metadata groups run over it
-- [ ] Guards that are inherently per-edition stay per-edition and are named as such, because each edition's copy is checked against a different CV
-- [ ] The Spanish identity line's condensation guard holds: no figure appears in Spanish metadata that the Spanish identity line does not carry
-- [ ] Every asset each document references exists at the path it is referenced by
-- [ ] `npm run build`, `npm run lint` and `npm test` pass, and both documents are inspected in a browser in both themes with no console errors
+- [x] The build emits two documents, the existing one at `/` and a second at `/es`, each booting the application with its own edition's content
+- [x] `/es` serves the approved Spanish copy in full: hero, experience, independent work, recognitions, technologies and contact
+- [x] The English edition is unchanged at its existing URL, with the same text, anchors and behaviour as before
+- [x] Each document declares the language of its own edition
+- [x] Each document carries its own title, description, Open Graph and Twitter tags, canonical link and theme colours as **static markup**. No metadata is written by a component, in either edition
+- [x] Both documents cross-link with `hreflang` alternates, and `x-default` points at the English edition
+- [x] The pre-paint theme script runs in both documents, so a dark-mode visitor sees no light flash on either. It is duplicated rather than imported, because it must run before any module loads
+- [x] A visitor's theme choice persists across the two editions
+- [~] The test suite defines one edition table, each row bundling that edition's content, entry document and share image source; the structural, content and metadata groups run over it
+
+  The table is built and the structural, content, theme and metadata groups run over it. Each row carries its content module, its entry document and its metadata expectations, but **not a share image source**: there is one share image and it is the English one, so a Spanish column would have named a file that does not exist. The share-image group therefore stays outside the table, named `the English share image ...` and commented as per-edition-until-06. Ticket 06 adds the column and moves the group onto it.
+- [x] Guards that are inherently per-edition stay per-edition and are named as such, because each edition's copy is checked against a different CV
+- [x] The Spanish identity line's condensation guard holds: no figure appears in Spanish metadata that the Spanish identity line does not carry
+- [~] Every asset each document references exists at the path it is referenced by
+
+  Holds for the documents: both reference `/og-image.png`, `/favicon.svg` and `/apple-touch-icon.png`, all present, asserted from the table and confirmed in the built output. It does **not** hold for the CV the Spanish *page* links: `content.es.ts` points at `/Fran_Menendez_CV_ES.pdf` and that PDF is ticket 05's to publish. `/es` demos end to end apart from that one button.
+- [x] `npm run build`, `npm run lint` and `npm test` pass, and both documents are inspected in a browser in both themes with no console errors

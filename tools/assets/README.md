@@ -36,6 +36,6 @@ The favicon itself is `public/favicon.svg` and is hand-drawn, not generated. Its
 letter is geometry rather than type on purpose: a favicon cannot carry a font with
 it, so text would render in whatever monospace the visitor's machine happens to have.
 
-The copy on the share image is the identity line from `src/content.ts`, shortened.
+The copy on the share image is the identity line from `src/content.en.ts`, shortened.
 Like everything else a visitor reads, it answers to the CV (ADR 0001): if the
 identity line changes, change it here and re-render.

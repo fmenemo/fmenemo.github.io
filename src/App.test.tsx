@@ -2,12 +2,155 @@ import { cleanup, fireEvent, render, screen } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import App from './App';
 import { en } from './content.en';
-// The shipped entry document, the stylesheet holding the palette, and the
+import { es } from './content.es';
+// The shipped entry documents, the stylesheet holding the palette, and the
 // source of the share image, each read as a string. Vite resolves `?raw` at
 // transform time, so the test needs no filesystem access and the app project
 // keeps its browser-only type boundary.
-import indexHtml from '../index.html?raw';
+import enHtml from '../index.html?raw';
+import esHtml from '../es/index.html?raw';
 import ogImageHtml from '../tools/assets/og-image.html?raw';
+
+const SITE = 'https://fmenemo.github.io';
+
+// One row per edition, and the point of the exercise (ADR 0004). The guard
+// groups below run over this table with `describe.each`, so a test that covers
+// English and not Spanish becomes something you have to go out of your way to
+// write, which is the failure mode a second edition invites.
+//
+// A row carries that edition's content module, its entry document, and the
+// values the shared assertions compare against. Those values are per-edition
+// *expectations*, not a second copy of the content: each edition is condensed
+// from a different CV, so "Zaragoza, Spain" and "Zaragoza, España" are two
+// facts checked against two documents, not one fact translated.
+//
+// What does not belong here is a guard that is inherently per-edition. Bullet
+// provenance is checked against a different CV for each edition, so it stays
+// out of the table and is named as per-edition where it sits.
+//
+// Ticket 06 of this feature adds each row's share image source and moves the
+// share-image group onto the table. Until it lands there is only one image, so
+// that group is still English-only and says so.
+const editions = [
+  {
+    edition: 'English',
+    content: en,
+    entry: enHtml,
+    lang: 'en',
+    url: `${SITE}/`,
+    title: 'Fran Menéndez | Software Engineer',
+    // Both editions still point at the English card. Ticket 06 of this feature
+    // draws the Spanish one and changes this row, which is a one-line edit
+    // precisely because the value is asserted exactly rather than by shape.
+    image: `${SITE}/og-image.png`,
+    // The first words of the identity line, which several guards need to find
+    // the paragraph without asserting the whole of it.
+    identityLead: /^Software Engineer, 10\+ years/,
+    themeToggle: /switch to (dark|light) mode/i,
+    cv: { href: '/Fran_Menendez_CV.pdf', download: 'Fran_Menendez_CV.pdf' },
+    location: 'Zaragoza, Spain',
+    // The employer names are the same in both editions; the month
+    // abbreviations are not.
+    employers: [
+      ['The Knot Worldwide', 'Oct 2023'],
+      ['MOBIKO GmbH', 'Aug 2020'],
+      ['Hiberus Tecnología', 'Jul 2017'],
+    ],
+    // A promotion at one employer is two entries, not one (CONTEXT.md).
+    roles: [
+      'Principal Software Engineer',
+      'Lead Software Engineer',
+      'Team Lead & Architecture',
+      'Senior Full-Stack Developer',
+      'Full-Stack Developer',
+      'Junior Developer, E-commerce',
+    ],
+    figures: ['850ms', '34ms', '100,000+', '2M+', '500k+', '1M+', '100k+', '8-person'],
+    // The organisations and awards are names, and so are the month
+    // abbreviations, but each edition names them as its own CV does.
+    recognitions: [
+      'NASA Space Apps Global Finalist',
+      '100 Ideas Zaragoza',
+      'uCode by Adidas',
+      'ImagineCode',
+      'Google Hash Code',
+    ],
+    // Carried by every copy of the identity, including the share image, which
+    // has room for the identity but not for the differentiator that follows.
+    identityPhrases: ['Software Engineer', '10+ years', 'millions of users', 'AI layer'],
+    differentiator: ['semantic search', 'MCP', 'agentic'],
+    // The claims ADR 0001 removed, in the language they would come back in.
+    availability: /available|open to (new )?opportunities|actively (exploring|looking)|hiring/i,
+    claims: [
+      /\d+\+?\s*(engineers|developers)\s*mentored/i,
+      /years of experience|systems scaled/i,
+      /open source|passionate|passion for/i,
+      /freelance/i, // D3: the freelance entry is on the CV, not on the site.
+    ],
+    // A description is what a search engine indexes the page as, so the two
+    // titles ADR 0001 took off the page must not survive in it.
+    describedAsNot: /full stack|designer|portfolio/i,
+    metadataClaims: [
+      /passionate|passion for|open source|beautiful|user-friendly/i,
+      /years of experience|systems scaled/i,
+    ],
+  },
+  {
+    edition: 'Spanish',
+    content: es,
+    entry: esHtml,
+    lang: 'es',
+    url: `${SITE}/es/`,
+    title: 'Fran Menéndez | Ingeniero de Software',
+    image: `${SITE}/og-image.png`,
+    identityLead: /^Ingeniero de software, más de 10 años/,
+    themeToggle: /cambiar a modo (oscuro|claro)/i,
+    // Ticket 05 of this feature publishes this PDF and puts the original beside
+    // it. Until then
+    // the link is here and the file is not, which is why that ticket exists.
+    cv: { href: '/Fran_Menendez_CV_ES.pdf', download: 'Fran_Menendez_CV_ES.pdf' },
+    location: 'Zaragoza, España',
+    employers: [
+      ['The Knot Worldwide', 'Oct 2023'],
+      ['MOBIKO GmbH', 'Ago 2020'],
+      ['Hiberus Tecnología', 'Jul 2017'],
+    ],
+    roles: [
+      'Ingeniero de Software Principal',
+      'Ingeniero de Software Líder',
+      'Team Lead y Arquitectura',
+      'Desarrollador Full-Stack Senior',
+      'Desarrollador Full-Stack',
+      'Desarrollador Junior, E-commerce',
+    ],
+    // The same evidence as the English row, written as the Spanish CV writes
+    // it: a decimal point for thousands, and a space before the unit.
+    figures: ['850 ms', '34 ms', '100.000', '2M', '500k', '1M', '100k', '8 personas'],
+    recognitions: [
+      'Finalista global',
+      '100 Ideas Zaragoza',
+      'uCode by Adidas',
+      'ImagineCode',
+      'Google Hash Code',
+    ],
+    identityPhrases: ['Ingeniero de software', 'más de 10 años', 'millones de usuarios', 'capa de IA'],
+    differentiator: ['búsqueda semántica', 'MCP', 'agéntico'],
+    availability: /disponible|abierto a (nuevas )?oportunidades|buscando activamente|contratando/i,
+    claims: [
+      /\d+\+?\s*(ingenieros|desarrolladores)\s*mentorizados/i,
+      /años de experiencia|sistemas escalados/i,
+      /código abierto|apasionad[oa]|pasión por/i,
+      /freelance|autónomo/i,
+    ],
+    describedAsNot: /full stack|diseñador|portfolio|portafolio/i,
+    metadataClaims: [
+      /apasionad[oa]|pasión por|código abierto|precios[oa]|fácil de usar/i,
+      /años de experiencia|sistemas escalados/i,
+    ],
+  },
+] as const;
+
+type Edition = (typeof editions)[number];
 
 // jsdom does not implement matchMedia, which the theme code reads on mount.
 // Tests flip this to simulate the system colour-scheme preference.
@@ -28,10 +171,15 @@ vi.stubGlobal(
     }) as MediaQueryList
 );
 
-const renderedText = () => {
-  render(<App content={en} />);
+const renderedText = (edition: Edition) => {
+  render(<App content={edition.content} />);
   return document.body.textContent ?? '';
 };
+
+const parseDocument = (html: string) => new DOMParser().parseFromString(html, 'text/html');
+
+const metaOf = (head: ParentNode, key: string) =>
+  head.querySelector(`meta[name="${key}"], meta[property="${key}"]`)?.getAttribute('content') ?? null;
 
 beforeEach(() => {
   localStorage.clear();
@@ -53,434 +201,519 @@ describe('the edition arrives from above', () => {
     eager: true,
   }) as Record<string, string>;
 
-  // The entry supplies the edition, and this file renders one to assert
-  // against. Everything else reads whichever edition it was rendered under.
-  const chooseTheEdition = ['./main.tsx', './App.test.tsx'];
+  // One entry per edition supplies that edition, and this file renders both to
+  // assert against. Everything else reads whichever edition it was rendered
+  // under. If this list ever needs an entry that is not an entry document, the
+  // decision it defends has gone and the test should be deleted, not extended.
+  const chooseTheEdition = ['./main.tsx', './main.es.tsx', './App.test.tsx'];
 
-  it('has nothing but the entry import an edition by name', () => {
+  it('has nothing but the entry documents import an edition by name', () => {
     // The glob is resolved at transform time, so a pattern that stopped
     // matching would leave this passing over an empty set.
     expect(Object.keys(sources).length).toBeGreaterThan(5);
 
     const reaching = Object.entries(sources)
       .filter(([path]) => !chooseTheEdition.includes(path))
-      .filter(([, source]) => /from '[^']*content\.(en|es)'/.test(source))
+      .filter(([, source]) => /from '[^']*content\.(en|es)(\.ts)?'/.test(source))
       .map(([path]) => path);
 
     expect(reaching).toEqual([]);
   });
 });
 
-// Guard tests for ticket 04 (theming architecture): the theme is a class on
-// <html> plus a persisted localStorage choice, exercised through the toggle.
-describe('theme', () => {
-  const toggle = () => screen.getAllByRole('button', { name: /switch to (dark|light) mode/i })[0];
+describe.each(editions)('$edition edition', (edition) => {
+  const { content } = edition;
 
-  it('follows the system dark preference on first visit', () => {
-    systemPrefersDark = true;
-    render(<App content={en} />);
-    expect(document.documentElement.classList.contains('dark')).toBe(true);
-    expect(localStorage.getItem('theme')).toBeNull();
-  });
+  // Guard tests for ticket 04 (theming architecture): the theme is a class on
+  // <html> plus a persisted localStorage choice, exercised through the toggle.
+  // The behaviour is the same in both editions and the toggle's accessible
+  // name is not, which is the whole reason this runs from the table.
+  describe('theme', () => {
+    const toggle = () => screen.getAllByRole('button', { name: edition.themeToggle })[0];
 
-  it('follows the system light preference on first visit', () => {
-    render(<App content={en} />);
-    expect(document.documentElement.classList.contains('dark')).toBe(false);
-    expect(localStorage.getItem('theme')).toBeNull();
-  });
-
-  it('lets a stored explicit choice override the system preference', () => {
-    systemPrefersDark = true;
-    localStorage.setItem('theme', 'light');
-    render(<App content={en} />);
-    expect(document.documentElement.classList.contains('dark')).toBe(false);
-  });
-
-  it('toggling to dark sets the class and persists the choice', () => {
-    render(<App content={en} />);
-    fireEvent.click(toggle());
-    expect(document.documentElement.classList.contains('dark')).toBe(true);
-    expect(localStorage.getItem('theme')).toBe('dark');
-  });
-
-  it('toggling back to light removes the class and persists the choice', () => {
-    render(<App content={en} />);
-    fireEvent.click(toggle());
-    fireEvent.click(toggle());
-    expect(document.documentElement.classList.contains('dark')).toBe(false);
-    expect(localStorage.getItem('theme')).toBe('light');
-  });
-
-  it('ignores an invalid stored theme and falls back to the system preference', () => {
-    systemPrefersDark = true;
-    localStorage.setItem('theme', 'banana');
-    render(<App content={en} />);
-    expect(document.documentElement.classList.contains('dark')).toBe(true);
-  });
-});
-
-// Guard tests for ticket 05 (Swiss visual direction). These assert structure a
-// visitor can observe: one document outline, working anchor navigation, real
-// links rather than clickable boxes, and no emoji in the copy.
-describe('page structure', () => {
-  it('has a single h1', () => {
-    render(<App content={en} />);
-    expect(screen.getAllByRole('heading', { level: 1 })).toHaveLength(1);
-  });
-
-  // queryAllByRole with a name filter uses the accessible-name computation, so
-  // anything missing from the named set has no name a screen reader can read.
-  it('gives every link and button an accessible name', () => {
-    render(<App content={en} />);
-    for (const role of ['link', 'button'] as const) {
-      const named = screen.queryAllByRole(role, { name: /\S/ });
-      expect(named).toHaveLength(screen.queryAllByRole(role).length);
-    }
-  });
-
-  it('points every in-page anchor at a section that exists', () => {
-    render(<App content={en} />);
-    const anchors = screen
-      .getAllByRole('link')
-      .map((link) => link.getAttribute('href'))
-      .filter((href): href is string => href?.startsWith('#') ?? false);
-
-    expect(anchors.length).toBeGreaterThan(0);
-    for (const href of anchors) {
-      expect(document.querySelector(href)).not.toBeNull();
-    }
-  });
-
-  it('offers the CV as a link to the PDF rather than a scripted download', () => {
-    render(<App content={en} />);
-    expect(screen.getByRole('link', { name: /cv/i }).getAttribute('href')).toContain('.pdf');
-  });
-
-  // The asset, the href and the name the visitor's browser saves it under are
-  // all one string. They drifted once already: the file was versioned
-  // `CV_Fran_Menendez_2026-07.pdf` while the download attribute said
-  // `Francisco_Menendez_CV.pdf`, a name Fran does not use.
-  it('serves the CV under one name everywhere', () => {
-    render(<App content={en} />);
-    const cv = screen.getByRole('link', { name: /cv/i });
-    expect(cv.getAttribute('href')).toBe('/Fran_Menendez_CV.pdf');
-    expect(cv.getAttribute('download')).toBe('Fran_Menendez_CV.pdf');
-  });
-
-  // Each contact route has to be an anchor a visitor can open, middle-click or
-  // tab to, rather than a div carrying an onClick.
-  it('makes each contact route a real link', () => {
-    render(<App content={en} />);
-    const hrefs = screen.getAllByRole('link').map((link) => link.getAttribute('href'));
-    expect(hrefs).toContain('mailto:fmenendezmoya@gmail.com');
-    expect(hrefs).toContain('https://www.linkedin.com/in/fmenemo/');
-    expect(hrefs).toContain('https://github.com/fmenemo');
-  });
-
-  // An emoji is a character that renders as one by default, or one forced into
-  // emoji presentation by a variation selector. This deliberately allows "©",
-  // which is pictographic but renders as text.
-  it('renders no emoji in the copy', () => {
-    expect(renderedText()).not.toMatch(/\p{Emoji_Presentation}|\uFE0F/u);
-  });
-});
-
-// Guard tests for ADR 0001 (evidence-first content): every statement on the
-// site must be traceable to the CV. These pin the decisions most likely to be
-// silently undone by a future change.
-describe('fabricated content stays out', () => {
-  it('renders none of the fabricated project names', () => {
-    const text = renderedText();
-    for (const name of ['TaskFlow', 'EcoTracker', 'FinanceWise', 'DevPortal', 'ShopSmart', 'MindfulSpace']) {
-      expect(text).not.toContain(name);
-    }
-  });
-
-  it('does not render the "∞" character', () => {
-    expect(renderedText()).not.toContain('∞');
-  });
-
-  // Narrowed for ticket 06. This banned every "N+" when the page had no CV copy
-  // on it, but the CV is full of them ("100,000+ products", "2M+ weekly users")
-  // and those are evidence, not claims. What ADR 0001 actually removed was the
-  // stat block: a big round number captioned with a capability noun and nothing
-  // behind it. That shape is what this now pins.
-  it('renders no round-number statistic', () => {
-    const text = renderedText();
-    expect(text).not.toMatch(/\d+\s*\+?\s*(years?\s+experience|engineers?\s+mentored|systems?\s+scaled)/i);
-    expect(text).not.toMatch(/\d+\s*\+\s*(engineers|developers|projects|clients|teams)\b/i);
-  });
-
-  // Narrowed for ticket 06. "Principal Software Engineer" is Fran's real title
-  // at The Knot Worldwide and belongs on that experience entry. What ADR 0001
-  // decided is that the site does not *lead* with it, so the assertion belongs
-  // on the identity line: see "leads with Software Engineer" below.
-  it('does not lead with "Principal Software Engineer"', () => {
-    render(<App content={en} />);
-    expect(screen.getByRole('heading', { level: 1 }).textContent).not.toContain('Principal');
-    expect(screen.getByText(/^Software Engineer, 10\+ years/).textContent).not.toContain('Principal');
-  });
-});
-
-// Guard tests for ticket 06 (content rewrite from the CV). Every assertion here
-// traces to `public/Fran_Menendez_CV.pdf` or to a decision recorded in
-// `.scratch/site-refresh/bullet-approval.md`.
-describe('content', () => {
-  // The footer said "Francisco Menendez" long after the hero stopped, and no
-  // test noticed. One name, one spelling, accent included.
-  it('calls him Fran Menéndez everywhere it names him', () => {
-    const text = renderedText();
-    expect(text).toContain('Fran Menéndez');
-    expect(text).not.toContain('Francisco');
-    expect(text).not.toContain('Menendez');
-  });
-
-  it('renders the name with its accent as the one h1', () => {
-    render(<App content={en} />);
-    expect(screen.getByRole('heading', { level: 1 }).textContent).toContain('Fran Menéndez');
-  });
-
-  // ADR 0001: the site leads with "Software Engineer" from the CV summary, not
-  // with the current job title. "Principal Software Engineer" is allowed to
-  // appear as an experience entry's title, so this is scoped to the identity
-  // line rather than to the whole page.
-  it('leads with Software Engineer rather than the current job title', () => {
-    render(<App content={en} />);
-    const identity = screen.getByText(/^Software Engineer, 10\+ years/);
-    expect(identity.textContent).not.toContain('Principal');
-  });
-
-  it('names the AI-layer differentiator in the identity line', () => {
-    render(<App content={en} />);
-    const identity = screen.getByText(/^Software Engineer, 10\+ years/);
-    expect(identity.textContent).toMatch(/semantic search/i);
-    expect(identity.textContent).toMatch(/MCP/);
-    expect(identity.textContent).toMatch(/agentic/i);
-  });
-
-  it.each([
-    ['The Knot Worldwide', 'Oct 2023'],
-    ['MOBIKO GmbH', 'Aug 2020'],
-    ['Hiberus Tecnología', 'Jul 2017'],
-  ])('renders %s with its dates', (employer, from) => {
-    const text = renderedText();
-    expect(text).toContain(employer);
-    expect(text).toContain(from);
-  });
-
-  // A promotion at one employer is two entries, not one (CONTEXT.md): seven
-  // roles across three employers.
-  it.each([
-    'Principal Software Engineer',
-    'Lead Software Engineer',
-    'Team Lead & Architecture',
-    'Senior Full-Stack Developer',
-    'Full-Stack Developer',
-    'Junior Developer, E-commerce',
-  ])('renders the %s role', (title) => {
-    expect(renderedText()).toContain(title);
-  });
-
-  it('carries the evidence figures exactly as the CV states them', () => {
-    const text = renderedText();
-    for (const figure of ['850ms', '34ms', '100,000+', '2M+', '500k+', '1M+', '100k+', '8-person']) {
-      expect(text).toContain(figure);
-    }
-  });
-
-  // D1: the mention ships, the URL does not, and no claim leans on a click.
-  it('mentions the independent work without linking it', () => {
-    render(<App content={en} />);
-    expect(document.body.textContent).toContain('Instagram Checker');
-    const hrefs = screen.getAllByRole('link').map((link) => link.getAttribute('href'));
-    expect(hrefs.some((href) => href?.includes('instagram-checker'))).toBe(false);
-  });
-
-  it('renders every recognition with its issuing organisation and date', () => {
-    const text = renderedText();
-    for (const recognition of [
-      'NASA Space Apps Global Finalist',
-      '100 Ideas Zaragoza',
-      'uCode by Adidas',
-      'ImagineCode',
-      'Google Hash Code',
-    ]) {
-      expect(text).toContain(recognition);
-    }
-    for (const date of ['May 2017', 'Sep 2017', 'Mar 2018', 'Oct 2018', 'Feb 2019']) {
-      expect(text).toContain(date);
-    }
-  });
-
-  it('states where Fran is without signalling availability', () => {
-    const text = renderedText();
-    expect(text).toContain('Zaragoza, Spain');
-    // D4: work authorization stays on the CV, off the site.
-    expect(text).not.toMatch(/work authorization/i);
-    expect(text).not.toMatch(/available|open to (new )?opportunities|actively (exploring|looking)|hiring/i);
-  });
-
-  // The claims ADR 0001 removed, and the ones most likely to creep back in.
-  it('makes no claim the CV does not support', () => {
-    const text = renderedText();
-    expect(text).not.toContain('∞');
-    expect(text).not.toMatch(/\d+\+?\s*(engineers|developers)\s*mentored/i);
-    expect(text).not.toMatch(/years of experience|systems scaled/i);
-    expect(text).not.toMatch(/open source|passionate|passion for/i);
-    // D3: the freelance entry is on the CV, not on the site.
-    expect(text).not.toMatch(/freelance/i);
-  });
-});
-
-// Guard tests for ticket 07 (favicon, OG image and metadata).
-//
-// These read `index.html` rather than the rendered app, because that is the
-// only thing a link scraper ever sees: Slack, LinkedIn and WhatsApp fetch the
-// document and stop, without running React. Metadata injected from a component
-// would pass a test against the rendered DOM and still produce a broken
-// preview, which is exactly the bug this ticket exists to fix.
-describe('metadata', () => {
-  const head = new DOMParser().parseFromString(indexHtml, 'text/html').head;
-
-  const meta = (key: string) =>
-    head.querySelector(`meta[name="${key}"], meta[property="${key}"]`)?.getAttribute('content') ?? null;
-
-  const link = (rel: string) => head.querySelector(`link[rel="${rel}"]`)?.getAttribute('href') ?? null;
-
-  /** Files Vite copies verbatim to the site root, keyed by their public path. */
-  const publicAssets = new Set(
-    Object.keys(import.meta.glob('../public/*')).map((path) => path.replace('../public', ''))
-  );
-
-  const SITE = 'https://fmenemo.github.io';
-
-  it('titles the tab with the person and the role, not the word portfolio', () => {
-    expect(head.querySelector('title')?.textContent).toBe('Fran Menéndez | Software Engineer');
-  });
-
-  it('describes a Software Engineer working at the AI layer', () => {
-    const description = meta('description');
-    expect(description).toMatch(/Software Engineer/);
-    expect(description).toMatch(/AI layer/);
-    // A description is what a search engine indexes the page as, so the two
-    // titles ADR 0001 took off the page must not survive here.
-    expect(description).not.toMatch(/full stack|designer|portfolio/i);
-  });
-
-  it.each([
-    ['og:title', 'Fran Menéndez | Software Engineer'],
-    ['og:type', 'website'],
-    ['og:site_name', 'Fran Menéndez'],
-    ['og:url', `${SITE}/`],
-    ['twitter:card', 'summary_large_image'],
-  ])('sets %s', (key, value) => {
-    expect(meta(key)).toBe(value);
-  });
-
-  it('gives the social tags the same description as the page', () => {
-    expect(meta('og:description')).toBe(meta('description'));
-    expect(meta('twitter:description')).toBe(meta('description'));
-    expect(meta('twitter:title')).toBe(meta('og:title'));
-  });
-
-  // A scraper resolves og:image against nothing: a root-relative path is not
-  // enough, it has to be absolute.
-  it.each(['og:image', 'twitter:image'])('points %s at an absolute URL', (key) => {
-    expect(meta(key)).toBe(`${SITE}/og-image.png`);
-  });
-
-  it('declares the share image dimensions a scraper crops to', () => {
-    expect(meta('og:image:width')).toBe('1200');
-    expect(meta('og:image:height')).toBe('630');
-    expect(meta('og:image:alt')).toMatch(/\S/);
-  });
-
-  // The previous OG image was referenced but never existed, which is half of
-  // why sharing the link looked broken.
-  it('ships every referenced asset at the path it is referenced by', () => {
-    for (const path of [meta('og:image')?.replace(SITE, ''), link('icon'), link('apple-touch-icon')]) {
-      expect(publicAssets).toContain(path);
-    }
-  });
-
-  it('serves a favicon of its own rather than the build tool logo', () => {
-    expect(link('icon')).toBe('/favicon.svg');
-    expect(indexHtml).not.toMatch(/vite\.svg/);
-    expect(publicAssets).not.toContain('/vite.svg');
-  });
-
-  it('declares the canonical URL', () => {
-    expect(link('canonical')).toBe(`${SITE}/`);
-  });
-
-  // The old value was the accent of a palette this site no longer uses.
-  //
-  // These two hex codes are the one place a test names a colour, which the
-  // spec otherwise forbids. A `<meta>` value is not a style: it cannot be
-  // expressed as a token, because the browser reads it before any stylesheet.
-  // It would be better read out of `index.css` than written here, but Vitest
-  // stubs CSS imports to empty strings whatever query they carry, so the
-  // coupling is recorded in `index.css` beside the tokens instead.
-  it('paints the browser chrome in the palette, per theme', () => {
-    const themeColors = [...head.querySelectorAll('meta[name="theme-color"]')].map((tag) => [
-      tag.getAttribute('media'),
-      tag.getAttribute('content'),
-    ]);
-
-    expect(themeColors).toEqual([
-      ['(prefers-color-scheme: light)', '#ffffff'], // --color-paper
-      ['(prefers-color-scheme: dark)', '#0d0d0d'], // --color-canvas
-    ]);
-  });
-
-  // The identity is written in three places: `identity.line` in content.en.ts,
-  // the description tags here, and the share image. Only the first is read
-  // against the CV, so the other two have to be condensations of it rather
-  // than independent descriptions of Fran that drift on their own.
-  describe('stays a condensation of the identity line', () => {
-    // The words on the share image, without the stylesheet that sets them:
-    // its letter-spacing and font sizes are not copy, and reading them as
-    // copy would have this asserting that "0.2em" traces to the CV.
-    const shareImageCopy = (
-      new DOMParser().parseFromString(ogImageHtml, 'text/html').body.textContent ?? ''
-    ).replace(/\s+/g, ' ');
-
-    // Carried by every copy, including the share image, which has room for
-    // the identity but not for the differentiator that follows it.
-    const IDENTITY = ['Software Engineer', '10+ years', 'millions of users', 'AI layer'];
-    // The differentiator, carried by the text copies only.
-    const DIFFERENTIATOR = ['semantic search', 'MCP', 'agentic'];
-
-    it.each([...IDENTITY, ...DIFFERENTIATOR])('sources "%s" from the identity line', (phrase) => {
-      expect(en.identity.line).toContain(phrase);
+    it('follows the system dark preference on first visit', () => {
+      systemPrefersDark = true;
+      render(<App content={content} />);
+      expect(document.documentElement.classList.contains('dark')).toBe(true);
+      expect(localStorage.getItem('theme')).toBeNull();
     });
 
-    it.each([...IDENTITY, ...DIFFERENTIATOR])('carries "%s" in the description', (phrase) => {
-      expect(meta('description')).toContain(phrase);
+    it('follows the system light preference on first visit', () => {
+      render(<App content={content} />);
+      expect(document.documentElement.classList.contains('dark')).toBe(false);
+      expect(localStorage.getItem('theme')).toBeNull();
     });
 
-    it.each(IDENTITY)('carries "%s" on the share image', (phrase) => {
-      expect(shareImageCopy).toContain(phrase);
+    it('lets a stored explicit choice override the system preference', () => {
+      systemPrefersDark = true;
+      localStorage.setItem('theme', 'light');
+      render(<App content={content} />);
+      expect(document.documentElement.classList.contains('dark')).toBe(false);
     });
 
-    // Nothing on the share image can be checked against the CV by a reader,
-    // because it is a picture. So every number on it has to come from the one
-    // sentence that was checked.
-    it('puts no figure on the share image that the identity line does not carry', () => {
-      const figures = shareImageCopy.match(/\d[\d,.]*\+?/g) ?? [];
-      expect(figures.length).toBeGreaterThan(0);
-      for (const figure of figures) {
-        expect(en.identity.line).toContain(figure);
+    it('toggling to dark sets the class and persists the choice', () => {
+      render(<App content={content} />);
+      fireEvent.click(toggle());
+      expect(document.documentElement.classList.contains('dark')).toBe(true);
+      expect(localStorage.getItem('theme')).toBe('dark');
+    });
+
+    it('toggling back to light removes the class and persists the choice', () => {
+      render(<App content={content} />);
+      fireEvent.click(toggle());
+      fireEvent.click(toggle());
+      expect(document.documentElement.classList.contains('dark')).toBe(false);
+      expect(localStorage.getItem('theme')).toBe('light');
+    });
+
+    it('ignores an invalid stored theme and falls back to the system preference', () => {
+      systemPrefersDark = true;
+      localStorage.setItem('theme', 'banana');
+      render(<App content={content} />);
+      expect(document.documentElement.classList.contains('dark')).toBe(true);
+    });
+
+    // A visitor who chose a theme on one edition keeps it on the other. The
+    // two documents share an origin and a storage key, so this is the same
+    // assertion as "a stored choice is honoured" made from the other edition's
+    // side: what it defends is a future change keying the choice per edition.
+    it('honours a theme chosen on the other edition', () => {
+      localStorage.setItem('theme', 'dark');
+      render(<App content={content} />);
+      expect(document.documentElement.classList.contains('dark')).toBe(true);
+    });
+  });
+
+  // Guard tests for ticket 05 of the site refresh (Swiss visual direction).
+  // These assert structure a visitor can observe: one document outline, working
+  // anchor navigation, real links rather than clickable boxes, and no emoji.
+  describe('page structure', () => {
+    it('has a single h1', () => {
+      render(<App content={content} />);
+      expect(screen.getAllByRole('heading', { level: 1 })).toHaveLength(1);
+    });
+
+    // queryAllByRole with a name filter uses the accessible-name computation, so
+    // anything missing from the named set has no name a screen reader can read.
+    it('gives every link and button an accessible name', () => {
+      render(<App content={content} />);
+      for (const role of ['link', 'button'] as const) {
+        const named = screen.queryAllByRole(role, { name: /\S/ });
+        expect(named).toHaveLength(screen.queryAllByRole(role).length);
+      }
+    });
+
+    // Section ids stay English in every edition, so a fragment carries across
+    // the language selector unchanged. This passing in both editions is what
+    // says the two anchor sets have not drifted apart.
+    it('points every in-page anchor at a section that exists', () => {
+      render(<App content={content} />);
+      const anchors = screen
+        .getAllByRole('link')
+        .map((link) => link.getAttribute('href'))
+        .filter((href): href is string => href?.startsWith('#') ?? false);
+
+      expect(anchors.length).toBeGreaterThan(0);
+      for (const href of anchors) {
+        expect(document.querySelector(href)).not.toBeNull();
+      }
+    });
+
+    it('offers the CV as a link to the PDF rather than a scripted download', () => {
+      render(<App content={content} />);
+      expect(screen.getByRole('link', { name: /cv/i }).getAttribute('href')).toContain('.pdf');
+    });
+
+    // The asset, the href and the name the visitor's browser saves it under are
+    // all one string. They drifted once already: the file was versioned
+    // `CV_Fran_Menendez_2026-07.pdf` while the download attribute said
+    // `Francisco_Menendez_CV.pdf`, a name Fran does not use.
+    it('serves the CV under one name everywhere', () => {
+      render(<App content={content} />);
+      const cv = screen.getByRole('link', { name: /cv/i });
+      expect(cv.getAttribute('href')).toBe(edition.cv.href);
+      expect(cv.getAttribute('download')).toBe(edition.cv.download);
+    });
+
+    // Each contact route has to be an anchor a visitor can open, middle-click or
+    // tab to, rather than a div carrying an onClick.
+    it('makes each contact route a real link', () => {
+      render(<App content={content} />);
+      const hrefs = screen.getAllByRole('link').map((link) => link.getAttribute('href'));
+      expect(hrefs).toContain('mailto:fmenendezmoya@gmail.com');
+      expect(hrefs).toContain('https://www.linkedin.com/in/fmenemo/');
+      expect(hrefs).toContain('https://github.com/fmenemo');
+    });
+
+    // An emoji is a character that renders as one by default, or one forced into
+    // emoji presentation by a variation selector. This deliberately allows "©",
+    // which is pictographic but renders as text.
+    it('renders no emoji in the copy', () => {
+      expect(renderedText(edition)).not.toMatch(/\p{Emoji_Presentation}|\uFE0F/u);
+    });
+  });
+
+  // Guard tests for ADR 0001 (evidence-first content): every statement on the
+  // site must be traceable to a CV. These pin the decisions most likely to be
+  // silently undone by a future change.
+  describe('fabricated content stays out', () => {
+    it('renders none of the fabricated project names', () => {
+      const text = renderedText(edition);
+      for (const name of ['TaskFlow', 'EcoTracker', 'FinanceWise', 'DevPortal', 'ShopSmart', 'MindfulSpace']) {
+        expect(text).not.toContain(name);
+      }
+    });
+
+    it('does not render the "∞" character', () => {
+      expect(renderedText(edition)).not.toContain('∞');
+    });
+
+    // Narrowed for ticket 06 of the site refresh. This banned every "N+" when
+    // the page had no CV copy on it, but the CV is full of them ("100,000+
+    // products", "2M+ weekly users") and those are evidence, not claims. What
+    // ADR 0001 actually removed was the stat block: a big round number
+    // captioned with a capability noun and nothing behind it.
+    it('renders no round-number statistic', () => {
+      const text = renderedText(edition);
+      expect(text).not.toMatch(
+        /\d+\s*\+?\s*(years?\s+experience|engineers?\s+mentored|systems?\s+scaled|años\s+de\s+experiencia)/i
+      );
+      expect(text).not.toMatch(
+        /\d+\s*\+\s*(engineers|developers|projects|clients|teams|ingenieros|desarrolladores|proyectos|clientes|equipos)\b/i
+      );
+    });
+
+    // The current job title is allowed on its own experience entry: "Principal
+    // Software Engineer" and "Ingeniero de Software Principal" are Fran's real
+    // titles at The Knot Worldwide. What ADR 0001 decided is that the site does
+    // not *lead* with one, so the assertion belongs on the identity line.
+    it('does not lead with the current job title', () => {
+      render(<App content={content} />);
+      expect(screen.getByRole('heading', { level: 1 }).textContent).not.toContain('Principal');
+      expect(screen.getByText(edition.identityLead).textContent).not.toContain('Principal');
+    });
+  });
+
+  // Guard tests for the content of each edition. Every value in this row of the
+  // table traces to that edition's CV, or to a decision recorded in its bullet
+  // approval record under `.scratch/`.
+  describe('content', () => {
+    // The footer said "Francisco Menendez" long after the hero stopped, and no
+    // test noticed. One name, one spelling, accent included, in every edition.
+    it('calls him Fran Menéndez everywhere it names him', () => {
+      const text = renderedText(edition);
+      expect(text).toContain('Fran Menéndez');
+      expect(text).not.toContain('Francisco');
+      expect(text).not.toContain('Menendez');
+    });
+
+    it('renders the name with its accent as the one h1', () => {
+      render(<App content={content} />);
+      expect(screen.getByRole('heading', { level: 1 }).textContent).toContain('Fran Menéndez');
+    });
+
+    it('names the AI-layer differentiator in the identity line', () => {
+      render(<App content={content} />);
+      const identity = screen.getByText(edition.identityLead);
+      for (const phrase of edition.differentiator) {
+        expect(identity.textContent).toContain(phrase);
+      }
+    });
+
+    // `as const` on the table makes every row deeply readonly, which `it.each`
+    // does not accept: the copy is for the type, not for the values.
+    it.each(edition.employers.map(([employer, from]) => [employer, from]))(
+      'renders %s with its dates',
+      (employer, from) => {
+        const text = renderedText(edition);
+        expect(text).toContain(employer);
+        expect(text).toContain(from);
+      }
+    );
+
+    it.each(edition.roles)('renders the %s role', (title) => {
+      expect(renderedText(edition)).toContain(title);
+    });
+
+    it('carries the evidence figures exactly as its CV states them', () => {
+      const text = renderedText(edition);
+      for (const figure of edition.figures) {
+        expect(text).toContain(figure);
+      }
+    });
+
+    // D1: the mention ships, the URL does not, and no claim leans on a click.
+    it('mentions the independent work without linking it', () => {
+      render(<App content={content} />);
+      expect(document.body.textContent).toContain('Instagram Checker');
+      const hrefs = screen.getAllByRole('link').map((link) => link.getAttribute('href'));
+      expect(hrefs.some((href) => href?.includes('instagram-checker'))).toBe(false);
+    });
+
+    it('renders every recognition with its issuing organisation and date', () => {
+      const text = renderedText(edition);
+      for (const recognition of edition.recognitions) {
+        expect(text).toContain(recognition);
+      }
+      for (const date of ['May 2017', 'Sep 2017', 'Mar 2018', 'Oct 2018', 'Feb 2019']) {
+        expect(text).toContain(date);
+      }
+    });
+
+    it('states where Fran is without signalling availability', () => {
+      const text = renderedText(edition);
+      expect(text).toContain(edition.location);
+      // D4: work authorization stays on the CV, off the site.
+      expect(text).not.toMatch(/work authorization|permiso de trabajo/i);
+      expect(text).not.toMatch(edition.availability);
+    });
+
+    it('makes no claim its CV does not support', () => {
+      const text = renderedText(edition);
+      expect(text).not.toContain('∞');
+      for (const claim of edition.claims) {
+        expect(text).not.toMatch(claim);
       }
     });
   });
 
-  // ADR 0001 governs the metadata too: it is copy, and it is the copy most
-  // likely to be written once and never reread.
-  it('makes no claim the CV does not support', () => {
-    const text = head.textContent + [...head.querySelectorAll('meta')].map((tag) => tag.getAttribute('content')).join(' ');
-    expect(text).not.toMatch(/passionate|passion for|open source|beautiful|user-friendly/i);
-    expect(text).not.toMatch(/years of experience|systems scaled/i);
-    expect(text).not.toContain('∞');
+  // Guard tests for ticket 07 of the site refresh (favicon, OG image and
+  // metadata), now run over both documents.
+  //
+  // These read the entry document rather than the rendered app, because that is
+  // the only thing a link scraper ever sees: Slack, LinkedIn and WhatsApp fetch
+  // the document and stop, without running React. Metadata injected from a
+  // component would pass a test against the rendered DOM and still produce a
+  // broken preview, which is exactly the bug ADR 0003 exists to prevent, twice
+  // over now that there are two documents.
+  describe('metadata', () => {
+    const parsed = parseDocument(edition.entry);
+    const head = parsed.head;
+
+    const meta = (key: string) => metaOf(head, key);
+
+    const link = (rel: string) => head.querySelector(`link[rel="${rel}"]`)?.getAttribute('href') ?? null;
+
+    /** Files Vite copies verbatim to the site root, keyed by their public path. */
+    const publicAssets = new Set(
+      Object.keys(import.meta.glob('../public/*')).map((path) => path.replace('../public', ''))
+    );
+
+    // Without this a screen reader pronounces Spanish with English phonetics,
+    // which is the difference between a document in a language and a document
+    // that merely contains one.
+    it('declares the language of its own edition', () => {
+      expect(parsed.documentElement.getAttribute('lang')).toBe(edition.lang);
+    });
+
+    it('titles the tab with the person and the role, not the word portfolio', () => {
+      expect(head.querySelector('title')?.textContent).toBe(edition.title);
+    });
+
+    // What the description *says* is checked by the condensation group below,
+    // against the identity line. This is the other half: a description is what
+    // a search engine indexes the page as, so the two titles ADR 0001 took off
+    // the page must not survive in it.
+    it('does not index the page under a title ADR 0001 removed', () => {
+      expect(meta('description')).not.toMatch(edition.describedAsNot);
+    });
+
+    it.each([
+      ['og:type', 'website'],
+      ['og:site_name', 'Fran Menéndez'],
+      ['twitter:card', 'summary_large_image'],
+    ])('sets %s', (key, value) => {
+      expect(meta(key)).toBe(value);
+    });
+
+    it('points its own URL at its own edition', () => {
+      expect(meta('og:url')).toBe(edition.url);
+      expect(link('canonical')).toBe(edition.url);
+    });
+
+    it('gives the social tags the same description as the page', () => {
+      expect(meta('og:description')).toBe(meta('description'));
+      expect(meta('twitter:description')).toBe(meta('description'));
+      expect(meta('twitter:title')).toBe(meta('og:title'));
+      expect(meta('og:title')).toBe(edition.title);
+    });
+
+    // A scraper resolves og:image against nothing: a root-relative path is not
+    // enough, it has to be absolute.
+    it.each(['og:image', 'twitter:image'])('points %s at an absolute URL', (key) => {
+      expect(meta(key)).toBe(edition.image);
+    });
+
+    it('declares the share image dimensions a scraper crops to', () => {
+      expect(meta('og:image:width')).toBe('1200');
+      expect(meta('og:image:height')).toBe('630');
+      // Deliberately not per-edition: alt text describes the picture, and until
+      // ticket 06 of this feature draws the Spanish card there is one picture.
+      // A Spanish alt over the English image would describe something that is
+      // not there, which is a worse failure than an English one.
+      expect(meta('og:image:alt')).toMatch(/\S/);
+    });
+
+    // The previous OG image was referenced but never existed, which is half of
+    // why sharing the link looked broken.
+    it('ships every referenced asset at the path it is referenced by', () => {
+      for (const path of [meta('og:image')?.replace(SITE, ''), link('icon'), link('apple-touch-icon')]) {
+        expect(publicAssets).toContain(path);
+      }
+    });
+
+    it('serves a favicon of its own rather than the build tool logo', () => {
+      expect(link('icon')).toBe('/favicon.svg');
+      expect(edition.entry).not.toMatch(/vite\.svg/);
+      expect(publicAssets).not.toContain('/vite.svg');
+    });
+
+    // The old value was the accent of a palette this site no longer uses.
+    //
+    // These two hex codes are the one place a test names a colour, which the
+    // spec otherwise forbids. A `<meta>` value is not a style: it cannot be
+    // expressed as a token, because the browser reads it before any stylesheet.
+    // It would be better read out of `index.css` than written here, but Vitest
+    // stubs CSS imports to empty strings whatever query they carry, so the
+    // coupling is recorded in `index.css` beside the tokens instead.
+    it('paints the browser chrome in the palette, per theme', () => {
+      const themeColors = [...head.querySelectorAll('meta[name="theme-color"]')].map((tag) => [
+        tag.getAttribute('media'),
+        tag.getAttribute('content'),
+      ]);
+
+      expect(themeColors).toEqual([
+        ['(prefers-color-scheme: light)', '#ffffff'], // --color-paper
+        ['(prefers-color-scheme: dark)', '#0d0d0d'], // --color-canvas
+      ]);
+    });
+
+    // The pre-paint theme script cannot be imported, because it has to run
+    // before any module loads, so it is copied into both documents. What this
+    // catches is one document getting the fix and the other not: a dark-mode
+    // visitor would see a light flash on whichever one was missed.
+    it('sets the theme class before first paint', () => {
+      const script = [...head.querySelectorAll('script:not([src])')].map((tag) => tag.textContent).join('');
+      expect(script).toContain("localStorage.getItem('theme')");
+      expect(script).toContain('prefers-color-scheme: dark');
+      expect(script).toContain("classList.toggle('dark'");
+    });
+
+    // The identity is written in three places per edition: `identity.line` in
+    // the content module, the description tags here, and the share image. Only
+    // the first is read against a CV, so the others have to be condensations of
+    // it rather than independent descriptions of Fran that drift on their own.
+    describe('stays a condensation of the identity line', () => {
+      it.each([...edition.identityPhrases, ...edition.differentiator])(
+        'sources "%s" from the identity line',
+        (phrase) => {
+          expect(content.identity.line).toContain(phrase);
+        }
+      );
+
+      it.each([...edition.identityPhrases, ...edition.differentiator])(
+        'carries "%s" in the description',
+        (phrase) => {
+          expect(meta('description')).toContain(phrase);
+        }
+      );
+
+      // Nothing in the metadata can be checked against the CV by a reader
+      // either: a scraper shows it without the page around it. So every number
+      // in it has to come from the one sentence that was checked.
+      it('puts no figure in the description that the identity line does not carry', () => {
+        const figures = (meta('description') ?? '').match(/\d[\d,.]*\+?/g) ?? [];
+        expect(figures.length).toBeGreaterThan(0);
+        for (const figure of figures) {
+          expect(content.identity.line).toContain(figure);
+        }
+      });
+    });
+
+    // ADR 0001 governs the metadata too: it is copy, and it is the copy most
+    // likely to be written once and never reread.
+    it('makes no claim its CV does not support', () => {
+      const text =
+        head.textContent + [...head.querySelectorAll('meta')].map((tag) => tag.getAttribute('content')).join(' ');
+      for (const claim of edition.metadataClaims) {
+        expect(text).not.toMatch(claim);
+      }
+      expect(text).not.toContain('∞');
+    });
+  });
+});
+
+// The first assertions that read both documents together, so they sit outside
+// the table by necessity rather than by oversight: what they check is the
+// relationship between the editions, which no single row can see.
+describe('the two editions know about each other', () => {
+  const alternatesOf = (html: string) =>
+    [...parseDocument(html).head.querySelectorAll('link[rel="alternate"]')].map((tag) => [
+      tag.getAttribute('hreflang'),
+      tag.getAttribute('href'),
+    ]);
+
+  // Both documents carry the same self-including set, which is what lets a
+  // crawler that finds either one find the pair. `x-default` names the edition
+  // to fall back to when it cannot tell, and it is the one place English
+  // legitimately leads (ADR 0004).
+  const expected = [
+    ['en', `${SITE}/`],
+    ['es', `${SITE}/es/`],
+    ['x-default', `${SITE}/`],
+  ];
+
+  it.each([
+    ['the English document', enHtml],
+    ['the Spanish document', esHtml],
+  ])('%s cross-links both editions with an x-default', (_name, html) => {
+    expect(alternatesOf(html)).toEqual(expected);
+  });
+
+  it('gives each edition an alternate pointing at the other', () => {
+    for (const edition of editions) {
+      const others = alternatesOf(edition.entry)
+        .filter(([hreflang]) => hreflang !== 'x-default' && hreflang !== edition.lang)
+        .map(([, href]) => href);
+
+      expect(others).toEqual([editions.find((other) => other !== edition)!.url]);
+    }
+  });
+
+  // Two documents mean two of everything a scraper reads, and a copied
+  // document that was not fully rewritten is the failure this feature invites.
+  it('gives the editions different titles and descriptions', () => {
+    const [enHead, esHead] = [enHtml, esHtml].map((html) => parseDocument(html).head);
+    expect(enHead.querySelector('title')?.textContent).not.toBe(esHead.querySelector('title')?.textContent);
+    expect(metaOf(enHead, 'description')).not.toBe(metaOf(esHead, 'description'));
+  });
+});
+
+// Per-edition by necessity, and named as such: there is one share image and it
+// is the English one. Ticket 06 of this feature draws the Spanish image, adds
+// each row's source to the edition table, and moves this group onto it.
+describe('the English share image stays a condensation of the identity line', () => {
+  // The words on the share image, without the stylesheet that sets them: its
+  // letter-spacing and font sizes are not copy, and reading them as copy would
+  // have this asserting that "0.2em" traces to the CV.
+  const shareImageCopy = (parseDocument(ogImageHtml).body.textContent ?? '').replace(/\s+/g, ' ');
+
+  // The identity, which the image has room for, without the differentiator
+  // that follows it, which it does not.
+  const IDENTITY = ['Software Engineer', '10+ years', 'millions of users', 'AI layer'];
+
+  it.each(IDENTITY)('carries "%s" on the share image', (phrase) => {
+    expect(shareImageCopy).toContain(phrase);
+  });
+
+  // Nothing on the share image can be checked against the CV by a reader,
+  // because it is a picture. So every number on it has to come from the one
+  // sentence that was checked.
+  it('puts no figure on the share image that the identity line does not carry', () => {
+    const figures = shareImageCopy.match(/\d[\d,.]*\+?/g) ?? [];
+    expect(figures.length).toBeGreaterThan(0);
+    for (const figure of figures) {
+      expect(en.identity.line).toContain(figure);
+    }
   });
 });
