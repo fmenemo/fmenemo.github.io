@@ -36,12 +36,34 @@ _Avoid_: Award section, accolade
 The AI-layer thread that distinguishes Fran from other engineers with ten years of experience: production semantic search, MCP tooling, agentic development workflows. Every part of the site should be readable as supporting it.
 _Avoid_: USP, specialty, focus area
 
+### Editions
+
+**Edition**:
+One language version of the whole site: its own URL, its own document, its own metadata, its own CV. There are two, English and Spanish. Neither is a mode of the other, and neither is presented to a reader as the lesser one.
+_Avoid_: Locale, translation, language version
+
+**English edition**:
+The site at `/`. Not privileged over the Spanish edition in the UI. The only asymmetry stated anywhere is that the CV was written in English, which is provenance, not precedence.
+_Avoid_: Default site, main site, source language
+
+**Spanish edition**:
+The site at `/es`. Exists for the reader who arrives from LinkedIn knowing the name and would rather read Spanish, so its job is warmth, not comprehension. Written from the Spanish CV rather than translated from the English edition.
+_Avoid_: Translation, /es version, localised site
+
 ### Source of truth
 
 **CV**:
-`public/Fran_Menendez_CV.pdf`. The authority for titles, dates, employers, and numbers. Where the site and the CV disagree, the CV wins and the site is wrong. The filename carries no version: one name in one place, replaced in situ when the CV is updated.
+The authority for titles, dates, employers, and numbers. Where the site and the CV disagree, the CV wins and the site is wrong. Exists in two languages, one per edition. Neither filename carries a version: one name per language, replaced in situ when that CV is updated.
 _Avoid_: Resume
 
+**Original CV**:
+The English CV, `public/Fran_Menendez_CV.pdf`. Written first, and the authority for facts in both languages. Offered on the Spanish edition too, as a document a recruiter can forward onward.
+_Avoid_: Master CV, canonical CV, authoritative CV
+
+**Spanish CV**:
+The Spanish CV, a translation of the original. Not an authority for facts, but the source of truth for the Spanish edition's wording: where a title or section name appears in both, the site takes the CV's. Regenerated and published alongside the original, never on its own.
+_Avoid_: Translated CV, localised CV
+
 **Identity line**:
-The single sentence in the hero stating who Fran is. Sourced from the CV summary, which says "Software Engineer", deliberately not the current job title of Principal Software Engineer.
+The single sentence in the hero stating who Fran is. Sourced from the CV summary of its own language, which says "Software Engineer" and "Ingeniero de software", deliberately not the current job title of Principal Software Engineer.
 _Avoid_: Tagline, headline, bio
