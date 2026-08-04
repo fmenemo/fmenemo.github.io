@@ -1,67 +1,55 @@
 import React from 'react';
+import { Container } from '../components/Section';
+
+const specialties = ['System Architecture', 'Cloud Infrastructure', 'Technical Leadership', 'Platform Engineering'];
 
 const Home: React.FC = () => {
   return (
-    <section className='min-h-screen flex flex-col justify-center items-center p-4 relative overflow-hidden bg-paper text-black dark:bg-black dark:text-white'>
-      {/* Subtle gradient background */}
-      <div className='absolute inset-0 z-0 bg-linear-to-b from-paper to-surface dark:from-black dark:to-surface-dark'></div>
+    <section id='home'>
+      <Container className='pt-28 pb-20 md:pt-40 md:pb-28'>
+        <p className='font-mono text-2xs tracking-[0.2em] text-accent uppercase dark:text-accent-dark'>Hello, I'm</p>
 
-      <div className='container relative z-10'>
-        <div className='text-center'>
-          {/* Professional greeting */}
-          <p className='text-lg mb-4 font-medium tracking-wide text-accent'>Hello, I'm</p>
+        <h1 className='mt-6 text-5xl leading-[0.95] font-semibold tracking-tight sm:text-6xl md:text-7xl'>
+          <span className='block'>Francisco</span>
+          <span className='block'>Menendez</span>
+        </h1>
 
-          <h1 className='text-6xl md:text-8xl font-bold mb-6 leading-none'>
-            <span className='block'>Francisco</span>
-            <span className='block mt-2'>Menendez</span>
-          </h1>
+        <p className='mt-8 font-mono text-sm tracking-[0.2em] text-muted uppercase dark:text-muted-dark'>Software Engineer</p>
 
-          <div className='mb-8'>
-            <p className='text-2xl md:text-3xl font-light mb-4 text-gray-500 dark:text-gray-300'>Software Engineer</p>
-            <p className='text-lg md:text-xl max-w-3xl mx-auto leading-relaxed text-gray-600 dark:text-gray-400'>
-              Leading engineering teams and architecting scalable solutions. Passionate about building robust systems, mentoring talent, and
-              driving technical excellence across complex software initiatives.
-            </p>
-          </div>
+        <p className='mt-6 max-w-2xl text-lg leading-relaxed font-light text-muted dark:text-muted-dark'>
+          Leading engineering teams and architecting scalable solutions. Passionate about building robust systems, mentoring talent, and
+          driving technical excellence across complex software initiatives.
+        </p>
 
-          {/* Key specialties */}
-          <div className='flex flex-wrap justify-center gap-4 mb-12'>
-            {['System Architecture', 'Cloud Infrastructure', 'Technical Leadership', 'Platform Engineering'].map((specialty, index) => (
-              <span
-                key={index}
-                className='px-6 py-3 rounded-full text-sm font-medium border backdrop-blur-[10px] bg-white/80 border-gray-300/80 text-gray-700 dark:bg-gray-800/50 dark:border-gray-600/30 dark:text-gray-200'
-              >
-                {specialty}
-              </span>
-            ))}
-          </div>
+        <ul className='mt-12 flex max-w-3xl flex-wrap gap-x-8 gap-y-2 border-t border-rule pt-4 font-mono text-2xs tracking-[0.2em] text-muted uppercase dark:border-rule-dark dark:text-muted-dark'>
+          {specialties.map((specialty) => (
+            <li key={specialty}>{specialty}</li>
+          ))}
+        </ul>
 
-          {/* CTA Buttons */}
-          <div className='flex flex-col sm:flex-row gap-4 justify-center items-center'>
-            <a
-              href='#about'
-              className='btn btn-primary text-lg px-8 py-4 shadow-lg hover:shadow-xl border-none bg-linear-135 from-accent to-accent-strong'
-            >
-              Learn More
-            </a>
-
-            <a
-              href='#contact'
-              className='btn btn-secondary text-lg px-8 py-4 border-2 hover:shadow-lg bg-transparent border-gray-300 text-gray-700 dark:border-gray-700 dark:text-gray-200'
-            >
-              Get In Touch
-            </a>
-          </div>
-
-          <div className='mt-16 flex flex-col sm:flex-row justify-center items-center gap-8 text-center'>
-            <div className='flex items-center gap-2'>
-              <div className='w-3 h-3 bg-green-500 rounded-full animate-pulse'></div>
-              <span className='text-sm text-gray-500 dark:text-gray-400'>Available for leadership opportunities</span>
-            </div>
-            <div className='text-sm text-gray-500 dark:text-gray-400'>📍 Based in Spain • 🌍 Leading remote teams globally</div>
-          </div>
+        <div className='mt-12 flex flex-wrap items-center gap-x-8 gap-y-4'>
+          <a
+            href='#about'
+            className='inline-block border-2 border-ink px-6 py-3 font-mono text-2xs tracking-[0.2em] uppercase transition-colors hover:bg-ink hover:text-paper dark:border-chalk dark:hover:bg-chalk dark:hover:text-canvas'
+          >
+            Learn More
+          </a>
+          <a
+            href='#contact'
+            className='font-mono text-2xs tracking-[0.2em] text-accent uppercase underline decoration-1 underline-offset-4 transition-colors hover:text-ink dark:text-accent-dark dark:hover:text-chalk'
+          >
+            Get In Touch
+          </a>
         </div>
-      </div>
+
+        <p className='mt-16 font-mono text-2xs tracking-[0.15em] text-muted uppercase dark:text-muted-dark'>
+          Available for leadership opportunities
+          <span className='mx-3 text-rule dark:text-rule-dark'>/</span>
+          Based in Spain
+          <span className='mx-3 text-rule dark:text-rule-dark'>/</span>
+          Leading remote teams globally
+        </p>
+      </Container>
     </section>
   );
 };

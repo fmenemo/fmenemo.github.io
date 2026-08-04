@@ -82,6 +82,59 @@ describe('theme', () => {
   });
 });
 
+// Guard tests for ticket 05 (Swiss visual direction). These assert structure a
+// visitor can observe: one document outline, working anchor navigation, real
+// links rather than clickable boxes, and no emoji in the copy.
+describe('page structure', () => {
+  it('has a single h1', () => {
+    render(<App />);
+    expect(screen.getAllByRole('heading', { level: 1 })).toHaveLength(1);
+  });
+
+  // queryAllByRole with a name filter uses the accessible-name computation, so
+  // anything missing from the named set has no name a screen reader can read.
+  it('gives every link and button an accessible name', () => {
+    render(<App />);
+    for (const role of ['link', 'button'] as const) {
+      const named = screen.queryAllByRole(role, { name: /\S/ });
+      expect(named).toHaveLength(screen.queryAllByRole(role).length);
+    }
+  });
+
+  it('points every in-page anchor at a section that exists', () => {
+    render(<App />);
+    const anchors = screen
+      .getAllByRole('link')
+      .map((link) => link.getAttribute('href'))
+      .filter((href): href is string => href?.startsWith('#') ?? false);
+
+    expect(anchors.length).toBeGreaterThan(0);
+    for (const href of anchors) {
+      expect(document.querySelector(href)).not.toBeNull();
+    }
+  });
+
+  it('offers the CV as a link to the PDF rather than a scripted download', () => {
+    render(<App />);
+    expect(screen.getByRole('link', { name: /cv/i }).getAttribute('href')).toContain('.pdf');
+  });
+
+  it('makes each contact route a real link', () => {
+    render(<App />);
+    const href = (name: RegExp) => screen.getAllByRole('link', { name })[0].getAttribute('href');
+    expect(href(/fmenendezmoya@gmail\.com/i)).toBe('mailto:fmenendezmoya@gmail.com');
+    expect(href(/linkedin/i)).toBe('https://www.linkedin.com/in/fmenemo/');
+    expect(href(/github/i)).toBe('https://github.com/fmenemo');
+  });
+
+  // An emoji is a character that renders as one by default, or one forced into
+  // emoji presentation by a variation selector. This deliberately allows "©",
+  // which is pictographic but renders as text.
+  it('renders no emoji in the copy', () => {
+    expect(renderedText()).not.toMatch(/\p{Emoji_Presentation}|\uFE0F/u);
+  });
+});
+
 // Guard tests for ADR 0001 (evidence-first content): every statement on the
 // site must be traceable to the CV. These pin the decisions most likely to be
 // silently undone by a future change.

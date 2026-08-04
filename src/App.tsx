@@ -7,13 +7,11 @@ import Home from './pages/Home';
 
 function App() {
   return (
-    <div className='min-h-screen relative bg-paper text-black dark:bg-black dark:text-white'>
+    <div className='min-h-screen bg-paper text-ink dark:bg-canvas dark:text-chalk'>
       <SEO />
       <Navbar />
-      <main className='bg-paper dark:bg-black'>
-        <section id='home'>
-          <Home />
-        </section>
+      <main>
+        <Home />
         <About />
         <Contact />
       </main>
