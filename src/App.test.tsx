@@ -163,11 +163,134 @@ describe('fabricated content stays out', () => {
     expect(renderedText()).not.toContain('∞');
   });
 
+  // Narrowed for ticket 06. This banned every "N+" when the page had no CV copy
+  // on it, but the CV is full of them ("100,000+ products", "2M+ weekly users")
+  // and those are evidence, not claims. What ADR 0001 actually removed was the
+  // stat block: a big round number captioned with a capability noun and nothing
+  // behind it. That shape is what this now pins.
   it('renders no round-number statistic', () => {
-    expect(renderedText()).not.toMatch(/\d+\s*\+/);
+    const text = renderedText();
+    expect(text).not.toMatch(/\d+\s*\+?\s*(years?\s+experience|engineers?\s+mentored|systems?\s+scaled)/i);
+    expect(text).not.toMatch(/\d+\s*\+\s*(engineers|developers|projects|clients|teams)\b/i);
   });
 
-  it('does not render "Principal Software Engineer"', () => {
-    expect(renderedText()).not.toContain('Principal Software Engineer');
+  // Narrowed for ticket 06. "Principal Software Engineer" is Fran's real title
+  // at The Knot Worldwide and belongs on that experience entry. What ADR 0001
+  // decided is that the site does not *lead* with it, so the assertion belongs
+  // on the identity line: see "leads with Software Engineer" below.
+  it('does not lead with "Principal Software Engineer"', () => {
+    render(<App />);
+    expect(screen.getByRole('heading', { level: 1 }).textContent).not.toContain('Principal');
+    expect(screen.getByText(/^Software Engineer, 10\+ years/).textContent).not.toContain('Principal');
+  });
+});
+
+// Guard tests for ticket 06 (content rewrite from the CV). Every assertion here
+// traces to `public/Fran_Menendez_CV.pdf` or to a decision recorded in
+// `.scratch/site-refresh/bullet-approval.md`.
+describe('content', () => {
+  // The footer said "Francisco Menendez" long after the hero stopped, and no
+  // test noticed. One name, one spelling, accent included.
+  it('calls him Fran Menéndez everywhere it names him', () => {
+    const text = renderedText();
+    expect(text).toContain('Fran Menéndez');
+    expect(text).not.toContain('Francisco');
+    expect(text).not.toContain('Menendez');
+  });
+
+  it('renders the name with its accent as the one h1', () => {
+    render(<App />);
+    expect(screen.getByRole('heading', { level: 1 }).textContent).toContain('Fran Menéndez');
+  });
+
+  // ADR 0001: the site leads with "Software Engineer" from the CV summary, not
+  // with the current job title. "Principal Software Engineer" is allowed to
+  // appear as an experience entry's title, so this is scoped to the identity
+  // line rather than to the whole page.
+  it('leads with Software Engineer rather than the current job title', () => {
+    render(<App />);
+    const identity = screen.getByText(/^Software Engineer, 10\+ years/);
+    expect(identity.textContent).not.toContain('Principal');
+  });
+
+  it('names the AI-layer differentiator in the identity line', () => {
+    render(<App />);
+    const identity = screen.getByText(/^Software Engineer, 10\+ years/);
+    expect(identity.textContent).toMatch(/semantic search/i);
+    expect(identity.textContent).toMatch(/MCP/);
+    expect(identity.textContent).toMatch(/agentic/i);
+  });
+
+  it.each([
+    ['The Knot Worldwide', 'Oct 2023'],
+    ['MOBIKO GmbH', 'Aug 2020'],
+    ['Hiberus Tecnología', 'Jul 2017'],
+  ])('renders %s with its dates', (employer, from) => {
+    const text = renderedText();
+    expect(text).toContain(employer);
+    expect(text).toContain(from);
+  });
+
+  // A promotion at one employer is two entries, not one (CONTEXT.md): seven
+  // roles across three employers.
+  it.each([
+    'Principal Software Engineer',
+    'Lead Software Engineer',
+    'Team Lead & Architecture',
+    'Senior Full-Stack Developer',
+    'Full-Stack Developer',
+    'Junior Developer, E-commerce',
+  ])('renders the %s role', (title) => {
+    expect(renderedText()).toContain(title);
+  });
+
+  it('carries the evidence figures exactly as the CV states them', () => {
+    const text = renderedText();
+    for (const figure of ['850ms', '34ms', '100,000+', '2M+', '500k+', '1M+', '100k+', '8-person']) {
+      expect(text).toContain(figure);
+    }
+  });
+
+  // D1: the mention ships, the URL does not, and no claim leans on a click.
+  it('mentions the independent work without linking it', () => {
+    render(<App />);
+    expect(document.body.textContent).toContain('Instagram Checker');
+    const hrefs = screen.getAllByRole('link').map((link) => link.getAttribute('href'));
+    expect(hrefs.some((href) => href?.includes('instagram-checker'))).toBe(false);
+  });
+
+  it('renders every recognition with its issuing organisation and date', () => {
+    const text = renderedText();
+    for (const recognition of [
+      'NASA Space Apps Global Finalist',
+      '100 Ideas Zaragoza',
+      'uCode by Adidas',
+      'ImagineCode',
+      'Google Hash Code',
+    ]) {
+      expect(text).toContain(recognition);
+    }
+    for (const date of ['May 2017', 'Sep 2017', 'Mar 2018', 'Oct 2018', 'Feb 2019']) {
+      expect(text).toContain(date);
+    }
+  });
+
+  it('states where Fran is without signalling availability', () => {
+    const text = renderedText();
+    expect(text).toContain('Zaragoza, Spain');
+    // D4: work authorization stays on the CV, off the site.
+    expect(text).not.toMatch(/work authorization/i);
+    expect(text).not.toMatch(/available|open to (new )?opportunities|actively (exploring|looking)|hiring/i);
+  });
+
+  // The claims ADR 0001 removed, and the ones most likely to creep back in.
+  it('makes no claim the CV does not support', () => {
+    const text = renderedText();
+    expect(text).not.toContain('∞');
+    expect(text).not.toMatch(/\d+\+?\s*(engineers|developers)\s*mentored/i);
+    expect(text).not.toMatch(/years of experience|systems scaled/i);
+    expect(text).not.toMatch(/open source|passionate|passion for/i);
+    // D3: the freelance entry is on the CV, not on the site.
+    expect(text).not.toMatch(/freelance/i);
   });
 });
