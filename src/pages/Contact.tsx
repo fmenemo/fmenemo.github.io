@@ -1,9 +1,6 @@
 import React from 'react';
-import { useDarkMode } from '../hooks/useDarkMode';
 
 const Contact: React.FC = () => {
-  const { isDarkMode } = useDarkMode();
-
   const contactMethods = [
     {
       icon: (
@@ -63,17 +60,10 @@ const Contact: React.FC = () => {
   ];
 
   return (
-    <section
-      id='contact'
-      className='py-24 relative overflow-hidden'
-      style={{
-        backgroundColor: isDarkMode ? '#000000' : '#f5f5f7',
-        color: isDarkMode ? '#ffffff' : '#000000',
-      }}
-    >
+    <section id='contact' className='py-24 relative overflow-hidden bg-surface text-black dark:bg-black dark:text-white'>
       <div className='container mx-auto px-4'>
         <h2 className='section-title'>Let's Connect</h2>
-        <p className='text-xl text-center mb-16 max-w-3xl mx-auto font-light' style={{ color: isDarkMode ? '#9ca3af' : '#4b5563' }}>
+        <p className='text-xl text-center mb-16 max-w-3xl mx-auto font-light text-gray-600 dark:text-gray-400'>
           I'm always interested in discussing new opportunities, technical challenges, and leadership roles. Whether you're hiring or
           exploring potential collaborations, I'd love to hear from you.
         </p>
@@ -84,38 +74,19 @@ const Contact: React.FC = () => {
             {contactMethods.map((method, index) => (
               <div
                 key={index}
-                className='apple-card p-6 group cursor-pointer'
-                style={{
-                  backgroundColor: isDarkMode ? 'rgba(31, 41, 55, 0.5)' : 'rgba(255, 255, 255, 0.8)',
-                  backdropFilter: 'blur(10px)',
-                }}
+                className='apple-card p-6 group cursor-pointer backdrop-blur-[10px] bg-white/80 dark:bg-gray-800/50'
                 onClick={() => method.action && window.open(method.action, '_blank')}
               >
                 <div className='flex items-start gap-4'>
-                  <div
-                    className='p-3 rounded-lg transition-colors'
-                    style={{
-                      backgroundColor: '#0066cc',
-                      color: '#ffffff',
-                    }}
-                  >
-                    {method.icon}
-                  </div>
+                  <div className='p-3 rounded-lg transition-colors bg-accent text-white'>{method.icon}</div>
                   <div className='flex-1'>
-                    <h4 className='text-lg font-semibold mb-2' style={{ color: isDarkMode ? '#ffffff' : '#000000' }}>
-                      {method.title}
-                    </h4>
-                    <p className='text-sm mb-2' style={{ color: isDarkMode ? '#9ca3af' : '#4b5563' }}>
-                      {method.description}
-                    </p>
-                    <p className='font-medium' style={{ color: '#0066cc' }}>
-                      {method.contact}
-                    </p>
+                    <h4 className='text-lg font-semibold mb-2 text-black dark:text-white'>{method.title}</h4>
+                    <p className='text-sm mb-2 text-gray-600 dark:text-gray-400'>{method.description}</p>
+                    <p className='font-medium text-accent'>{method.contact}</p>
                   </div>
                   {method.action && (
                     <svg
-                      className='w-5 h-5 transition-transform group-hover:translate-x-1'
-                      style={{ color: isDarkMode ? '#9ca3af' : '#6b7280' }}
+                      className='w-5 h-5 transition-transform group-hover:translate-x-1 text-gray-500 dark:text-gray-400'
                       fill='none'
                       stroke='currentColor'
                       viewBox='0 0 24 24'
@@ -130,20 +101,12 @@ const Contact: React.FC = () => {
           </div>
 
           {/* Availability Status */}
-          <div
-            className='apple-card p-8 text-center'
-            style={{
-              backgroundColor: isDarkMode ? 'rgba(16, 185, 129, 0.1)' : 'rgba(16, 185, 129, 0.05)',
-              border: `1px solid rgba(16, 185, 129, 0.2)`,
-            }}
-          >
+          <div className='apple-card p-8 text-center border border-emerald-500/20 bg-emerald-500/5 dark:bg-emerald-500/10'>
             <div className='flex items-center justify-center gap-3 mb-4'>
               <div className='w-3 h-3 bg-green-500 rounded-full animate-pulse'></div>
-              <h3 className='text-xl font-semibold' style={{ color: isDarkMode ? '#ffffff' : '#000000' }}>
-                Currently Open to New Opportunities
-              </h3>
+              <h3 className='text-xl font-semibold text-black dark:text-white'>Currently Open to New Opportunities</h3>
             </div>
-            <p className='text-lg mb-6' style={{ color: isDarkMode ? '#9ca3af' : '#4b5563' }}>
+            <p className='text-lg mb-6 text-gray-600 dark:text-gray-400'>
               I'm actively exploring engineering and leadership roles. Particularly interested in positions involving team leadership,
               technical architecture, and scaling engineering organizations.
             </p>
@@ -155,11 +118,7 @@ const Contact: React.FC = () => {
                 href='https://www.linkedin.com/in/fmenemo/'
                 target='_blank'
                 rel='noopener noreferrer'
-                className='btn btn-secondary border'
-                style={{
-                  borderColor: isDarkMode ? '#374151' : '#d1d5db',
-                  color: isDarkMode ? '#e5e7eb' : '#374151',
-                }}
+                className='btn btn-secondary border border-gray-300 text-gray-700 dark:border-gray-700 dark:text-gray-200'
               >
                 Connect on LinkedIn
               </a>
@@ -170,30 +129,18 @@ const Contact: React.FC = () => {
           <div className='mt-16 grid grid-cols-1 md:grid-cols-3 gap-8'>
             <div className='text-center'>
               <div className='text-2xl mb-3'>🚀</div>
-              <h4 className='text-lg font-semibold mb-2' style={{ color: isDarkMode ? '#ffffff' : '#000000' }}>
-                Engineering Leadership
-              </h4>
-              <p className='text-sm' style={{ color: isDarkMode ? '#9ca3af' : '#4b5563' }}>
-                Building and scaling high-performing engineering teams
-              </p>
+              <h4 className='text-lg font-semibold mb-2 text-black dark:text-white'>Engineering Leadership</h4>
+              <p className='text-sm text-gray-600 dark:text-gray-400'>Building and scaling high-performing engineering teams</p>
             </div>
             <div className='text-center'>
               <div className='text-2xl mb-3'>🏗️</div>
-              <h4 className='text-lg font-semibold mb-2' style={{ color: isDarkMode ? '#ffffff' : '#000000' }}>
-                System Architecture
-              </h4>
-              <p className='text-sm' style={{ color: isDarkMode ? '#9ca3af' : '#4b5563' }}>
-                Designing scalable, maintainable software architectures
-              </p>
+              <h4 className='text-lg font-semibold mb-2 text-black dark:text-white'>System Architecture</h4>
+              <p className='text-sm text-gray-600 dark:text-gray-400'>Designing scalable, maintainable software architectures</p>
             </div>
             <div className='text-center'>
               <div className='text-2xl mb-3'>📈</div>
-              <h4 className='text-lg font-semibold mb-2' style={{ color: isDarkMode ? '#ffffff' : '#000000' }}>
-                Technical Strategy
-              </h4>
-              <p className='text-sm' style={{ color: isDarkMode ? '#9ca3af' : '#4b5563' }}>
-                Aligning technology roadmaps with business objectives
-              </p>
+              <h4 className='text-lg font-semibold mb-2 text-black dark:text-white'>Technical Strategy</h4>
+              <p className='text-sm text-gray-600 dark:text-gray-400'>Aligning technology roadmaps with business objectives</p>
             </div>
           </div>
         </div>

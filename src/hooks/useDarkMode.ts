@@ -1,41 +1,20 @@
 import { useEffect, useState } from 'react';
-
-// Dark mode preference on initial load: an explicit choice wins, otherwise the system setting.
-const prefersDarkMode = () =>
-  localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches);
+import { applyTheme, resolveTheme, type Theme } from '../theme';
 
 export const useDarkMode = () => {
-  const [isDarkMode, setIsDarkMode] = useState(prefersDarkMode);
+  const [theme, setTheme] = useState<Theme>(resolveTheme);
 
+  // The inline script in index.html applies the class before first paint in
+  // production; this covers environments without it, such as tests.
   useEffect(() => {
-    const checkDarkMode = () => {
-      setIsDarkMode(document.documentElement.classList.contains('dark'));
-    };
-
-    document.documentElement.classList.toggle('dark', prefersDarkMode());
-
-    // Listen for changes to the dark mode
-    const observer = new MutationObserver((mutations) => {
-      mutations.forEach((mutation) => {
-        if (mutation.attributeName === 'class') {
-          checkDarkMode();
-        }
-      });
-    });
-
-    observer.observe(document.documentElement, { attributes: true });
-    return () => observer.disconnect();
+    applyTheme(resolveTheme());
   }, []);
 
   const toggleDarkMode = () => {
-    if (isDarkMode) {
-      document.documentElement.classList.remove('dark');
-      localStorage.theme = 'light';
-    } else {
-      document.documentElement.classList.add('dark');
-      localStorage.theme = 'dark';
-    }
+    const next: Theme = theme === 'dark' ? 'light' : 'dark';
+    applyTheme(next, { persist: true });
+    setTheme(next);
   };
 
-  return { isDarkMode, toggleDarkMode };
+  return { isDarkMode: theme === 'dark', toggleDarkMode };
 };

@@ -7,6 +7,24 @@
     <meta name="description" content="Francisco Menendez - Full Stack Developer & Designer Portfolio" />
     <meta name="theme-color" content="#0066cc" />
     <title>Francisco Menendez | Portfolio</title>
+    <script>
+      // Set the theme class before first paint so a dark-mode visitor never
+      // sees a light flash. Mirrors resolveTheme/applyTheme in src/theme.ts.
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored === 'dark' || stored === 'light'
+              ? stored
+              : window.matchMedia('(prefers-color-scheme: dark)').matches
+                ? 'dark'
+                : 'light';
+          document.documentElement.classList.toggle('dark', theme === 'dark');
+        } catch (e) {
+          /* no localStorage: leave the light default */
+        }
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>

@@ -1,43 +1,15 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 
 const Footer: React.FC = () => {
-  const [isDarkMode, setIsDarkMode] = useState(false);
-
-  useEffect(() => {
-    const checkDarkMode = () => {
-      setIsDarkMode(document.documentElement.classList.contains('dark'));
-    };
-
-    checkDarkMode();
-    // Listen for changes to the dark mode
-    const observer = new MutationObserver((mutations) => {
-      mutations.forEach((mutation) => {
-        if (mutation.attributeName === 'class') {
-          checkDarkMode();
-        }
-      });
-    });
-
-    observer.observe(document.documentElement, { attributes: true });
-    return () => observer.disconnect();
-  }, []);
-
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer
-      className='py-8 relative'
-      style={{
-        backgroundColor: isDarkMode ? '#000000' : '#f5f5f7',
-        color: isDarkMode ? '#9ca3af' : '#6b7280',
-        borderTop: `1px solid ${isDarkMode ? 'rgba(75, 85, 99, 0.2)' : 'rgba(229, 231, 235, 0.8)'}`,
-      }}
-    >
+    <footer className='py-8 relative bg-surface text-gray-500 border-t border-gray-200/80 dark:bg-black dark:text-gray-400 dark:border-gray-600/20'>
       <div className='container mx-auto px-4'>
         <div className='flex flex-col md:flex-row justify-between items-center'>
           <div className='mb-4 md:mb-0'>
-            <a href='#home' className='text-xl font-bold text-primary'>
-              FM<span className='text-dark dark:text-light'>.dev</span>
+            <a href='#home' className='text-xl font-bold text-accent'>
+              FM<span className='text-black dark:text-white'>.dev</span>
             </a>
           </div>
 
@@ -46,10 +18,7 @@ const Footer: React.FC = () => {
               href='https://github.com/fmenemo'
               target='_blank'
               rel='noopener noreferrer'
-              className='transition-colors'
-              style={{ color: isDarkMode ? '#9ca3af' : '#6b7280' }}
-              onMouseOver={(e) => (e.currentTarget.style.color = '#0066cc')}
-              onMouseOut={(e) => (e.currentTarget.style.color = isDarkMode ? '#9ca3af' : '#6b7280')}
+              className='transition-colors text-gray-500 dark:text-gray-400 hover:text-accent dark:hover:text-accent'
             >
               <span className='sr-only'>GitHub</span>
               <svg className='w-5 h-5' fill='currentColor' viewBox='0 0 24 24' aria-hidden='true'>
@@ -64,10 +33,7 @@ const Footer: React.FC = () => {
               href='https://www.linkedin.com/in/fmenemo/'
               target='_blank'
               rel='noopener noreferrer'
-              className='transition-colors'
-              style={{ color: isDarkMode ? '#9ca3af' : '#6b7280' }}
-              onMouseOver={(e) => (e.currentTarget.style.color = '#0066cc')}
-              onMouseOut={(e) => (e.currentTarget.style.color = isDarkMode ? '#9ca3af' : '#6b7280')}
+              className='transition-colors text-gray-500 dark:text-gray-400 hover:text-accent dark:hover:text-accent'
             >
               <span className='sr-only'>LinkedIn</span>
               <svg className='w-5 h-5' fill='currentColor' viewBox='0 0 24 24' aria-hidden='true'>

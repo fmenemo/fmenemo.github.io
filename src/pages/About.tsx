@@ -1,9 +1,6 @@
 import React from 'react';
-import { useDarkMode } from '../hooks/useDarkMode';
 
 const About: React.FC = () => {
-  const { isDarkMode } = useDarkMode();
-
   const leadershipSkills = [
     'Engineering Leadership',
     'Technical Strategy & Vision',
@@ -52,23 +49,15 @@ const About: React.FC = () => {
     document.body.removeChild(link);
   };
 
+  const skillChipClasses =
+    'px-3 py-1 rounded-full text-sm font-medium bg-gray-100/80 text-gray-600 dark:bg-gray-800/80 dark:text-gray-200';
+
   return (
-    <section
-      id='about'
-      className='py-24 relative overflow-hidden'
-      style={{
-        backgroundColor: isDarkMode ? '#000000' : '#f5f5f7',
-        color: isDarkMode ? '#ffffff' : '#000000',
-      }}
-    >
+    <section id='about' className='py-24 relative overflow-hidden bg-surface text-black dark:bg-black dark:text-white'>
       {/* Subtle background pattern */}
-      <div className='absolute inset-0 z-0' style={{ opacity: isDarkMode ? 0.07 : 0.03 }}>
+      <div className='absolute inset-0 z-0 opacity-[0.03] dark:opacity-[0.07]'>
         <div
-          className='absolute top-0 left-0 w-full h-full'
-          style={{
-            backgroundImage: `radial-gradient(#0066cc 1px, transparent 1px)`,
-            backgroundSize: '20px 20px',
-          }}
+          className='absolute top-0 left-0 w-full h-full bg-size-[20px_20px] bg-[radial-gradient(var(--color-accent)_1px,transparent_1px)]'
         ></div>
       </div>
 
@@ -77,20 +66,18 @@ const About: React.FC = () => {
 
         <div className='grid grid-cols-1 lg:grid-cols-2 gap-16 items-start mb-16'>
           <div className='apple-card'>
-            <h3 className='text-2xl font-medium mb-6' style={{ color: isDarkMode ? '#ffffff' : '#000000' }}>
-              Who I Am
-            </h3>
-            <p className='text-lg mb-6 font-light leading-relaxed' style={{ color: isDarkMode ? '#9ca3af' : '#4b5563' }}>
+            <h3 className='text-2xl font-medium mb-6 text-black dark:text-white'>Who I Am</h3>
+            <p className='text-lg mb-6 font-light leading-relaxed text-gray-600 dark:text-gray-400'>
               I'm Francisco Menendez, a Software Engineer with a passion for building exceptional teams and scalable technology solutions.
               My journey in software engineering has evolved from hands-on development to leading complex technical initiatives and
               fostering engineering excellence.
             </p>
-            <p className='text-lg mb-6 font-light leading-relaxed' style={{ color: isDarkMode ? '#9ca3af' : '#4b5563' }}>
+            <p className='text-lg mb-6 font-light leading-relaxed text-gray-600 dark:text-gray-400'>
               What drives me most is the intersection of technology and people - creating systems that not only perform flawlessly but also
               empowering teams to do their best work. I believe that great software is built by great teams, and great teams are built
               through mentorship, clear communication, and shared technical vision.
             </p>
-            <p className='text-lg mb-8 font-light leading-relaxed' style={{ color: isDarkMode ? '#9ca3af' : '#4b5563' }}>
+            <p className='text-lg mb-8 font-light leading-relaxed text-gray-600 dark:text-gray-400'>
               When I'm not architecting solutions or mentoring developers, you'll find me exploring emerging technologies, contributing to
               open source projects, or enjoying the outdoors with my family. I'm always curious about the next challenge and how technology
               can make a meaningful impact.
@@ -113,19 +100,10 @@ const About: React.FC = () => {
           <div className='space-y-8'>
             {/* Leadership Skills */}
             <div className='apple-card'>
-              <h3 className='text-xl font-medium mb-4' style={{ color: isDarkMode ? '#ffffff' : '#000000' }}>
-                Leadership & Management
-              </h3>
+              <h3 className='text-xl font-medium mb-4 text-black dark:text-white'>Leadership & Management</h3>
               <div className='flex flex-wrap gap-2'>
                 {leadershipSkills.map((skill, index) => (
-                  <span
-                    key={index}
-                    className='px-3 py-1 rounded-full text-sm font-medium'
-                    style={{
-                      backgroundColor: isDarkMode ? 'rgba(31, 41, 55, 0.8)' : 'rgba(243, 244, 246, 0.8)',
-                      color: isDarkMode ? '#e5e7eb' : '#4b5563',
-                    }}
-                  >
+                  <span key={index} className={skillChipClasses}>
                     {skill}
                   </span>
                 ))}
@@ -134,19 +112,10 @@ const About: React.FC = () => {
 
             {/* Technical Skills */}
             <div className='apple-card'>
-              <h3 className='text-xl font-medium mb-4' style={{ color: isDarkMode ? '#ffffff' : '#000000' }}>
-                Technical Expertise
-              </h3>
+              <h3 className='text-xl font-medium mb-4 text-black dark:text-white'>Technical Expertise</h3>
               <div className='flex flex-wrap gap-2'>
                 {technicalSkills.map((skill, index) => (
-                  <span
-                    key={index}
-                    className='px-3 py-1 rounded-full text-sm font-medium'
-                    style={{
-                      backgroundColor: isDarkMode ? 'rgba(31, 41, 55, 0.8)' : 'rgba(243, 244, 246, 0.8)',
-                      color: isDarkMode ? '#e5e7eb' : '#4b5563',
-                    }}
-                  >
+                  <span key={index} className={skillChipClasses}>
                     {skill}
                   </span>
                 ))}
@@ -155,19 +124,10 @@ const About: React.FC = () => {
 
             {/* Tools & Platforms */}
             <div className='apple-card'>
-              <h3 className='text-xl font-medium mb-4' style={{ color: isDarkMode ? '#ffffff' : '#000000' }}>
-                Tools & Platforms
-              </h3>
+              <h3 className='text-xl font-medium mb-4 text-black dark:text-white'>Tools & Platforms</h3>
               <div className='flex flex-wrap gap-2'>
                 {toolsSkills.map((skill, index) => (
-                  <span
-                    key={index}
-                    className='px-3 py-1 rounded-full text-sm font-medium'
-                    style={{
-                      backgroundColor: isDarkMode ? 'rgba(31, 41, 55, 0.8)' : 'rgba(243, 244, 246, 0.8)',
-                      color: isDarkMode ? '#e5e7eb' : '#4b5563',
-                    }}
-                  >
+                  <span key={index} className={skillChipClasses}>
                     {skill}
                   </span>
                 ))}
