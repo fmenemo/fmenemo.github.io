@@ -6,9 +6,13 @@ export type Theme = 'light' | 'dark';
 
 const isTheme = (value: unknown): value is Theme => value === 'light' || value === 'dark';
 
-export const storedTheme = (): Theme | null => {
-  const value = localStorage.getItem('theme');
-  return isTheme(value) ? value : null;
+const storedTheme = (): Theme | null => {
+  try {
+    const value = localStorage.getItem('theme');
+    return isTheme(value) ? value : null;
+  } catch {
+    return null;
+  }
 };
 
 const systemTheme = (): Theme => (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
@@ -19,6 +23,10 @@ export const resolveTheme = (): Theme => storedTheme() ?? systemTheme();
 export const applyTheme = (theme: Theme, options?: { persist: boolean }) => {
   document.documentElement.classList.toggle('dark', theme === 'dark');
   if (options?.persist) {
-    localStorage.setItem('theme', theme);
+    try {
+      localStorage.setItem('theme', theme);
+    } catch {
+      // Storage blocked: the choice still applies for this page view.
+    }
   }
 };
