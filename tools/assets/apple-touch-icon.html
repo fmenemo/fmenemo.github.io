@@ -1,0 +1,29 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <!-- iOS will not take an SVG, so the touch icon is this page screenshotted
+         at 180x180. The mark itself is `public/favicon.svg`, referenced rather
+         than copied so the two cannot drift. -->
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+      }
+      html,
+      body {
+        width: 180px;
+        height: 180px;
+        overflow: hidden;
+      }
+      img {
+        display: block;
+        width: 180px;
+        height: 180px;
+      }
+    </style>
+  </head>
+  <body>
+    <img src="../../public/favicon.svg" alt="" />
+  </body>
+</html>

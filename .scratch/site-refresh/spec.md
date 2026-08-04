@@ -121,6 +121,7 @@ A visitor lands on an **identity line** stating that Fran is a Software Engineer
 A good test here asserts what a **visitor** can observe, never how a component is built. Tests read the rendered page for visible text, links and attributes. No snapshots, no assertions on class names or token values, no component-level tests, no testing that a style equals a hex code.
 
 - **One seam: the rendered application.** A single test file mounts the whole app and asserts against the resulting DOM. This is the highest available seam and the only one being introduced.
+  - **One exception, added during ticket 07: the entry document.** Metadata is read by link scrapers that fetch `index.html` and stop without running React, so the rendered DOM is the wrong seam for it: tags injected by a component pass a DOM assertion and still produce a broken preview. The metadata tests read `index.html` as text, in the same file. This is still "assert what a visitor can observe", with the scraper as the visitor. It does not license component tests or a second test file.
 - **Stack**: Vitest, Testing Library and jsdom, added as dev dependencies with a `test` script. There is **no prior art** in this repo: it currently has no test framework, no test script and no tests, so this establishes the pattern rather than following one.
 - **Coverage at that seam**:
   - The identity line renders "Software Engineer" and does not render "Principal Software Engineer".

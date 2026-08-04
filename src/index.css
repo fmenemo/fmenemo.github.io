@@ -23,7 +23,9 @@
   --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
   --font-mono: 'IBM Plex Mono', ui-monospace, monospace;
 
-  /* Surfaces and text. */
+  /* Surfaces and text. The two surfaces are mirrored by the `theme-color`
+     meta tags in index.html, which paint the browser's own chrome and are
+     read before this stylesheet exists. Change one, change the other. */
   --color-paper: #ffffff;
   --color-canvas: #0d0d0d;
   --color-ink: #111111;

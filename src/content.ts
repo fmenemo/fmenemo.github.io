@@ -1,4 +1,10 @@
-// Every string a visitor reads on this site lives in this file.
+// Every string a visitor reads on the page lives in this file.
+//
+// Two copies live outside it, both of them condensations of `identity.line`
+// below: the metadata in `index.html`, which is what a link scraper reads, and
+// the share image copy in `tools/assets/og-image.html`. Change the identity
+// line and all three move together; a test in `App.test.tsx` fails if they
+// drift apart.
 //
 // It is condensed from `public/Fran_Menendez_CV.pdf`, which is the source of
 // truth: where the two disagree, the CV wins and this file is wrong (ADR 0001).

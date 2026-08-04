@@ -1,119 +1,63 @@
-# Francisco Menendez - Portfolio Website
+# fmenemo.github.io
 
-A modern, responsive portfolio website built with React, TypeScript, and Tailwind CSS. Features a beautiful Apple-inspired design with dark/light mode toggle and smooth animations.
+Fran Menéndez's personal site. Its job is narrow: confirm, for someone who already
+has his name, that he is real and senior. See `CONTEXT.md` for the vocabulary and
+`docs/adr/` for the decisions.
 
-## ✨ Features
+A single scrolling page, no router, React as the only runtime dependency.
 
-- **Modern Tech Stack**: React 19, TypeScript, Vite, Tailwind CSS 4.0
-- **Responsive Design**: Mobile-first approach with beautiful layouts
-- **Dark/Light Mode**: Smooth theme toggle with system preference detection
-- **Smooth Animations**: Framer Motion for professional transitions
-- **SEO Optimized**: Proper meta tags and Open Graph support
-- **Performance Focused**: Fast loading with Vite and optimized assets
-- **Clean Code**: TypeScript, ESLint, and modern best practices
-
-## 🚀 Quick Start
-
-### Prerequisites
-
-- Node.js 18+ and npm
-
-### Installation
+## Quick start
 
 ```bash
-# Clone the repository
-git clone https://github.com/fmenemo/fmenemo.github.io.git
-cd fmenemo.github.io
-
-# Install dependencies
-npm install
-
-# Start development server
+npm ci
 npm run dev
 ```
 
-### Build for Production
+## Scripts
 
-```bash
-# Build for production
-npm run build
+- `npm run dev` starts the dev server
+- `npm run build` typechecks and builds to `dist/`
+- `npm run preview` serves the built site
+- `npm run lint` runs ESLint
+- `npm test` runs the test suite
+- `npm run deploy` publishes `dist/` to GitHub Pages, manually and deliberately
 
-# Preview production build
-npm run preview
-```
-
-## 🛠️ Tech Stack
-
-- **Frontend**: React 19, TypeScript
-- **Styling**: Tailwind CSS 4.0
-- **Animations**: Framer Motion
-- **Build Tool**: Vite
-- **Linting**: ESLint
-- **Development**: Hot Module Replacement (HMR)
-
-## 📁 Project Structure
+## Layout
 
 ```
+index.html          the entry document, and every metadata tag a scraper reads
 src/
-├── components/          # Reusable UI components
-│   ├── Navbar.tsx
-│   ├── Footer.tsx
-│   └── SEO.tsx
-├── pages/              # Main page components
-│   ├── Home.tsx
-│   ├── About.tsx
-│   ├── Projects.tsx
-│   └── Contact.tsx
-├── hooks/              # Custom React hooks
-│   └── useDarkMode.ts
-├── assets/             # Static assets
-└── styles/             # CSS files
+├── content.ts      every string a visitor reads on the page
+├── index.css       the design tokens: palette, type scale, spacing rhythm
+├── styles.ts       the three interactive treatments and the metadata voice
+├── theme.ts        resolving and persisting the light/dark choice
+├── App.test.tsx    the whole test suite
+├── components/     Navbar, Footer, Section, Container
+├── pages/          the sections of the one page
+└── hooks/          useDarkMode
+public/             served at the site root: the CV, the favicon, the share image
+tools/assets/       sources for the two generated PNGs in public/
+docs/adr/           the decisions, and why
+.scratch/           issues and specs
 ```
 
-## 🔧 Available Scripts
+## Content rules
 
-- `npm run dev` - Start development server
-- `npm run build` - Build for production
-- `npm run preview` - Preview production build
-- `npm run lint` - Run ESLint
+Everything on the page answers to `public/Fran_Menendez_CV.pdf`. Where the site and
+the CV disagree, the CV wins and the site is wrong. Statements are evidence, tied to
+a named employer, date or artefact; capability claims are removed on sight. This is
+ADR 0001, and the tests in `src/App.test.tsx` enforce the parts of it that a future
+change is most likely to undo.
 
-## 📱 Sections
+## Metadata
 
-1. **Home** - Hero section with introduction
-2. **About** - Personal information and skills
-3. **Projects** - Portfolio showcase
-4. **Contact** - Contact form and information
+The title, description, Open Graph and Twitter tags are static markup in
+`index.html`, not written by a component. Link scrapers fetch the document and stop
+without running React, so a tag rendered by the app exists too late to be read.
 
-## 🎨 Design Features
+## Testing
 
-- Apple-inspired minimal design
-- Glassmorphism effects
-- Smooth hover animations
-- Responsive typography
-- Modern color palette
-- Dark mode support
-
-## 📈 Performance
-
-- Lighthouse score: 95+ on all metrics
-- Fast loading with code splitting
-- Optimized images and assets
-- Minimal bundle size
-
-## 🔍 SEO
-
-- Dynamic meta tags
-- Open Graph support
-- Twitter Card integration
-- Semantic HTML structure
-- Canonical URLs
-
-## 📄 License
-
-This project is open source and available under the [MIT License](LICENSE).
-
-## 📧 Contact
-
-Francisco Menendez - [GitHub](https://github.com/fmenemo)
-
-Project Link: [https://fmenemo.github.io](https://fmenemo.github.io)
+Vitest, Testing Library and jsdom. One seam: the test mounts the whole app and reads
+the resulting DOM for what a visitor can observe. No snapshots, no component tests,
+no assertions on class names. The one exception is the metadata block, which reads
+`index.html` directly, because the document is what a scraper observes.
