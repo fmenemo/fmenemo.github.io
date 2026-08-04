@@ -1,6 +1,29 @@
 # Site refresh: evidence-first content, Swiss visual direction, dependency reconcile
 
-Status: ready-for-agent
+Status: resolved
+
+All seven tickets are resolved and the site is deployed to https://fmenemo.github.io/.
+Verified live: the assets the metadata references return 200, the share image is
+byte-identical to the committed one, and the tags are in the served document before
+any JavaScript runs.
+
+Three things the spec did not anticipate, each recorded where it belongs rather
+than only here:
+
+1. **The link previews were broken twice over.** The referenced OG image was missing,
+   which the spec knew, but the tags pointing at it were also written by a React
+   effect and so were never read by any scraper. See ADR 0003.
+2. **The one-seam testing rule needed an exception**, for exactly that reason. It is
+   written into the Testing Decisions above rather than left as a departure.
+3. **The repo misdescribed itself in more places than `package.json`.** `README.md`
+   documented a deleted component, Framer Motion, a Projects page, a contact form and
+   an unmeasured Lighthouse score; `.github/` carried a Jekyll theme's contributing
+   guide and issue template, pointing at another project's issue tracker. Both were
+   dealt with under the same principle that drove the manifest reconcile: a repo that
+   describes an application it is not is a liability.
+
+Out of scope and still true: no CI workflow, no automated deployment. `npm run deploy`
+remains a manual, deliberate act.
 
 ## Problem Statement
 

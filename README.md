@@ -53,7 +53,9 @@ change is most likely to undo.
 
 The title, description, Open Graph and Twitter tags are static markup in
 `index.html`, not written by a component. Link scrapers fetch the document and stop
-without running React, so a tag rendered by the app exists too late to be read.
+without running React, so a tag rendered by the app exists too late to be read. This
+is ADR 0003, and it is the reason there is no React Helmet here: it would solve the
+same problem the same way, one render too late.
 
 ## Testing
 
