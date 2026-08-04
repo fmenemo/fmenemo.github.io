@@ -205,7 +205,8 @@ is fresher is a confession about maintenance and does not.
 
 A good test here asserts what a consumer observes and nothing about how it was produced.
 There are two consumers, a visitor and a scraper, and the existing suite already has a seam
-for each. This feature adds **no new seams**; it parameterises the existing three.
+for each. This feature parameterises the existing three, and adds **one** more, which is
+the fourth below and the only one in the suite that reads source rather than output.
 
 ### The seams
 
@@ -219,6 +220,22 @@ for each. This feature adds **no new seams**; it parameterises the existing thre
 3. **The share image copy.** The share image source imported as raw text and read as text
    content, deliberately excluding its styling, so that letter-spacing values are never
    mistaken for copy.
+4. **Which edition a module reaches for.** Every module under `src/` imported as raw text,
+   asserting that nothing but the entry document names an edition. Added in ticket 01,
+   against the instinct that governs the other three, so the reasoning is recorded here
+   rather than only in a code comment.
+
+   What it defends is the decision that an edition is chosen once, at the top: a component
+   that imported `content.en` directly would go on rendering English inside the Spanish
+   document. That is observable through seam 1 once `/es` exists, because the Spanish
+   render would show English words, but only for strings some test happens to assert, and
+   not at all in the window between ticket 01 and ticket 03. The import is where the
+   mistake actually is, and it is the same shape as the ADR 0003 exception: an assertion
+   moved to where the failure is legible rather than where it eventually surfaces.
+
+   It stays cheap on purpose: one glob, one regex, no per-file list to maintain. If it
+   ever needs a list of allowed exceptions longer than the entry documents, it has stopped
+   defending the decision and should be deleted rather than extended.
 
 ### One table, both editions
 

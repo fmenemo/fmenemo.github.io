@@ -41,6 +41,36 @@ beforeEach(() => {
 
 afterEach(cleanup);
 
+// Guard test for ticket 01 (content through a provider), and the one test here
+// that reads source rather than what a consumer observes. It is the fourth seam
+// recorded in the Spanish edition's spec: a component that imported an edition
+// by name would go on rendering English inside the Spanish document, and the
+// import is the only place that is visible before `/es` exists (ADR 0004).
+describe('the edition arrives from above', () => {
+  const sources = import.meta.glob('./**/*.{ts,tsx}', {
+    query: '?raw',
+    import: 'default',
+    eager: true,
+  }) as Record<string, string>;
+
+  // The entry supplies the edition, and this file renders one to assert
+  // against. Everything else reads whichever edition it was rendered under.
+  const chooseTheEdition = ['./main.tsx', './App.test.tsx'];
+
+  it('has nothing but the entry import an edition by name', () => {
+    // The glob is resolved at transform time, so a pattern that stopped
+    // matching would leave this passing over an empty set.
+    expect(Object.keys(sources).length).toBeGreaterThan(5);
+
+    const reaching = Object.entries(sources)
+      .filter(([path]) => !chooseTheEdition.includes(path))
+      .filter(([, source]) => /from '[^']*content\.(en|es)'/.test(source))
+      .map(([path]) => path);
+
+    expect(reaching).toEqual([]);
+  });
+});
+
 // Guard tests for ticket 04 (theming architecture): the theme is a class on
 // <html> plus a persisted localStorage choice, exercised through the toggle.
 describe('theme', () => {

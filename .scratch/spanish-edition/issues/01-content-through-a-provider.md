@@ -19,3 +19,13 @@ See the Testing Decisions in `spec.md`, and `CONTEXT.md` for the vocabulary.
 - [x] Every existing test still passes, asserting the same things about the same copy
 - [x] The rendered English page is unchanged: same text, same order, same anchors
 - [x] `npm run build`, `npm run lint` and `npm test` pass
+
+## Comments
+
+**The chrome moved into the content type.** Section headings, nav labels, the accessible names of the controls, the CV button and the contact-list labels were literals inside the components. A visitor reads all of them, so the type carries them or `/es` shows English through the gaps. Names are not chrome and stayed where they are drawn: `FM`, `GitHub` and `LinkedIn` are the same in every edition. The rule is recorded as a `Chrome` entry in `CONTEXT.md`.
+
+**The nav labels are separate keys from the section headings**, though the two coincide in English. The Spanish CV's heading is "Experiencia profesional", which the masthead cannot carry and stay one line at every width, so ticket 02 is free to give them different words.
+
+**A fourth test seam was added**, asserting that nothing but the entry document imports an edition by name. It contradicted the "no new seams" line in `spec.md`, so that line and the reasoning for the exception are now recorded in the Testing Decisions there and in the README.
+
+**The unchanged-page criterion was checked by rendering `HEAD` in a scratch worktree** and diffing the full body HTML against the new render, rather than by trusting the existing assertions. Byte-identical.

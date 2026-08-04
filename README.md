@@ -64,7 +64,13 @@ same problem the same way, one render too late.
 
 ## Testing
 
-Vitest, Testing Library and jsdom. One seam: the test mounts the whole app and reads
-the resulting DOM for what a visitor can observe. No snapshots, no component tests,
-no assertions on class names. The one exception is the metadata block, which reads
-`index.html` directly, because the document is what a scraper observes.
+Vitest, Testing Library and jsdom. The main seam mounts the whole app with an edition
+supplied to it and reads the resulting DOM for what a visitor can observe. No
+snapshots, no component tests, no assertions on class names.
+
+Three groups read source instead, each for a reason recorded where it was decided:
+the metadata block reads `index.html`, and the share image group reads its source in
+`tools/assets/`, because a document and a picture are what a scraper observes
+(ADR 0003); and one guard reads every module under `src/` to assert that nothing but
+the entry document imports an edition by name, because that is where choosing the
+wrong edition is legible (ADR 0004).
