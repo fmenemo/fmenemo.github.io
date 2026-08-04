@@ -119,6 +119,17 @@ describe('page structure', () => {
     expect(screen.getByRole('link', { name: /cv/i }).getAttribute('href')).toContain('.pdf');
   });
 
+  // The asset, the href and the name the visitor's browser saves it under are
+  // all one string. They drifted once already: the file was versioned
+  // `CV_Fran_Menendez_2026-07.pdf` while the download attribute said
+  // `Francisco_Menendez_CV.pdf`, a name Fran does not use.
+  it('serves the CV under one name everywhere', () => {
+    render(<App />);
+    const cv = screen.getByRole('link', { name: /cv/i });
+    expect(cv.getAttribute('href')).toBe('/Fran_Menendez_CV.pdf');
+    expect(cv.getAttribute('download')).toBe('Fran_Menendez_CV.pdf');
+  });
+
   // Each contact route has to be an anchor a visitor can open, middle-click or
   // tab to, rather than a div carrying an onClick.
   it('makes each contact route a real link', () => {

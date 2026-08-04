@@ -71,8 +71,8 @@ const About: React.FC = () => (
     </div>
 
     <a
-      href='/CV_Fran_Menendez_2026-07.pdf'
-      download='Francisco_Menendez_CV.pdf'
+      href='/Fran_Menendez_CV.pdf'
+      download='Fran_Menendez_CV.pdf'
       className={`mt-10 ${primaryAction}`}
     >
       Download CV

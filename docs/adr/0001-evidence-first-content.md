@@ -1,6 +1,6 @@
 # Evidence-first content, sourced from the CV
 
-The site previously presented thirty skill chips ("Technical Decision Making", "DevSecOps"), three invented stats ("10+ Years Experience", "50+ Engineers Mentored", "∞ Systems Scaled"), and a Projects section containing six fabricated products with `githubUrl` links to repositories that do not exist. Since the site's job is to be a credibility anchor (see `CONTEXT.md`), unverifiable claims actively cost credibility rather than building it. We decided that every statement on the site must be evidence traceable to `public/CV_Fran_Menendez_2026-07.pdf`, that the CV wins wherever the two disagree, and that content which cannot be sourced is deleted rather than softened.
+The site previously presented thirty skill chips ("Technical Decision Making", "DevSecOps"), three invented stats ("10+ Years Experience", "50+ Engineers Mentored", "∞ Systems Scaled"), and a Projects section containing six fabricated products with `githubUrl` links to repositories that do not exist. Since the site's job is to be a credibility anchor (see `CONTEXT.md`), unverifiable claims actively cost credibility rather than building it. We decided that every statement on the site must be evidence traceable to `public/Fran_Menendez_CV.pdf`, that the CV wins wherever the two disagree, and that content which cannot be sourced is deleted rather than softened.
 
 ## Consequences
 

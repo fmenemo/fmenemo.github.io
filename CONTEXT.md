@@ -39,7 +39,7 @@ _Avoid_: USP, specialty, focus area
 ### Source of truth
 
 **CV**:
-`public/CV_Fran_Menendez_2026-07.pdf`. The authority for titles, dates, employers, and numbers. Where the site and the CV disagree, the CV wins and the site is wrong.
+`public/Fran_Menendez_CV.pdf`. The authority for titles, dates, employers, and numbers. Where the site and the CV disagree, the CV wins and the site is wrong. The filename carries no version: one name in one place, replaced in situ when the CV is updated.
 _Avoid_: Resume
 
 **Identity line**:
