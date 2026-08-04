@@ -46,4 +46,21 @@ The emoji guard matches `/\p{Emoji_Presentation}|\uFE0F/u`, not `\p{Extended_Pic
 - Card titles went with the cards: "Who I Am" is dropped, since the section is already labelled "About Me". The `❤️` colophon line in the footer is dropped rather than de-emojified.
 - Contact rows link out with an `aria-label` of `"<Label>: <value>"`, so "Francisco Menendez" reads as "LinkedIn: Francisco Menendez" without hiding the visible text.
 
-**Verified in Chrome** at 1280px and at 500px in both themes: `scrollWidth === clientWidth` with no overflowing element, the CV link serves `200 application/pdf`, and the toggle flips the class, the icon and the label. 500px is the narrowest window Chrome will open, but it is below the `sm` breakpoint, so it is the mobile composition being measured. The built stylesheet was checked directly for the two things that cannot be asserted in jsdom: the `:focus-visible` outline rule and the `prefers-reduced-motion` block are both present, and it contains zero occurrences of `backdrop-filter`, `linear-gradient` or `animate-pulse`.
+**Verified in Chrome** in both themes at 1280px, 1024px and 320px (device emulation, `mobile,touch`): `scrollWidth === clientWidth` at every width with no element extending past the viewport, the CV link serves `200 application/pdf`, and the toggle flips the class, the icon and the label. Keyboard focus was checked directly rather than inferred: tabbing to a nav link gives `:focus-visible` with a computed outline of `2px solid rgb(204, 34, 0)` at `3px` offset. The built stylesheet was checked for the two things jsdom cannot assert: the `prefers-reduced-motion` block is present, and the sheet contains zero occurrences of `backdrop-filter`, `linear-gradient` or `animate-pulse`.
+
+## Review round
+
+Both axes of `/code-review` ran against `main...HEAD`. Neither found a hard standards violation or a missing requirement. Acted on:
+
+- **Duplicated class strings.** The primary-action string was copied verbatim in three files and the accent-link string in two, while `Contact.tsx` kept a local `linkClasses` that proved the shape wanted a name. The mono metadata treatment was repeated fourteen times across five files, which meant restyling the metadata voice, the thing this ticket exists to make cheap, would have touched every page. All four now live in `src/styles.ts` as `metaVoice`, `primaryAction`, `accentAction` and `inlineLink`.
+- **`Container` was exported from a module named `Section`**, and three unrelated files imported it from there. It now has its own `src/components/Container.tsx`.
+- **"All rights reserved." had been dropped** from the footer copyright. That was an undisclosed copy change in a form-only ticket, so it is restored.
+- **The accent's usage was recorded inaccurately** in the `src/index.css` token comment ("the CV action", which is ink-bordered) and in the note above ("nowhere else", when it is also on secondary actions and link hover). Both records corrected.
+- **The contact-link test relied on DOM order**, taking `getAllByRole(...)[0]` and so depending on Contact preceding Footer. It now collects every link's `href` and asserts membership, which is order-independent.
+
+Declined, with reasons:
+
+- **The old skill chips survive as `skillGroups`, `specialties` and `focusAreas`**, and they are claims that `CONTEXT.md` and ADR 0001 would delete on sight. They stay because this ticket is form-only. Ticket 06 now has three data structures to delete rather than one, which is worth knowing going in.
+- **The hero, masthead and footer align to the measure but not to the 3/9 column split**, so the grid is least visible on the page's most prominent band. That is deliberate: the hero is a full-bleed opening statement, and indenting it would weaken it. Worth revisiting when ticket 06 puts real content there.
+- **The "Home" nav link is gone** along with the hamburger. The wordmark still links to `#home`, which is the conventional route back to the top, so a second control for the same target earned nothing.
+- **`SectionProps.index` is a hand-written `'01'`/`'02'` string.** With two call sites, explicit numbering is clearer than deriving it, and a wrong number is visible on the page.

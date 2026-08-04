@@ -119,12 +119,14 @@ describe('page structure', () => {
     expect(screen.getByRole('link', { name: /cv/i }).getAttribute('href')).toContain('.pdf');
   });
 
+  // Each contact route has to be an anchor a visitor can open, middle-click or
+  // tab to, rather than a div carrying an onClick.
   it('makes each contact route a real link', () => {
     render(<App />);
-    const href = (name: RegExp) => screen.getAllByRole('link', { name })[0].getAttribute('href');
-    expect(href(/fmenendezmoya@gmail\.com/i)).toBe('mailto:fmenendezmoya@gmail.com');
-    expect(href(/linkedin/i)).toBe('https://www.linkedin.com/in/fmenemo/');
-    expect(href(/github/i)).toBe('https://github.com/fmenemo');
+    const hrefs = screen.getAllByRole('link').map((link) => link.getAttribute('href'));
+    expect(hrefs).toContain('mailto:fmenendezmoya@gmail.com');
+    expect(hrefs).toContain('https://www.linkedin.com/in/fmenemo/');
+    expect(hrefs).toContain('https://github.com/fmenemo');
   });
 
   // An emoji is a character that renders as one by default, or one forced into

@@ -1,5 +1,6 @@
 import React from 'react';
-import { Container } from './Section';
+import { metaVoice } from '../styles';
+import Container from './Container';
 
 const socialLinks = [
   {
@@ -20,8 +21,8 @@ const Footer: React.FC = () => {
   return (
     <footer className='border-t border-rule dark:border-rule-dark'>
       <Container className='py-10'>
-        <div className='flex flex-wrap items-center justify-between gap-6 font-mono text-2xs tracking-[0.15em] text-muted uppercase dark:text-muted-dark'>
-          <p>&copy; {currentYear} Francisco Menendez</p>
+        <div className={`flex flex-wrap items-center justify-between gap-6 ${metaVoice} text-muted dark:text-muted-dark`}>
+          <p>&copy; {currentYear} Francisco Menendez. All rights reserved.</p>
 
           <div className='flex items-center gap-6'>
             {socialLinks.map((link) => (

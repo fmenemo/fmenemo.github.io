@@ -35,8 +35,9 @@
   --color-rule: #d9d9d9;
   --color-rule-dark: #2b2b2b;
 
-  /* The one accent. Used on section numbers, link underlines, the CV action
-     and focus rings, and nowhere else. */
+  /* The one accent. Used on section numbers, the hero eyebrow, secondary
+     actions, focus rings, and link hover. The primary actions stay ink, so
+     the accent never carries more than one voice at a time. */
   --color-accent: #cc2200;
   --color-accent-dark: #ff5540;
 

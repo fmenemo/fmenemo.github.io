@@ -1,5 +1,6 @@
 import React from 'react';
 import Section from '../components/Section';
+import { metaVoice, primaryAction } from '../styles';
 
 const skillGroups = [
   {
@@ -72,7 +73,7 @@ const About: React.FC = () => (
     <a
       href='/CV_Fran_Menendez_2026-07.pdf'
       download='Francisco_Menendez_CV.pdf'
-      className='mt-10 inline-block border-2 border-ink px-6 py-3 font-mono text-2xs tracking-[0.2em] uppercase transition-colors hover:bg-ink hover:text-paper dark:border-chalk dark:hover:bg-chalk dark:hover:text-canvas'
+      className={`mt-10 ${primaryAction}`}
     >
       Download CV
     </a>
@@ -80,7 +81,7 @@ const About: React.FC = () => (
     <dl className='mt-16 border-t border-rule dark:border-rule-dark'>
       {skillGroups.map((group) => (
         <div key={group.title} className='grid gap-2 border-b border-rule py-6 sm:grid-cols-4 sm:gap-8 dark:border-rule-dark'>
-          <dt className='font-mono text-2xs tracking-[0.2em] text-muted uppercase dark:text-muted-dark'>{group.title}</dt>
+          <dt className={`${metaVoice} text-muted dark:text-muted-dark`}>{group.title}</dt>
           <dd className='text-sm leading-relaxed sm:col-span-3'>{group.items.join(', ')}</dd>
         </div>
       ))}

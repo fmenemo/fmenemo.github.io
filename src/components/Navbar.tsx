@@ -1,6 +1,7 @@
 import React from 'react';
 import { useDarkMode } from '../hooks/useDarkMode';
-import { Container } from './Section';
+import { metaVoice } from '../styles';
+import Container from './Container';
 
 const SunIcon = () => (
   <svg className='h-4 w-4' fill='none' stroke='currentColor' viewBox='0 0 24 24' aria-hidden='true'>
@@ -48,7 +49,7 @@ const Navbar: React.FC = () => {
               <a
                 key={link.name}
                 href={link.href}
-                className='font-mono text-2xs tracking-[0.2em] text-muted uppercase transition-colors hover:text-accent dark:text-muted-dark dark:hover:text-accent-dark'
+                className={`${metaVoice} text-muted transition-colors hover:text-accent dark:text-muted-dark dark:hover:text-accent-dark`}
               >
                 {link.name}
               </a>
