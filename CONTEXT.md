@@ -50,6 +50,10 @@ _Avoid_: Default site, main site, source language
 The site at `/es`. Exists for the reader who arrives from LinkedIn knowing the name and would rather read Spanish, so its job is warmth, not comprehension. Written from the Spanish CV rather than translated from the English edition.
 _Avoid_: Translation, /es version, localised site
 
+**Chrome**:
+The words the layout says about itself rather than about Fran: section headings, navigation labels, the name of a control. Part of an edition, so a Spanish reader meets them in Spanish, but not traceable to a CV the way an `evidence` bullet is. Names are not chrome: "FM", "GitHub" and "LinkedIn" are the same in every edition and stay in the components that draw them.
+_Avoid_: Labels, UI strings, i18n keys
+
 ### Source of truth
 
 **CV**:

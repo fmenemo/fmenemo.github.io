@@ -1,4 +1,5 @@
 import React from 'react';
+import { useContent } from '../hooks/useContent';
 import { useDarkMode } from '../hooks/useDarkMode';
 import { metaVoice } from '../styles';
 import Container from './Container';
@@ -25,21 +26,25 @@ const MoonIcon = () => (
   </svg>
 );
 
-// Two links, not one per section. Independent work, recognitions and
-// technologies are each a few lines sitting directly under experience, so a
-// visitor scrolling reaches them before a nav link would have saved them
-// anything. The ids exist and are linkable; the masthead just does not list
-// them, which is what keeps it to one line at every width.
-const navLinks = [
-  { name: 'Experience', href: '#experience' },
-  { name: 'Contact', href: '#contact' },
-];
-
 // The masthead is a hairline rule and three short labels. It carries no
 // scroll state, no blur and no mobile menu: at this length the links fit
 // across every width the site supports.
 const Navbar: React.FC = () => {
   const { isDarkMode, toggleDarkMode } = useDarkMode();
+  const { chrome } = useContent();
+
+  // Two links, not one per section. Independent work, recognitions and
+  // technologies are each a few lines sitting directly under experience, so a
+  // visitor scrolling reaches them before a nav link would have saved them
+  // anything. The ids exist and are linkable; the masthead just does not list
+  // them, which is what keeps it to one line at every width.
+  //
+  // The labels are the edition's; the anchors are English in every edition, so
+  // that a fragment carries across the language selector unchanged (ADR 0004).
+  const navLinks = [
+    { name: chrome.nav.experience, href: '#experience' },
+    { name: chrome.nav.contact, href: '#contact' },
+  ];
 
   return (
     <header className='fixed inset-x-0 top-0 z-50 border-b border-rule bg-paper dark:border-rule-dark dark:bg-canvas'>
@@ -49,7 +54,7 @@ const Navbar: React.FC = () => {
             FM
           </a>
 
-          <nav aria-label='Sections' className='flex items-center gap-5 sm:gap-8'>
+          <nav aria-label={chrome.nav.label} className='flex items-center gap-5 sm:gap-8'>
             {navLinks.map((link) => (
               <a
                 key={link.name}
@@ -63,7 +68,7 @@ const Navbar: React.FC = () => {
             <button
               type='button'
               onClick={toggleDarkMode}
-              aria-label={isDarkMode ? 'Switch to light mode' : 'Switch to dark mode'}
+              aria-label={isDarkMode ? chrome.nav.toLightMode : chrome.nav.toDarkMode}
               className='-mr-1 p-1 text-muted transition-colors hover:text-accent dark:text-muted-dark dark:hover:text-accent-dark'
             >
               {isDarkMode ? <SunIcon /> : <MoonIcon />}

@@ -6,6 +6,10 @@ has his name, that he is real and senior. See `CONTEXT.md` for the vocabulary an
 
 A single scrolling page, no router, React as the only runtime dependency.
 
+The strings are one edition's, supplied to the app at its root rather than imported
+by the components, so that a second edition is a second entry document rather than a
+runtime toggle (ADR 0004).
+
 ## Quick start
 
 ```bash
@@ -27,14 +31,15 @@ npm run dev
 ```
 index.html          the entry document, and every metadata tag a scraper reads
 src/
-├── content.ts      every string a visitor reads on the page
+├── content.ts      the shape of one edition's strings
+├── content.en.ts   every string a visitor reads on the English edition
 ├── index.css       the design tokens: palette, type scale, spacing rhythm
 ├── styles.ts       the three interactive treatments and the metadata voice
 ├── theme.ts        resolving and persisting the light/dark choice
 ├── App.test.tsx    the whole test suite
 ├── components/     Navbar, Footer, Section, Container
 ├── pages/          the sections of the one page
-└── hooks/          useDarkMode
+└── hooks/          useDarkMode, useContent
 public/             served at the site root: the CV, the favicon, the share image
 tools/assets/       sources for the two generated PNGs in public/
 docs/adr/           the decisions, and why

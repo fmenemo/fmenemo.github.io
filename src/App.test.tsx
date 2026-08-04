@@ -1,7 +1,7 @@
 import { cleanup, fireEvent, render, screen } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import App from './App';
-import { identity } from './content';
+import { en } from './content.en';
 // The shipped entry document, the stylesheet holding the palette, and the
 // source of the share image, each read as a string. Vite resolves `?raw` at
 // transform time, so the test needs no filesystem access and the app project
@@ -29,7 +29,7 @@ vi.stubGlobal(
 );
 
 const renderedText = () => {
-  render(<App />);
+  render(<App content={en} />);
   return document.body.textContent ?? '';
 };
 
@@ -48,13 +48,13 @@ describe('theme', () => {
 
   it('follows the system dark preference on first visit', () => {
     systemPrefersDark = true;
-    render(<App />);
+    render(<App content={en} />);
     expect(document.documentElement.classList.contains('dark')).toBe(true);
     expect(localStorage.getItem('theme')).toBeNull();
   });
 
   it('follows the system light preference on first visit', () => {
-    render(<App />);
+    render(<App content={en} />);
     expect(document.documentElement.classList.contains('dark')).toBe(false);
     expect(localStorage.getItem('theme')).toBeNull();
   });
@@ -62,19 +62,19 @@ describe('theme', () => {
   it('lets a stored explicit choice override the system preference', () => {
     systemPrefersDark = true;
     localStorage.setItem('theme', 'light');
-    render(<App />);
+    render(<App content={en} />);
     expect(document.documentElement.classList.contains('dark')).toBe(false);
   });
 
   it('toggling to dark sets the class and persists the choice', () => {
-    render(<App />);
+    render(<App content={en} />);
     fireEvent.click(toggle());
     expect(document.documentElement.classList.contains('dark')).toBe(true);
     expect(localStorage.getItem('theme')).toBe('dark');
   });
 
   it('toggling back to light removes the class and persists the choice', () => {
-    render(<App />);
+    render(<App content={en} />);
     fireEvent.click(toggle());
     fireEvent.click(toggle());
     expect(document.documentElement.classList.contains('dark')).toBe(false);
@@ -84,7 +84,7 @@ describe('theme', () => {
   it('ignores an invalid stored theme and falls back to the system preference', () => {
     systemPrefersDark = true;
     localStorage.setItem('theme', 'banana');
-    render(<App />);
+    render(<App content={en} />);
     expect(document.documentElement.classList.contains('dark')).toBe(true);
   });
 });
@@ -94,14 +94,14 @@ describe('theme', () => {
 // links rather than clickable boxes, and no emoji in the copy.
 describe('page structure', () => {
   it('has a single h1', () => {
-    render(<App />);
+    render(<App content={en} />);
     expect(screen.getAllByRole('heading', { level: 1 })).toHaveLength(1);
   });
 
   // queryAllByRole with a name filter uses the accessible-name computation, so
   // anything missing from the named set has no name a screen reader can read.
   it('gives every link and button an accessible name', () => {
-    render(<App />);
+    render(<App content={en} />);
     for (const role of ['link', 'button'] as const) {
       const named = screen.queryAllByRole(role, { name: /\S/ });
       expect(named).toHaveLength(screen.queryAllByRole(role).length);
@@ -109,7 +109,7 @@ describe('page structure', () => {
   });
 
   it('points every in-page anchor at a section that exists', () => {
-    render(<App />);
+    render(<App content={en} />);
     const anchors = screen
       .getAllByRole('link')
       .map((link) => link.getAttribute('href'))
@@ -122,7 +122,7 @@ describe('page structure', () => {
   });
 
   it('offers the CV as a link to the PDF rather than a scripted download', () => {
-    render(<App />);
+    render(<App content={en} />);
     expect(screen.getByRole('link', { name: /cv/i }).getAttribute('href')).toContain('.pdf');
   });
 
@@ -131,7 +131,7 @@ describe('page structure', () => {
   // `CV_Fran_Menendez_2026-07.pdf` while the download attribute said
   // `Francisco_Menendez_CV.pdf`, a name Fran does not use.
   it('serves the CV under one name everywhere', () => {
-    render(<App />);
+    render(<App content={en} />);
     const cv = screen.getByRole('link', { name: /cv/i });
     expect(cv.getAttribute('href')).toBe('/Fran_Menendez_CV.pdf');
     expect(cv.getAttribute('download')).toBe('Fran_Menendez_CV.pdf');
@@ -140,7 +140,7 @@ describe('page structure', () => {
   // Each contact route has to be an anchor a visitor can open, middle-click or
   // tab to, rather than a div carrying an onClick.
   it('makes each contact route a real link', () => {
-    render(<App />);
+    render(<App content={en} />);
     const hrefs = screen.getAllByRole('link').map((link) => link.getAttribute('href'));
     expect(hrefs).toContain('mailto:fmenendezmoya@gmail.com');
     expect(hrefs).toContain('https://www.linkedin.com/in/fmenemo/');
@@ -186,7 +186,7 @@ describe('fabricated content stays out', () => {
   // decided is that the site does not *lead* with it, so the assertion belongs
   // on the identity line: see "leads with Software Engineer" below.
   it('does not lead with "Principal Software Engineer"', () => {
-    render(<App />);
+    render(<App content={en} />);
     expect(screen.getByRole('heading', { level: 1 }).textContent).not.toContain('Principal');
     expect(screen.getByText(/^Software Engineer, 10\+ years/).textContent).not.toContain('Principal');
   });
@@ -206,7 +206,7 @@ describe('content', () => {
   });
 
   it('renders the name with its accent as the one h1', () => {
-    render(<App />);
+    render(<App content={en} />);
     expect(screen.getByRole('heading', { level: 1 }).textContent).toContain('Fran Menéndez');
   });
 
@@ -215,13 +215,13 @@ describe('content', () => {
   // appear as an experience entry's title, so this is scoped to the identity
   // line rather than to the whole page.
   it('leads with Software Engineer rather than the current job title', () => {
-    render(<App />);
+    render(<App content={en} />);
     const identity = screen.getByText(/^Software Engineer, 10\+ years/);
     expect(identity.textContent).not.toContain('Principal');
   });
 
   it('names the AI-layer differentiator in the identity line', () => {
-    render(<App />);
+    render(<App content={en} />);
     const identity = screen.getByText(/^Software Engineer, 10\+ years/);
     expect(identity.textContent).toMatch(/semantic search/i);
     expect(identity.textContent).toMatch(/MCP/);
@@ -260,7 +260,7 @@ describe('content', () => {
 
   // D1: the mention ships, the URL does not, and no claim leans on a click.
   it('mentions the independent work without linking it', () => {
-    render(<App />);
+    render(<App content={en} />);
     expect(document.body.textContent).toContain('Instagram Checker');
     const hrefs = screen.getAllByRole('link').map((link) => link.getAttribute('href'));
     expect(hrefs.some((href) => href?.includes('instagram-checker'))).toBe(false);
@@ -403,7 +403,7 @@ describe('metadata', () => {
     ]);
   });
 
-  // The identity is written in three places: `identity.line` in content.ts,
+  // The identity is written in three places: `identity.line` in content.en.ts,
   // the description tags here, and the share image. Only the first is read
   // against the CV, so the other two have to be condensations of it rather
   // than independent descriptions of Fran that drift on their own.
@@ -422,7 +422,7 @@ describe('metadata', () => {
     const DIFFERENTIATOR = ['semantic search', 'MCP', 'agentic'];
 
     it.each([...IDENTITY, ...DIFFERENTIATOR])('sources "%s" from the identity line', (phrase) => {
-      expect(identity.line).toContain(phrase);
+      expect(en.identity.line).toContain(phrase);
     });
 
     it.each([...IDENTITY, ...DIFFERENTIATOR])('carries "%s" in the description', (phrase) => {
@@ -440,7 +440,7 @@ describe('metadata', () => {
       const figures = shareImageCopy.match(/\d[\d,.]*\+?/g) ?? [];
       expect(figures.length).toBeGreaterThan(0);
       for (const figure of figures) {
-        expect(identity.line).toContain(figure);
+        expect(en.identity.line).toContain(figure);
       }
     });
   });

@@ -8,14 +8,14 @@ It also decides the visitor-facing test seam for every later ticket: the root ta
 
 See the Testing Decisions in `spec.md`, and `CONTEXT.md` for the vocabulary.
 
-**Status:** ready-for-agent
+**Status:** resolved
 
 **Blocked by:** None. Can start immediately.
 
-- [ ] A single content type describes everything a visitor reads, satisfied by the existing English strings with no change to their values
-- [ ] The application root accepts that content as input and provides it to the tree; the seven components that import the content module directly read from the provider instead
-- [ ] No component imports the content module by name any more, and nothing reads a string through a default or a fallback: an edition supplies everything or fails to compile
-- [ ] The visitor-facing test seam becomes the root rendered with content supplied to it, and every existing test is moved onto it rather than reworked
-- [ ] Every existing test still passes, asserting the same things about the same copy
-- [ ] The rendered English page is unchanged: same text, same order, same anchors
-- [ ] `npm run build`, `npm run lint` and `npm test` pass
+- [x] A single content type describes everything a visitor reads, satisfied by the existing English strings with no change to their values
+- [x] The application root accepts that content as input and provides it to the tree; the seven components that import the content module directly read from the provider instead
+- [x] No component imports the content module by name any more, and nothing reads a string through a default or a fallback: an edition supplies everything or fails to compile
+- [x] The visitor-facing test seam becomes the root rendered with content supplied to it, and every existing test is moved onto it rather than reworked
+- [x] Every existing test still passes, asserting the same things about the same copy
+- [x] The rendered English page is unchanged: same text, same order, same anchors
+- [x] `npm run build`, `npm run lint` and `npm test` pass
