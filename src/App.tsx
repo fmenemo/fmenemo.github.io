@@ -6,7 +6,7 @@ import Experience from './pages/Experience';
 import Home from './pages/Home';
 import IndependentWork from './pages/IndependentWork';
 import Recognitions from './pages/Recognitions';
-import Skills from './pages/Skills';
+import Technologies from './pages/Technologies';
 
 function App() {
   return (
@@ -18,7 +18,7 @@ function App() {
         <Experience />
         <IndependentWork />
         <Recognitions />
-        <Skills />
+        <Technologies />
         <Contact />
       </main>
       <Footer />

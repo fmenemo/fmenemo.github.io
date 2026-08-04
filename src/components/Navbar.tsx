@@ -25,6 +25,11 @@ const MoonIcon = () => (
   </svg>
 );
 
+// Two links, not one per section. Independent work, recognitions and
+// technologies are each a few lines sitting directly under experience, so a
+// visitor scrolling reaches them before a nav link would have saved them
+// anything. The ids exist and are linkable; the masthead just does not list
+// them, which is what keeps it to one line at every width.
 const navLinks = [
   { name: 'Experience', href: '#experience' },
   { name: 'Contact', href: '#contact' },
