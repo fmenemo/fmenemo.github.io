@@ -10,6 +10,8 @@ import { es } from './content.es';
 import enHtml from '../index.html?raw';
 import esHtml from '../es/index.html?raw';
 import ogImageHtml from '../tools/assets/og-image.html?raw';
+import ogImageEsHtml from '../tools/assets/og-image.es.html?raw';
+import faviconSvg from '../public/favicon.svg?raw';
 
 const SITE = 'https://fmenemo.github.io';
 
@@ -27,10 +29,6 @@ const SITE = 'https://fmenemo.github.io';
 // What does not belong here is a guard that is inherently per-edition. Bullet
 // provenance is checked against a different CV for each edition, so it stays
 // out of the table and is named as per-edition where it sits.
-//
-// Ticket 06 of this feature adds each row's share image source and moves the
-// share-image group onto the table. Until it lands there is only one image, so
-// that group is still English-only and says so.
 const editions = [
   {
     edition: 'English',
@@ -39,10 +37,13 @@ const editions = [
     lang: 'en',
     url: `${SITE}/`,
     title: 'Fran Menéndez | Software Engineer',
-    // Both editions still point at the English card. Ticket 06 of this feature
-    // draws the Spanish one and changes this row, which is a one-line edit
-    // precisely because the value is asserted exactly rather than by shape.
+    // Each edition has a card of its own: the PNG a scraper fetches, the source
+    // it is rendered from, and the alt that describes the picture. The alt is a
+    // per-edition expectation for the same reason the title is — it is read
+    // aloud in the language of the document it sits in.
     image: `${SITE}/og-image.png`,
+    imageSource: ogImageHtml,
+    imageAlt: 'Fran Menéndez, Software Engineer, Zaragoza, Spain.',
     // The first words of the identity line, which several guards need to find
     // the paragraph without asserting the whole of it.
     identityLead: /^Software Engineer, 10\+ years/,
@@ -112,7 +113,9 @@ const editions = [
     lang: 'es',
     url: `${SITE}/es/`,
     title: 'Fran Menéndez | Ingeniero de Software',
-    image: `${SITE}/og-image.png`,
+    image: `${SITE}/og-image-es.png`,
+    imageSource: ogImageEsHtml,
+    imageAlt: 'Fran Menéndez, ingeniero de software, Zaragoza, España.',
     identityLead: /^Ingeniero de software, más de 10 años/,
     themeToggle: /cambiar a modo (oscuro|claro)/i,
     language: {
@@ -708,11 +711,11 @@ describe.each(editions)('$edition edition', (edition) => {
     it('declares the share image dimensions a scraper crops to', () => {
       expect(meta('og:image:width')).toBe('1200');
       expect(meta('og:image:height')).toBe('630');
-      // Deliberately not per-edition: alt text describes the picture, and until
-      // ticket 06 of this feature draws the Spanish card there is one picture.
-      // A Spanish alt over the English image would describe something that is
-      // not there, which is a worse failure than an English one.
-      expect(meta('og:image:alt')).toMatch(/\S/);
+      // The alt describes the picture, and each edition now has a picture of
+      // its own, so it is read out of the row rather than merely checked for
+      // being non-empty. An alt left in the other edition's language is the
+      // exact tell of a half-done localisation this ticket exists to remove.
+      expect(meta('og:image:alt')).toBe(edition.imageAlt);
     });
 
     // The previous OG image was referenced but never existed, which is half of
@@ -892,20 +895,44 @@ describe('the original CV is offered on both editions, and named as provenance',
   });
 });
 
-// Per-edition by necessity, and named as such: there is one share image and it
-// is the English one. Ticket 06 of this feature draws the Spanish image, adds
-// each row's source to the edition table, and moves this group onto it.
-describe('the English share image stays a condensation of the identity line', () => {
+// One asset for both editions, so it sits outside the table. It is here because
+// it shipped broken: an XML comment cannot contain a double hyphen, and the
+// token names in this file's own comment were written with theirs. Chrome was
+// lenient about it for a while and then was not, and the failure was silent in
+// both directions — the icon simply stopped being drawn, and the render script
+// wrote the blank screenshot out as though it had worked.
+describe('the favicon is a document a browser can parse', () => {
+  it('is well-formed XML', () => {
+    const parsed = new DOMParser().parseFromString(faviconSvg, 'image/svg+xml');
+    expect(parsed.querySelector('parsererror')).toBeNull();
+    expect(parsed.documentElement.tagName).toBe('svg');
+  });
+});
+
+// The third seam: the share image source read as text. It runs from the table
+// like the rest, which is what says the Spanish card is condensed from the
+// Spanish identity line rather than translated from the English picture.
+describe.each(editions)('the $edition share image stays a condensation of the identity line', (edition) => {
   // The words on the share image, without the stylesheet that sets them: its
   // letter-spacing and font sizes are not copy, and reading them as copy would
   // have this asserting that "0.2em" traces to the CV.
-  const shareImageCopy = (parseDocument(ogImageHtml).body.textContent ?? '').replace(/\s+/g, ' ');
+  const shareImageCopy = (parseDocument(edition.imageSource).body.textContent ?? '').replace(/\s+/g, ' ');
 
-  // The identity, which the image has room for, without the differentiator
-  // that follows it, which it does not.
-  const IDENTITY = ['Software Engineer', '10+ years', 'millions of users', 'AI layer'];
+  // The layout and palette live in `tools/assets/og-image.css`, shared by every
+  // edition's source, and this is what stops one card drifting off it. It also
+  // keeps the group above reading copy: a source with its own `<style>` would
+  // have letter-spacing values in its text content, and "0.2em" would then be
+  // something this file asserts traces to a CV.
+  it('takes its styling from the shared stylesheet rather than its own', () => {
+    const source = parseDocument(edition.imageSource);
+    expect(source.querySelector('link[rel="stylesheet"]')?.getAttribute('href')).toBe('og-image.css');
+    expect(source.querySelector('style')).toBeNull();
+    expect(source.querySelector('[style]')).toBeNull();
+  });
 
-  it.each(IDENTITY)('carries "%s" on the share image', (phrase) => {
+  // `identityPhrases` is the identity the image has room for, without the
+  // differentiator that follows it, which it does not.
+  it.each(edition.identityPhrases)('carries "%s" on the share image', (phrase) => {
     expect(shareImageCopy).toContain(phrase);
   });
 
@@ -913,10 +940,21 @@ describe('the English share image stays a condensation of the identity line', ()
   // because it is a picture. So every number on it has to come from the one
   // sentence that was checked.
   it('puts no figure on the share image that the identity line does not carry', () => {
-    const figures = shareImageCopy.match(/\d[\d,.]*\+?/g) ?? [];
+    const figures = shareImageCopy.match(/\d[\d.,]*\+?/g) ?? [];
     expect(figures.length).toBeGreaterThan(0);
     for (const figure of figures) {
-      expect(en.identity.line).toContain(figure);
+      expect(edition.content.identity.line).toContain(figure);
+    }
+  });
+
+  // The card is where the edition makes its first impression, so the place a
+  // stale copy-paste would show is the other edition's words surviving on it.
+  it('carries none of the other edition’s identity on it', () => {
+    const other = editions.find((row) => row !== edition)!;
+    const mine: readonly string[] = edition.identityPhrases;
+    for (const phrase of other.identityPhrases) {
+      if (mine.includes(phrase)) continue;
+      expect(shareImageCopy).not.toContain(phrase);
     }
   });
 });

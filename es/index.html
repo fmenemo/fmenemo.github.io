@@ -44,16 +44,17 @@
     />
     <meta property="og:url" content="https://fmenemo.github.io/es/" />
     <!-- A scraper resolves this against nothing, so it has to be absolute.
-         This is still the English edition's image: ticket 06 draws the Spanish
-         one and points these two tags at it. Leaving og:image off until then
-         would collapse the card to a link stub, which reads as a dead page. -->
-    <meta property="og:image" content="https://fmenemo.github.io/og-image.png" />
+         This edition's own card, rendered from `tools/assets/og-image.es.html`:
+         the first Spanish-language impression is the preview, not the page, and
+         an English image under a Spanish title is a half-done localisation in
+         the one frame where it shows most (ADR 0004). -->
+    <meta property="og:image" content="https://fmenemo.github.io/og-image-es.png" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
-    <!-- The alt describes the picture, and the picture is still the English
-         card, so this is the English card's description. Ticket 06 draws the
-         Spanish one and this becomes Spanish with it. -->
-    <meta property="og:image:alt" content="Fran Menéndez, Software Engineer, Zaragoza, Spain." />
+    <!-- The alt is read aloud in place of the picture, so it says what the
+         picture says: the role in the words the card uses, which are the
+         Spanish CV's and not the title tag's capitalisation. -->
+    <meta property="og:image:alt" content="Fran Menéndez, ingeniero de software, Zaragoza, España." />
 
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="Fran Menéndez | Ingeniero de Software" />
@@ -61,7 +62,7 @@
       name="twitter:description"
       content="Ingeniero de software, más de 10 años construyendo plataformas que dan servicio a millones de usuarios, trabajando en la capa de IA: búsqueda semántica, tooling MCP y flujos de desarrollo agéntico."
     />
-    <meta name="twitter:image" content="https://fmenemo.github.io/og-image.png" />
+    <meta name="twitter:image" content="https://fmenemo.github.io/og-image-es.png" />
     <script>
       // Set the theme class before first paint so a dark-mode visitor never
       // sees a light flash. Mirrors resolveTheme/applyTheme in src/theme.ts.

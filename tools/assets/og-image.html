@@ -1,92 +1,14 @@
 <!doctype html>
-<html>
+<html lang="en">
   <head>
     <meta charset="utf-8" />
-    <style>
-      @font-face {
-        font-family: 'Inter';
-        font-weight: 300;
-        src: url('../../node_modules/@fontsource/inter/files/inter-latin-300-normal.woff2') format('woff2');
-      }
-      @font-face {
-        font-family: 'Inter';
-        font-weight: 600;
-        src: url('../../node_modules/@fontsource/inter/files/inter-latin-600-normal.woff2') format('woff2');
-      }
-      @font-face {
-        font-family: 'IBM Plex Mono';
-        font-weight: 500;
-        src: url('../../node_modules/@fontsource/ibm-plex-mono/files/ibm-plex-mono-latin-500-normal.woff2') format('woff2');
-      }
-
-      /* Every colour below is a token from src/index.css, copied because a
-         standalone page rendered by Chrome cannot read the app's stylesheet:
-         #ffffff paper, #111111 ink, #5f5f5f muted, #d9d9d9 rule, #cc2200
-         accent. The stylesheet is the source of truth; a restyle follows it
-         and re-renders per the README beside this file. */
-
-      * { margin: 0; padding: 0; box-sizing: border-box; }
-
-      body {
-        width: 1200px;
-        height: 630px;
-        overflow: hidden;
-        background: #ffffff;
-        color: #111111;
-        font-family: 'Inter', sans-serif;
-        -webkit-font-smoothing: antialiased;
-      }
-
-      /* The heavy ink rule that opens every section on the site. */
-      .band { height: 10px; background: #111111; }
-
-      .sheet {
-        height: 620px;
-        padding: 68px 80px 60px;
-        display: flex;
-        flex-direction: column;
-      }
-
-      .eyebrow {
-        font-family: 'IBM Plex Mono', monospace;
-        font-weight: 500;
-        font-size: 18px;
-        letter-spacing: 0.2em;
-        text-transform: uppercase;
-        color: #cc2200;
-      }
-
-      h1 {
-        margin-top: 38px;
-        font-size: 106px;
-        font-weight: 600;
-        letter-spacing: -0.03em;
-        line-height: 0.95;
-      }
-
-      .identity {
-        margin-top: 34px;
-        max-width: 920px;
-        font-size: 29px;
-        font-weight: 300;
-        line-height: 1.45;
-        color: #5f5f5f;
-      }
-
-      .meta {
-        margin-top: auto;
-        padding-top: 22px;
-        border-top: 1px solid #d9d9d9;
-        font-family: 'IBM Plex Mono', monospace;
-        font-weight: 500;
-        font-size: 18px;
-        letter-spacing: 0.2em;
-        text-transform: uppercase;
-        color: #5f5f5f;
-      }
-
-      .slash { color: #d9d9d9; margin: 0 14px; }
-    </style>
+    <!-- The layout and the palette are in the stylesheet beside this file, so
+         that a restyle cannot reach one edition's card and miss the other. What
+         is left here is the copy, condensed from `identity.line` in
+         `src/content.en.ts`: like everything else a visitor reads, it answers to
+         the CV (ADR 0001). Change the identity line, change it here, re-render
+         per the README. -->
+    <link rel="stylesheet" href="og-image.css" />
   </head>
   <body>
     <div class="band"></div>
