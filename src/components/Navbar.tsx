@@ -1,8 +1,9 @@
 import React from 'react';
 import { useContent } from '../hooks/useContent';
 import { useDarkMode } from '../hooks/useDarkMode';
-import { metaVoice } from '../styles';
+import { mastheadControl, metaVoice } from '../styles';
 import Container from './Container';
+import LanguageSelector from './LanguageSelector';
 
 const SunIcon = () => (
   <svg className='h-4 w-4' fill='none' stroke='currentColor' viewBox='0 0 24 24' aria-hidden='true'>
@@ -54,26 +55,43 @@ const Navbar: React.FC = () => {
             FM
           </a>
 
-          <nav aria-label={chrome.nav.label} className='flex items-center gap-5 sm:gap-8'>
-            {navLinks.map((link) => (
-              <a
-                key={link.name}
-                href={link.href}
-                className={`${metaVoice} text-muted transition-colors hover:text-accent dark:text-muted-dark dark:hover:text-accent-dark`}
-              >
-                {link.name}
-              </a>
-            ))}
+          {/* The section links are the navigation; the language selector and the
+              theme toggle sit beside it rather than inside it. They are controls
+              for the document a visitor is already in, and listing them under
+              "Sections" would announce them as places to go. */}
+          <div className='flex items-center gap-4 sm:gap-8'>
+            {/* Below 420px the masthead cannot hold the name, two section
+                links, the selector and the toggle on one line: the Spanish
+                labels run it to 384px of content in a 320px viewport. The
+                section links are what yields, because they are the only part
+                a visitor can get without them — scrolling reaches every
+                section, and the comment above says as much about why there
+                are two of them rather than six. The selector cannot yield: a
+                reader who cannot see that the other edition exists has no way
+                to find it. */}
+            <nav aria-label={chrome.nav.label} className='hidden items-center gap-4 xs:flex sm:gap-8'>
+              {navLinks.map((link) => (
+                <a
+                  key={link.name}
+                  href={link.href}
+                  className={`${metaVoice} ${mastheadControl}`}
+                >
+                  {link.name}
+                </a>
+              ))}
+            </nav>
+
+            <LanguageSelector />
 
             <button
               type='button'
               onClick={toggleDarkMode}
               aria-label={isDarkMode ? chrome.nav.toLightMode : chrome.nav.toDarkMode}
-              className='-mr-1 p-1 text-muted transition-colors hover:text-accent dark:text-muted-dark dark:hover:text-accent-dark'
+              className={`-mr-1 p-1 ${mastheadControl}`}
             >
               {isDarkMode ? <SunIcon /> : <MoonIcon />}
             </button>
-          </nav>
+          </div>
         </div>
       </Container>
     </header>

@@ -5,6 +5,14 @@
 /** Small mono caps: section numbers, labels, dates, employers, nav. */
 export const metaVoice = 'font-mono text-2xs tracking-[0.2em] uppercase';
 
+/**
+ * A masthead control: secondary until it is hovered. Worn by the section
+ * links, the language selector's link to the other edition, and the theme
+ * toggle, which is why it is here rather than repeated in each of them.
+ */
+export const mastheadControl =
+  'text-muted transition-colors hover:text-accent dark:text-muted-dark dark:hover:text-accent-dark';
+
 /** The bordered block that carries a section's main action. */
 export const primaryAction = `inline-block border-2 border-ink px-6 py-3 ${metaVoice} transition-colors hover:bg-ink hover:text-paper dark:border-chalk dark:hover:bg-chalk dark:hover:text-canvas`;
 

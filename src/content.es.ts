@@ -185,6 +185,13 @@ export const es: SiteContent = {
       toDarkMode: 'Cambiar a modo oscuro',
       toLightMode: 'Cambiar a modo claro',
     },
+    // "EN" y "ES" son códigos de idioma, no palabras, así que se escriben igual
+    // en las dos ediciones. Lo que cambia es cuál de los dos es el otro.
+    language: {
+      label: 'Idioma',
+      current: 'ES',
+      other: { label: 'EN', path: '/', lang: 'en', name: 'Ver esta página en inglés' },
+    },
     hero: {
       cv: 'Descargar CV',
     },

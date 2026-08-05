@@ -47,6 +47,13 @@ const editions = [
     // the paragraph without asserting the whole of it.
     identityLead: /^Software Engineer, 10\+ years/,
     themeToggle: /switch to (dark|light) mode/i,
+    // The selector as a visitor meets it on this edition: its own label marked,
+    // the sibling's label linked, and the link named in this edition's language.
+    language: {
+      label: 'Language',
+      current: 'EN',
+      other: { label: 'ES', path: '/es/', name: 'View this page in Spanish' },
+    },
     cv: { href: '/Fran_Menendez_CV.pdf', download: 'Fran_Menendez_CV.pdf' },
     location: 'Zaragoza, Spain',
     // The employer names are the same in both editions; the month
@@ -105,6 +112,11 @@ const editions = [
     image: `${SITE}/og-image.png`,
     identityLead: /^Ingeniero de software, más de 10 años/,
     themeToggle: /cambiar a modo (oscuro|claro)/i,
+    language: {
+      label: 'Idioma',
+      current: 'ES',
+      other: { label: 'EN', path: '/', name: 'Ver esta página en inglés' },
+    },
     // Ticket 05 of this feature publishes this PDF and puts the original beside
     // it. Until then
     // the link is here and the file is not, which is why that ticket exists.
@@ -171,6 +183,12 @@ vi.stubGlobal(
     }) as MediaQueryList
 );
 
+// jsdom implements no scrolling at all, so `scrollIntoView` is not a function
+// on an element there. The fragment-landing tests below assert against this
+// spy; every other test needs it only so that rendering does not throw.
+const scrollIntoView = vi.fn();
+Element.prototype.scrollIntoView = scrollIntoView;
+
 const renderedText = (edition: Edition) => {
   render(<App content={edition.content} />);
   return document.body.textContent ?? '';
@@ -185,6 +203,11 @@ beforeEach(() => {
   localStorage.clear();
   document.documentElement.classList.remove('dark');
   systemPrefersDark = false;
+  // The fragment is navigation state carried in the URL, and jsdom keeps one
+  // URL for the whole file. A test that opened a section would otherwise leave
+  // every test after it rendered as though the visitor were mid-page.
+  window.location.hash = '';
+  scrollIntoView.mockClear();
 });
 
 afterEach(cleanup);
@@ -281,6 +304,107 @@ describe.each(editions)('$edition edition', (edition) => {
       localStorage.setItem('theme', 'dark');
       render(<App content={content} />);
       expect(document.documentElement.classList.contains('dark')).toBe(true);
+    });
+  });
+
+  // Guard tests for ticket 04 of the Spanish edition (the language selector).
+  // Running from the table is what says the control exists on both editions
+  // and points each one at the other, rather than English having a way out
+  // that Spanish does not.
+  describe('the language selector', () => {
+    const { language } = edition;
+
+    const control = () => screen.getByRole('navigation', { name: language.label });
+
+    // The accessible name asserted exactly, and it is the visible label
+    // followed by the qualifier. A name that did not begin with the two
+    // letters on screen would leave a voice-control visitor saying "click ES"
+    // with nothing to click (WCAG 2.5.3, Label in Name).
+    const toTheOther = () => screen.getByRole('link', { name: `${language.other.label} ${language.other.name}` });
+
+    const visibleText = (element: HTMLElement) => (element.textContent ?? '').replace(/\s+/g, '');
+
+    it('names itself in the language of the edition it appears in', () => {
+      render(<App content={content} />);
+      expect(control()).toBeTruthy();
+    });
+
+    it('shows both editions', () => {
+      render(<App content={content} />);
+      expect(visibleText(control())).toContain(language.current);
+      expect(visibleText(control())).toContain(language.other.label);
+    });
+
+    it('marks the edition being read and does not link it', () => {
+      render(<App content={content} />);
+      const marked = control().querySelector('[aria-current]');
+      expect(marked?.textContent).toBe(language.current);
+      expect(marked?.closest('a')).toBeNull();
+    });
+
+    it('links the other edition at its own document', () => {
+      render(<App content={content} />);
+      expect(toTheOther().getAttribute('href')).toBe(language.other.path);
+      expect(visibleText(toTheOther())).toBe(language.other.label);
+    });
+
+    // A flag names a country and Spanish is not Spain's alone, so the control
+    // is two language codes and a separator and nothing else. The emoji guard
+    // above covers the copy; this covers the control specifically, including
+    // an <img> or an <svg>, which no emoji pattern would catch.
+    it('is text rather than a flag', () => {
+      render(<App content={content} />);
+      expect(control().querySelector('img, svg')).toBeNull();
+      expect(visibleText(control())).toBe(`${language.current}/${language.other.label}`);
+    });
+
+    // The one interaction that matters: a reader switching language is usually
+    // mid-page, and landing them at the top of a document in the language they
+    // just asked for is worse than not offering the switch.
+    it('carries the fragment the document was opened at', () => {
+      window.location.hash = '#experience';
+      render(<App content={content} />);
+      expect(toTheOther().getAttribute('href')).toBe(`${language.other.path}#experience`);
+    });
+
+    // Section ids are English in every edition, so the fragment crosses
+    // unchanged and there is no mapping table for the two editions to
+    // disagree about.
+    it('follows the visitor as they move through the page', () => {
+      render(<App content={content} />);
+      window.location.hash = '#contact';
+      fireEvent(window, new HashChangeEvent('hashchange'));
+      expect(toTheOther().getAttribute('href')).toBe(`${language.other.path}#contact`);
+    });
+  });
+
+  // The other half of fragment preservation, and the half the browser is
+  // expected to do and does not: it resolves the fragment against a document
+  // whose only element is an empty `#root`, so it finds nothing and never
+  // tries again. Carrying a fragment across the selector is only worth
+  // anything if the document at the other end lands on it.
+  describe('landing on a fragment', () => {
+    it('scrolls to the section the document was opened at', () => {
+      window.location.hash = '#experience';
+      render(<App content={content} />);
+      expect(scrollIntoView).toHaveBeenCalledTimes(1);
+      expect(scrollIntoView.mock.contexts[0]).toBe(document.getElementById('experience'));
+    });
+
+    it('leaves a visitor who opened no fragment at the top', () => {
+      render(<App content={content} />);
+      expect(scrollIntoView).not.toHaveBeenCalled();
+    });
+
+    // The fragment is whatever the visitor typed, and reading one has two ways
+    // of throwing on input the site never wrote: `querySelector('#')` raises a
+    // SyntaxError, and `decodeURIComponent('%')` a URIError. Either would take
+    // down the whole page, on a URL a visitor can reach by mistyping.
+    it.each(['#', '#%', '#no-such-section'])('renders the page anyway when the fragment is %s', (hash) => {
+      window.location.hash = hash;
+      expect(() => render(<App content={content} />)).not.toThrow();
+      expect(screen.getAllByRole('heading', { level: 1 })).toHaveLength(1);
+      expect(scrollIntoView).not.toHaveBeenCalled();
     });
   });
 

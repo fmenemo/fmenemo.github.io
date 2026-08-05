@@ -59,6 +59,12 @@
 
   /* Spacing rhythm: quarter-rem base unit. */
   --spacing: 0.25rem;
+
+  /* One breakpoint below Tailwind's own smallest, and it exists for a single
+     measurement: below it the masthead cannot hold the name, two section
+     links, the language selector and the theme toggle on one line. See the
+     comment in Navbar.tsx for what yields there and why. */
+  --breakpoint-xs: 26.25rem;
 }
 
 body {

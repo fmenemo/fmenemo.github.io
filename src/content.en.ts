@@ -175,6 +175,11 @@ export const en: SiteContent = {
       toDarkMode: 'Switch to dark mode',
       toLightMode: 'Switch to light mode',
     },
+    language: {
+      label: 'Language',
+      current: 'EN',
+      other: { label: 'ES', path: '/es/', lang: 'es', name: 'View this page in Spanish' },
+    },
     hero: {
       cv: 'Download CV',
     },

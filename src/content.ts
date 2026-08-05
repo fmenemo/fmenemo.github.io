@@ -66,6 +66,30 @@ export interface Education {
 // The rule for what belongs here: anything that is a word in a language. Names
 // are not. "FM", "GitHub" and the SVG icon labels stay in their components,
 // because an edition that translated them would be wrong rather than localised.
+/** The sibling edition, as the current one names it. */
+export interface OtherEdition {
+  /**
+   * The two-letter label in the masthead. A language code rather than a word,
+   * so both editions spell it the same way; it is here rather than in the
+   * component because which edition is the *other* one differs per edition.
+   */
+  label: string;
+  /** Root-relative path of the sibling document, which the fragment is appended to. */
+  path: string;
+  /** BCP 47 code of the sibling, for `hreflang` on the link. */
+  lang: string;
+  /**
+   * What the link says beyond its two letters, read by a screen reader and not
+   * shown: it follows the visible label rather than replacing it, so that the
+   * accessible name still begins with the text on screen (WCAG 2.5.3).
+   *
+   * In the language of the edition it appears in: a Spanish reader on `/es`
+   * meets the control in Spanish, and what it says is where the link goes, not
+   * what language the reader is in.
+   */
+  name: string;
+}
+
 export interface Chrome {
   // The nav labels are separate from the section headings below rather than
   // reused from them, and the two are free to differ. They coincide in English
@@ -79,6 +103,18 @@ export interface Chrome {
     /** Accessible names for the theme toggle, by what it will do next. */
     toDarkMode: string;
     toLightMode: string;
+  };
+  /**
+   * The language selector: two short labels, the current one marked and the
+   * other a link to the sibling document. Text, not flags: a flag names a
+   * country, and Spanish is not Spain's alone (ADR 0004).
+   */
+  language: {
+    /** The accessible name of the control itself, in this edition's language. */
+    label: string;
+    /** This edition's own label. Marked, and deliberately not a link. */
+    current: string;
+    other: OtherEdition;
   };
   hero: {
     cv: string;
