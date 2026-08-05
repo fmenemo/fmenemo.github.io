@@ -10,7 +10,7 @@ The guard that matters here is the condensation rule. Nothing on a share image c
 
 See ADR 0003 and ADR 0004.
 
-**Status:** ready-for-human
+**Status:** resolved
 
 Everything an agent can close is closed. What is left is the live scraper check,
 which needs a public `/es` and so cannot happen before deploy. It is already
@@ -24,7 +24,7 @@ ticket 07's line 24, and this ticket closes with it.
 - [x] No figure appears on either share image that its own edition's identity line does not carry, asserted from the edition table
 - [x] The share image copy is read as text content, excluding styling, so that letter-spacing and font sizes are never mistaken for copy
 - [x] Both PNGs exist at the paths their documents reference, in the built output
-- [ ] The rendered card is checked against a real scraper preview for both editions before the ticket is closed, not inferred from the markup — **carried to ticket 07**, which is where the deploy that makes it possible sits. What was done here instead: both built documents were fetched over HTTP with a scraper user-agent and no JavaScript, their `og:image` values read out of the response, and both PNGs fetched from those paths and looked at. That is the whole chain except the scraper's own renderer.
+- [x] The rendered card is checked against a real scraper preview for both editions before the ticket is closed, not inferred from the markup — **carried to ticket 07**, and closed there on Fran's instruction on 2026-08-05 with the live documents fetched as a scraper and both PNGs looked at, but without a scraper's own renderer ever drawing the card, which is where the deploy that makes it possible sits. What was done here instead: both built documents were fetched over HTTP with a scraper user-agent and no JavaScript, their `og:image` values read out of the response, and both PNGs fetched from those paths and looked at. That is the whole chain except the scraper's own renderer.
 - [x] `npm run build`, `npm run lint` and `npm test` pass
 
 ## Comments

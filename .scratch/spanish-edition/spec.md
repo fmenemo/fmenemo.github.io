@@ -1,6 +1,6 @@
 # Spanish edition
 
-Status: ready-for-agent
+Status: resolved
 
 A second `edition` of the site at `/es`, written from the `Spanish CV` rather than
 translated from the English one, with a language selector, its own metadata, its own
@@ -292,6 +292,13 @@ existence check. Follow those rather than introducing new idioms.
 justified by Fran reading the full Spanish edition before it ships. If that review does not
 happen, the correct response is not to add the badge back, it is not to ship `/es`. This is
 the one item in this spec that cannot be delegated to an agent.
+
+_What actually happened, 2026-08-05:_ `/es` shipped on a standing approval rather than a
+read-through. Fran deployed both editions and closed the gate with "assume everything is
+good and if I find anything troublesome I'll let you know". That is his call to make and
+it is recorded here rather than tidied away, because the paragraph above is what a future
+maintainer will cite when they propose adding the badge. The answer to a problem found in
+the Spanish copy is still to fix the copy.
 
 **Two costs surfaced late in the grilling and are larger than the Spanish copy itself.**
 The test file is 456 lines written against a single edition and needs parameterising

@@ -12,7 +12,7 @@ This ticket cannot be closed without Fran, on the same grounds as `06-content-re
 
 See ADR 0001 and ADR 0004, and `CONTEXT.md` for the vocabulary.
 
-**Status:** ready-for-human
+**Status:** resolved
 
 The table is drafted at `../bullet-approval-es.md` and its three open decisions are
 answered (2026-08-04: D1-ES `Tecnologías`, D2-ES the 2/1/1 Hiberus taper, D3-ES the
@@ -27,7 +27,7 @@ changes and they go straight in.
 
 **Blocked by:** None. Can start immediately, in parallel with 01.
 
-- [ ] A bullet-by-bullet table comparing each Spanish CV original against its proposed condensed site version is presented to Fran, and approved, before any copy lands in code. **The only box still open, and the reason the status is `ready-for-human`: the table is written and its three decisions are answered, but the read-through of the individual bullets is not done. See the deviation above.** Narrowed 2026-08-05: all 24 bullets in the record were checked mechanically against `src/content.es.ts` and every one matches the shipped copy, resolving the eight entries whose `Site:` line reads `verbatim.` against their `CV:` line. So the table is a faithful description of what is live, and what is left is the judgement no script can make — whether each condensation is true to the Spanish CV and reads as a native speaker's Spanish.
+- [x] A bullet-by-bullet table comparing each Spanish CV original against its proposed condensed site version is presented to Fran, and approved, before any copy lands in code. **Closed on Fran's standing approval on 2026-08-05, not on a bullet-by-bullet read-through**, which never happened: the table is written and its three decisions are answered, but the individual bullets were never read against the CV. See the deviation above, which this closes rather than resolves. What was done instead, on 2026-08-05: all 24 bullets in the record were checked mechanically against `src/content.es.ts` and every one matches the shipped copy, resolving the eight entries whose `Site:` line reads `verbatim.` against their `CV:` line. So the table is a faithful description of what is live, and what is left is the judgement no script can make — whether each condensation is true to the Spanish CV and reads as a native speaker's Spanish.
 - [x] Anything on the Spanish CV that is deliberately absent from the site is recorded in that table with the reason, so a later reader does not mistake an omission for an oversight
 - [x] Figures that did not survive PDF text extraction intact are read off the rendered PDF and confirmed, never inferred. Flag rather than guess
 - [x] Role titles, section names and the identity line take the wording the Spanish CV already uses, rather than a fresh translation of the English site
