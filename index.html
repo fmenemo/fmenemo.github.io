@@ -15,6 +15,14 @@
     <meta name="author" content="Fran Menéndez" />
     <link rel="canonical" href="https://fmenemo.github.io/" />
 
+    <!-- Both documents carry the same alternate set, each including itself, so
+         a crawler that finds either one finds the pair. `x-default` points at
+         the English edition: it is the one place English legitimately leads,
+         and it is invisible to humans (ADR 0004). -->
+    <link rel="alternate" hreflang="en" href="https://fmenemo.github.io/" />
+    <link rel="alternate" hreflang="es" href="https://fmenemo.github.io/es/" />
+    <link rel="alternate" hreflang="x-default" href="https://fmenemo.github.io/" />
+
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
 
@@ -62,8 +70,9 @@
         }
       })();
     </script>
-    <script type="module" crossorigin src="/assets/index-CbcRP7EU.js"></script>
-    <link rel="stylesheet" crossorigin href="/assets/index-B5qNqC9T.css">
+    <script type="module" crossorigin src="/assets/en-D3NPx09E.js"></script>
+    <link rel="modulepreload" crossorigin href="/assets/App-CjUqdldb.js">
+    <link rel="stylesheet" crossorigin href="/assets/App-B4FgtiJO.css">
   </head>
   <body>
     <div id="root"></div>

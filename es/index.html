@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- The Spanish edition is a document, not a mode of the English one
+         (ADR 0004). Every tag below is static markup for the same reason it is
+         static in the English document: Slack, LinkedIn and WhatsApp fetch this
+         file and stop without running React, so a tag written by a component
+         exists too late to be read (ADR 0003). The duplication between the two
+         documents is the price of that, and it is what the edition table in
+         `src/App.test.tsx` exists to hold together. -->
+    <title>Fran Menéndez | Ingeniero de Software</title>
+    <meta
+      name="description"
+      content="Ingeniero de software, más de 10 años construyendo plataformas que dan servicio a millones de usuarios, trabajando en la capa de IA: búsqueda semántica, tooling MCP y flujos de desarrollo agéntico."
+    />
+    <meta name="author" content="Fran Menéndez" />
+    <link rel="canonical" href="https://fmenemo.github.io/es/" />
+
+    <!-- Both documents carry the same alternate set, each including itself, so
+         a crawler that finds either one finds the pair. `x-default` points at
+         the English edition: it is the one place English legitimately leads,
+         and it is invisible to humans. -->
+    <link rel="alternate" hreflang="en" href="https://fmenemo.github.io/" />
+    <link rel="alternate" hreflang="es" href="https://fmenemo.github.io/es/" />
+    <link rel="alternate" hreflang="x-default" href="https://fmenemo.github.io/" />
+
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+
+    <!-- The browser chrome takes the surface colour of each theme, so the -->
+    <!-- address bar continues the page rather than interrupting it. -->
+    <meta name="theme-color" media="(prefers-color-scheme: light)" content="#ffffff" />
+    <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#0d0d0d" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Fran Menéndez" />
+    <meta property="og:title" content="Fran Menéndez | Ingeniero de Software" />
+    <meta
+      property="og:description"
+      content="Ingeniero de software, más de 10 años construyendo plataformas que dan servicio a millones de usuarios, trabajando en la capa de IA: búsqueda semántica, tooling MCP y flujos de desarrollo agéntico."
+    />
+    <meta property="og:url" content="https://fmenemo.github.io/es/" />
+    <!-- A scraper resolves this against nothing, so it has to be absolute.
+         This edition's own card, rendered from `tools/assets/og-image.es.html`:
+         the first Spanish-language impression is the preview, not the page, and
+         an English image under a Spanish title is a half-done localisation in
+         the one frame where it shows most (ADR 0004). -->
+    <meta property="og:image" content="https://fmenemo.github.io/og-image-es.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <!-- The alt is read aloud in place of the picture, so it says what the
+         picture says: the role in the words the card uses, which are the
+         Spanish CV's and not the title tag's capitalisation. -->
+    <meta property="og:image:alt" content="Fran Menéndez, ingeniero de software, Zaragoza, España." />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Fran Menéndez | Ingeniero de Software" />
+    <meta
+      name="twitter:description"
+      content="Ingeniero de software, más de 10 años construyendo plataformas que dan servicio a millones de usuarios, trabajando en la capa de IA: búsqueda semántica, tooling MCP y flujos de desarrollo agéntico."
+    />
+    <meta name="twitter:image" content="https://fmenemo.github.io/og-image-es.png" />
+    <script>
+      // Set the theme class before first paint so a dark-mode visitor never
+      // sees a light flash. Mirrors resolveTheme/applyTheme in src/theme.ts.
+      //
+      // Duplicated from the English document rather than imported: it has to
+      // run before any module loads, and a module is the only thing there
+      // would be to import. The key is the same in both editions and
+      // localStorage is per-origin, so a theme chosen on one edition is
+      // already in effect on the other.
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored === 'dark' || stored === 'light'
+              ? stored
+              : window.matchMedia('(prefers-color-scheme: dark)').matches
+                ? 'dark'
+                : 'light';
+          document.documentElement.classList.toggle('dark', theme === 'dark');
+        } catch (e) {
+          /* no localStorage: leave the light default */
+        }
+      })();
+    </script>
+    <script type="module" crossorigin src="/assets/es-B5t-CwK_.js"></script>
+    <link rel="modulepreload" crossorigin href="/assets/App-CjUqdldb.js">
+    <link rel="stylesheet" crossorigin href="/assets/App-B4FgtiJO.css">
+  </head>
+  <body>
+    <div id="root"></div>
+  </body>
+</html>
