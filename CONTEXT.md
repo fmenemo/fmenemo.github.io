@@ -51,7 +51,7 @@ The site at `/es`. Exists for the reader who arrives from LinkedIn knowing the n
 _Avoid_: Translation, /es version, localised site
 
 **Chrome**:
-The words the layout says about itself rather than about Fran: section headings, navigation labels, the name of a control. Part of an edition, so a Spanish reader meets them in Spanish, but not traceable to a CV the way an `evidence` bullet is. Names are not chrome: "FM", "GitHub" and "LinkedIn" are the same in every edition and stay in the components that draw them.
+The words the layout says about itself rather than about Fran: section headings, navigation labels, the name of a control. Part of an edition, so a Spanish reader meets them in Spanish, but not traceable to a CV the way an `evidence` bullet is. Names are not chrome: "FM", "GitHub" and "LinkedIn" are the same in every edition and stay in the components that draw them. Nor is the label on a thing an edition may offer more or fewer of, such as a `CV` download: it travels with what it names, because a separate list of labels would pair with them by position.
 _Avoid_: Labels, UI strings, i18n keys
 
 ### Source of truth

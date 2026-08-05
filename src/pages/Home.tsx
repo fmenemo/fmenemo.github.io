@@ -7,11 +7,7 @@ import { accentAction, metaVoice, primaryAction } from '../styles';
 // availability signalling and no greeting: a reader who arrived already knowing
 // the name wants the identity line, not an introduction.
 const Home: React.FC = () => {
-  const { identity, contact, chrome } = useContent();
-
-  // The name the browser saves it under is the file's own name. They drifted
-  // apart once before, so they are one string here rather than two.
-  const cvFileName = contact.cv.replace(/^.*\//, '');
+  const { identity, contact } = useContent();
 
   return (
     <section id='home'>
@@ -31,9 +27,21 @@ const Home: React.FC = () => {
         <p className='mt-8 max-w-2xl text-lg leading-relaxed font-light text-muted dark:text-muted-dark'>{identity.line}</p>
 
         <div className='mt-12 flex flex-wrap items-center gap-x-8 gap-y-4'>
-          <a href={contact.cv} download={cvFileName} className={primaryAction}>
-            {chrome.hero.cv}
-          </a>
+          {/* The first CV is the edition's own and wears the bordered block;
+              any beside it are a service to a reader who needs a second
+              document, and sit in the same treatment as the other actions. The
+              name the browser saves a file under is the file's own name: they
+              drifted apart once before, so it is derived rather than written. */}
+          {contact.cvs.map((cv, index) => (
+            <a
+              key={cv.href}
+              href={cv.href}
+              download={cv.href.replace(/^.*\//, '')}
+              className={index === 0 ? primaryAction : accentAction}
+            >
+              {cv.label}
+            </a>
+          ))}
           <a href={`mailto:${contact.email}`} className={accentAction}>
             {contact.email}
           </a>

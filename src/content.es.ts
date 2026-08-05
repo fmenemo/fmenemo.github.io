@@ -28,9 +28,17 @@ export const es: SiteContent = {
     linkedin: 'https://www.linkedin.com/in/fmenemo/',
     linkedinLabel: 'linkedin.com/in/fmenemo',
     github: 'https://github.com/fmenemo',
-    // The Spanish CV is this edition's primary download. Ticket 05 publishes the
-    // asset and puts the original beside it; until then this path 404s.
-    cv: '/Fran_Menendez_CV_ES.pdf',
+    // El CV en español es la descarga principal, y el original en inglés va al
+    // lado: quien recluta desde una empresa española necesita a menudo un
+    // documento en inglés para un ATS o un comité internacional, y obligarle a
+    // pedirlo es justo la falta de cercanía que esta edición viene a corregir.
+    //
+    // Sobre la palabra "original" y sobre por qué los dos CV se publican
+    // juntos, ver `CvDownload` en `content.ts`.
+    cvs: [
+      { href: '/Fran_Menendez_CV_ES.pdf', label: 'Descargar CV' },
+      { href: '/Fran_Menendez_CV.pdf', label: 'CV en inglés (original)' },
+    ],
   },
 
   employers: [
@@ -191,9 +199,6 @@ export const es: SiteContent = {
       label: 'Idioma',
       current: 'ES',
       other: { label: 'EN', path: '/', lang: 'en', name: 'Ver esta página en inglés' },
-    },
-    hero: {
-      cv: 'Descargar CV',
     },
     // The CV's own headings, with one exception: the CV calls this section
     // "Competencias técnicas", and the site does not, for the same reason the

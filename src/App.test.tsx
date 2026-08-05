@@ -54,7 +54,10 @@ const editions = [
       current: 'EN',
       other: { label: 'ES', path: '/es/', name: 'View this page in Spanish' },
     },
-    cv: { href: '/Fran_Menendez_CV.pdf', download: 'Fran_Menendez_CV.pdf' },
+    // Primary first, and the whole list: the English edition offers the
+    // original and nothing else, which is what makes the Spanish row's second
+    // entry an assertion rather than a coincidence.
+    cvs: [{ href: '/Fran_Menendez_CV.pdf', download: 'Fran_Menendez_CV.pdf', label: 'Download CV' }],
     location: 'Zaragoza, Spain',
     // The employer names are the same in both editions; the month
     // abbreviations are not.
@@ -117,10 +120,13 @@ const editions = [
       current: 'ES',
       other: { label: 'EN', path: '/', name: 'Ver esta página en inglés' },
     },
-    // Ticket 05 of this feature publishes this PDF and puts the original beside
-    // it. Until then
-    // the link is here and the file is not, which is why that ticket exists.
-    cv: { href: '/Fran_Menendez_CV_ES.pdf', download: 'Fran_Menendez_CV_ES.pdf' },
+    // The Spanish CV leads and the original sits beside it, for a recruiter who
+    // needs an English artefact to forward onward. What the second label may and
+    // may not say is asserted in its own group below.
+    cvs: [
+      { href: '/Fran_Menendez_CV_ES.pdf', download: 'Fran_Menendez_CV_ES.pdf', label: 'Descargar CV' },
+      { href: '/Fran_Menendez_CV.pdf', download: 'Fran_Menendez_CV.pdf', label: 'CV en inglés (original)' },
+    ],
     location: 'Zaragoza, España',
     employers: [
       ['The Knot Worldwide', 'Oct 2023'],
@@ -198,6 +204,16 @@ const parseDocument = (html: string) => new DOMParser().parseFromString(html, 't
 
 const metaOf = (head: ParentNode, key: string) =>
   head.querySelector(`meta[name="${key}"], meta[property="${key}"]`)?.getAttribute('content') ?? null;
+
+/**
+ * Files Vite copies verbatim to the site root, keyed by their public path. Read
+ * by the metadata group for what a document references and by the CV group for
+ * what the page links to, which is why it sits out here rather than in either.
+ */
+const publicAssets = new Set(Object.keys(import.meta.glob('../public/*')).map((path) => path.replace('../public', '')));
+
+/** Every CV the hero offers, in the order a visitor meets them. */
+const cvLinks = () => screen.getAllByRole('link', { name: /cv/i });
 
 beforeEach(() => {
   localStorage.clear();
@@ -443,22 +459,6 @@ describe.each(editions)('$edition edition', (edition) => {
       }
     });
 
-    it('offers the CV as a link to the PDF rather than a scripted download', () => {
-      render(<App content={content} />);
-      expect(screen.getByRole('link', { name: /cv/i }).getAttribute('href')).toContain('.pdf');
-    });
-
-    // The asset, the href and the name the visitor's browser saves it under are
-    // all one string. They drifted once already: the file was versioned
-    // `CV_Fran_Menendez_2026-07.pdf` while the download attribute said
-    // `Francisco_Menendez_CV.pdf`, a name Fran does not use.
-    it('serves the CV under one name everywhere', () => {
-      render(<App content={content} />);
-      const cv = screen.getByRole('link', { name: /cv/i });
-      expect(cv.getAttribute('href')).toBe(edition.cv.href);
-      expect(cv.getAttribute('download')).toBe(edition.cv.download);
-    });
-
     // Each contact route has to be an anchor a visitor can open, middle-click or
     // tab to, rather than a div carrying an onClick.
     it('makes each contact route a real link', () => {
@@ -474,6 +474,48 @@ describe.each(editions)('$edition edition', (edition) => {
     // which is pictographic but renders as text.
     it('renders no emoji in the copy', () => {
       expect(renderedText(edition)).not.toMatch(/\p{Emoji_Presentation}|\uFE0F/u);
+    });
+  });
+
+  // Guard tests for ticket 05 of the Spanish edition (both CVs on the Spanish
+  // edition). Running from the table is what pins the asymmetry: each row states
+  // the whole list, so an edition quietly growing or losing a download fails
+  // here rather than being noticed by a reader.
+  describe('the CVs it offers', () => {
+    it('offers exactly the CVs this edition publishes, in order', () => {
+      render(<App content={content} />);
+      expect(cvLinks().map((link) => link.textContent)).toEqual(edition.cvs.map((cv) => cv.label));
+    });
+
+    it('offers each one as a link to the PDF rather than a scripted download', () => {
+      render(<App content={content} />);
+      for (const link of cvLinks()) {
+        expect(link.getAttribute('href')).toContain('.pdf');
+      }
+    });
+
+    // The asset, the href and the name the visitor's browser saves it under are
+    // all one string. They drifted once already: the file was versioned
+    // `CV_Fran_Menendez_2026-07.pdf` while the download attribute said
+    // `Francisco_Menendez_CV.pdf`, a name Fran does not use.
+    it('serves each one under one name everywhere', () => {
+      render(<App content={content} />);
+      const offered = cvLinks().map((link) => ({
+        href: link.getAttribute('href'),
+        download: link.getAttribute('download'),
+      }));
+
+      expect(offered).toEqual(edition.cvs.map(({ href, download }) => ({ href, download })));
+    });
+
+    // A PDF's text is not in the build, so nothing can check what a CV says.
+    // What can be checked is that the file is there at all: the Spanish link
+    // shipped one ticket before the file did, and this is what would have said so.
+    it('publishes every CV it offers as a site asset', () => {
+      render(<App content={content} />);
+      for (const link of cvLinks()) {
+        expect(publicAssets).toContain(link.getAttribute('href'));
+      }
     });
   });
 
@@ -617,11 +659,6 @@ describe.each(editions)('$edition edition', (edition) => {
     const meta = (key: string) => metaOf(head, key);
 
     const link = (rel: string) => head.querySelector(`link[rel="${rel}"]`)?.getAttribute('href') ?? null;
-
-    /** Files Vite copies verbatim to the site root, keyed by their public path. */
-    const publicAssets = new Set(
-      Object.keys(import.meta.glob('../public/*')).map((path) => path.replace('../public', ''))
-    );
 
     // Without this a screen reader pronounces Spanish with English phonetics,
     // which is the difference between a document in a language and a document
@@ -810,6 +847,48 @@ describe('the two editions know about each other', () => {
     const [enHead, esHead] = [enHtml, esHtml].map((html) => parseDocument(html).head);
     expect(enHead.querySelector('title')?.textContent).not.toBe(esHead.querySelector('title')?.textContent);
     expect(metaOf(enHead, 'description')).not.toBe(metaOf(esHead, 'description'));
+  });
+});
+
+// The one asymmetry between the editions that appears anywhere in the UI, so it
+// is asserted where both editions are in view rather than inside a row that can
+// only see its own.
+describe('the original CV is offered on both editions, and named as provenance', () => {
+  // By name rather than by position: a reordered table would otherwise swap
+  // which edition is expected to offer one CV, and both assertions would still
+  // pass.
+  const rowFor = (name: string) => editions.find((edition) => edition.edition === name)!;
+
+  const cvsOn = (edition: Edition) => {
+    render(<App content={edition.content} />);
+    return cvLinks().map((link) => ({ label: link.textContent, href: link.getAttribute('href') }));
+  };
+
+  const original = '/Fran_Menendez_CV.pdf';
+
+  it('offers the original alone on the English edition', () => {
+    const english = rowFor('English');
+    const offered = cvsOn(english);
+    expect(offered).toEqual(english.cvs.map(({ label, href }) => ({ label, href })));
+    expect(offered.map((cv) => cv.href)).toEqual([original]);
+  });
+
+  it('leads with the Spanish CV on the Spanish edition and puts the original beside it', () => {
+    const [primary, second] = cvsOn(rowFor('Spanish'));
+    expect(primary.href).toBe('/Fran_Menendez_CV_ES.pdf');
+    expect(second.href).toBe(original);
+  });
+
+  // The wording is load-bearing, and why is recorded in ADR 0004 and on
+  // `CvDownload` in `content.ts` rather than restated here: "original" says
+  // where the document was written, and anything about which version is fresher
+  // is a confession about maintenance.
+  it('says where the original was written and nothing about which is fresher', () => {
+    const [, second] = cvsOn(rowFor('Spanish'));
+    expect(second.label).toMatch(/original/i);
+    expect(second.label).not.toMatch(
+      /actualizad|reciente|complet|recomendad|preferid|mejor|updated|current|recommended|preferred/i
+    );
   });
 });
 

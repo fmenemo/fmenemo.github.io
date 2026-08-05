@@ -39,12 +39,36 @@ export interface Identity {
   mode: string;
 }
 
+/**
+ * One CV a visitor can download. The label is here beside the path rather than
+ * in `chrome`, because an edition may offer more than one and a list of labels
+ * kept somewhere else would pair with this list by position.
+ *
+ * **Both CVs are regenerated and published together.** The original is the
+ * authority for facts and the Spanish CV is a translation of it, so replacing
+ * one alone lets `/es` assert things that have stopped being true. No test can
+ * catch that: a PDF's text is not in the build, and a text-extraction drift
+ * test was considered and rejected in ADR 0004. The rule is the guard.
+ */
+export interface CvDownload {
+  /** Root-relative path of the file in `public/`, under a name carrying no version. */
+  href: string;
+  /**
+   * What the button says. On an edition offering two, the English one is named
+   * the **original**, which is a fact about where the document was written. Not
+   * "more up to date", "more complete" or "recommended": those say that two
+   * versions exist and nobody is sure which is current (ADR 0004).
+   */
+  label: string;
+}
+
 export interface Contact {
   email: string;
   linkedin: string;
   linkedinLabel: string;
   github: string;
-  cv: string;
+  /** Primary download first, and any the edition offers beside it. */
+  cvs: CvDownload[];
 }
 
 export interface IndependentWork {
@@ -115,9 +139,6 @@ export interface Chrome {
     /** This edition's own label. Marked, and deliberately not a link. */
     current: string;
     other: OtherEdition;
-  };
-  hero: {
-    cv: string;
   };
   /** The section headings, keyed by the anchor they sit on. Anchors stay English. */
   sections: {

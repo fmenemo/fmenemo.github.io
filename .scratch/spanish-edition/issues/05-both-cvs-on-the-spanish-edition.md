@@ -10,16 +10,32 @@ That rule is the real content of this ticket. The `original CV` is the authority
 
 See ADR 0004 and the `CV` entries in `CONTEXT.md`.
 
-**Status:** ready-for-agent
+**Status:** resolved
 
 **Blocked by:** 03 (the Spanish edition exists).
 
-- [ ] The Spanish CV is published as a site asset under a fixed name carrying no version, following the same convention as the original
-- [ ] The Spanish edition offers the Spanish CV as its primary download, with the English one beside it labelled as the **original**
-- [ ] Neither button's label says or implies that one CV is fresher, fuller or preferred
-- [ ] The English edition continues to offer only the original CV, unchanged
-- [ ] Each CV is offered as a link to the PDF rather than a scripted download, and each is served under exactly one name everywhere it is referenced, extending the existing guards to the new file
-- [ ] The rule that both CVs are regenerated and published together is recorded as a comment where the CV paths are defined, not only in the ADR
-- [ ] Both PDFs are confirmed to resolve at the paths the site references, in the built output
-- [ ] Tests cover the Spanish edition offering both CVs and the English edition offering one
-- [ ] `npm run build`, `npm run lint` and `npm test` pass
+- [x] The Spanish CV is published as a site asset under a fixed name carrying no version, following the same convention as the original
+
+  `public/Fran_Menendez_CV_ES.pdf`, taken from `~/Downloads/Fran_Menendez_CV_ES.pdf`, which is the document ticket 02 condensed the Spanish copy from. The English CV sitting beside it in that folder is byte-identical to the one already published, so the pair that shipped is a matched pair rather than a new Spanish CV against an older English one.
+- [x] The Spanish edition offers the Spanish CV as its primary download, with the English one beside it labelled as the **original**
+
+  "Descargar CV" in the bordered block, "CV en inglés (original)" beside it in the accent treatment the email and LinkedIn links already wear.
+- [x] Neither button's label says or implies that one CV is fresher, fuller or preferred
+- [x] The English edition continues to offer only the original CV, unchanged
+
+  Confirmed in a browser: the English hero renders one CV link, at the same href and download name as before.
+- [x] Each CV is offered as a link to the PDF rather than a scripted download, and each is served under exactly one name everywhere it is referenced, extending the existing guards to the new file
+
+  The two guards that read `edition.cv` now read a list and assert the whole of it in order, so an edition growing or losing a download fails rather than being noticed by a reader.
+- [x] The rule that both CVs are regenerated and published together is recorded as a comment where the CV paths are defined, not only in the ADR
+
+  On the `CvDownload` type in `content.ts`, which is where the shape of a CV entry is defined, and pointed at from the `cvs` block in each content module.
+- [x] Both PDFs are confirmed to resolve at the paths the site references, in the built output
+
+  `vite preview` over `dist/`: `/Fran_Menendez_CV.pdf` and `/Fran_Menendez_CV_ES.pdf` both 200 `application/pdf`, at 185,491 and 238,519 bytes.
+- [x] Tests cover the Spanish edition offering both CVs and the English edition offering one
+
+  From the edition table, where each row states its whole list of downloads, plus one group outside it that sees both editions at once: the original is offered on both, the Spanish CV leads on `/es`, and the label naming the original says nothing about which is fresher.
+- [x] `npm run build`, `npm run lint` and `npm test` pass
+
+**Design note, not asked for by the ticket:** `contact.cv` (a path) and `chrome.hero.cv` (its label) became one list, `contact.cvs: CvDownload[]`, and `chrome.hero` is gone. Keeping the labels in `chrome` would have paired two lists by position, and an edition offering two downloads is exactly where that goes wrong. The precedent for a label living beside its target rather than in `chrome` is `contact.linkedinLabel`, which was already there. The `Chrome` entry in `CONTEXT.md` said "the name of a control" without qualification, so it now names this exception, in the same shape as the exception it already made for names.

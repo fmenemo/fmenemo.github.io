@@ -28,7 +28,10 @@ export const en: SiteContent = {
     linkedin: 'https://www.linkedin.com/in/fmenemo/',
     linkedinLabel: 'linkedin.com/in/fmenemo',
     github: 'https://github.com/fmenemo',
-    cv: '/Fran_Menendez_CV.pdf',
+    // The original, and the only CV this edition offers. The Spanish edition
+    // offers this one too, so it is republished with its Spanish translation
+    // and never on its own (ADR 0004, and the note on `CvDownload`).
+    cvs: [{ href: '/Fran_Menendez_CV.pdf', label: 'Download CV' }],
   },
 
   employers: [
@@ -179,9 +182,6 @@ export const en: SiteContent = {
       label: 'Language',
       current: 'EN',
       other: { label: 'ES', path: '/es/', lang: 'es', name: 'View this page in Spanish' },
-    },
-    hero: {
-      cv: 'Download CV',
     },
     sections: {
       experience: 'Experience',
