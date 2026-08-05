@@ -209,6 +209,24 @@ const metaOf = (head: ParentNode, key: string) =>
   head.querySelector(`meta[name="${key}"], meta[property="${key}"]`)?.getAttribute('content') ?? null;
 
 /**
+ * Every word a scraper reads out of an entry document, as one string: the tags
+ * it builds a card from, plus whatever text the document carries around them.
+ *
+ * Parsed rather than read raw, unlike the metadata group's `?raw` import, and
+ * this is the one place that distinction matters: `textContent` leaves out the
+ * HTML comments, and those comments are where these documents explain their own
+ * decisions, in the vocabulary the guards below are looking for.
+ */
+const scraperText = (entry: string) => {
+  const parsed = parseDocument(entry);
+  return [
+    parsed.head.textContent,
+    ...[...parsed.querySelectorAll('meta[content]')].map((tag) => tag.getAttribute('content')),
+    parsed.body.textContent,
+  ].join(' ');
+};
+
+/**
  * Files Vite copies verbatim to the site root, keyed by their public path. Read
  * by the metadata group for what a document references and by the CV group for
  * what the page links to, which is why it sits out here rather than in either.
@@ -563,6 +581,102 @@ describe.each(editions)('$edition edition', (edition) => {
     });
   });
 
+  // Guard test for the central decision of ADR 0004: nothing in the UI hedges.
+  //
+  // If you are reading this because you tripped it, go and read ADR 0004 before
+  // you edit the list. A badge, banner, tooltip or footnote saying an edition
+  // is machine-translated, unreviewed, provisional or less current than the
+  // other tells the Spanish reader, in Spanish, that the page they are on is
+  // the unchecked copy. That hedges the credibility of the artefact in front of
+  // the only person it was added for, and it is implausible on its face, since
+  // Fran is a native Spanish speaker. The honest response to a Spanish edition
+  // nobody has read is not to label it, it is not to ship it.
+  //
+  // Written as a negative test in the manner of the fabricated-content group
+  // above, and run from the edition table, because a hedge that appeared on one
+  // edition only is exactly the shape this would take.
+  describe('nothing hedges the edition', () => {
+    // Both languages in every list, because a hedge is written in the language
+    // of the reader it is aimed at, and the one aimed at the Spanish reader is
+    // the one that costs.
+    //
+    // These are hedges wherever they appear. "sin revisar" and not "revisi",
+    // because code review is evidence the site legitimately carries.
+    const alwaysAHedge = [
+      /machine[\s-]?translat|auto(?:matic(?:ally)?|[\s-])[\s-]?translat|ai[\s-]translat/i,
+      /translated\s+from\s+the\s+english|traducido\s+del\s+ingl[eé]s/i,
+      /traduc\w*\s+(?:autom|con\s+ia|por\s+ia)|traducci[oó]n\s+(?:autom|de\s+ia)|generad\w*\s+(?:con|por)\s+ia/i,
+      /unreviewed|not\s+(?:yet\s+)?reviewed|pending\s+review/i,
+      /sin\s+revisar|sin\s+revisi[oó]n|no\s+revisad|pendiente\s+de\s+revisi[oó]n/i,
+      /work\s+in\s+progress|en\s+construcci[oó]n/i,
+    ];
+
+    // These are only a hedge when they are said *about a version of this site*.
+    // "Replaced an outdated stack" and "una plataforma más completa" are the
+    // ordinary vocabulary of a CV bullet, so matching them bare would one day
+    // fail a true piece of evidence under a comment telling whoever wrote it to
+    // go and read ADR 0004 — which is the worst thing a guard like this can do.
+    // What makes the difference is the subject, so these carry one.
+    // What a hedge calls the thing it is hedging: the document, or the language
+    // it is written in. "El texto en español está desactualizado" names neither
+    // a version nor an edition and is a hedge all the same.
+    const aboutAVersionOfTheSite =
+      /\b(?:page|version|edition|translation|copy|site|text|content|spanish|english|p[aá]gina|versi[oó]n|edici[oó]n|traducci[oó]n|copia|sitio|texto|contenido|espa[nñ]ol|ingl[eé]s)\b/i;
+
+    // Both directions of the comparison. A hedge aimed at `/es` is at least as
+    // likely to be written from the modest side ("no tan actual") as the
+    // boastful one, and the first draft of this list only banned the boastful.
+    const hedgeAboutAVersion = [
+      /out[\s-]of[\s-]date|outdated|desactualizad|obsolet/i,
+      /\b(?:more|less|not\s+as)\s+(?:up[\s-]to[\s-]date|current|complete|accurate|recent)\b/i,
+      /\b(?:m[aá]s|menos|no\s+tan)\s+(?:actual|actualizad|complet|reciente|fiable)/i,
+      /provisional/i,
+      /\bbeta\b|\bdraft\b|\bborrador\b/i,
+    ];
+
+    // Near, not anywhere in the document: "version" appears in the theme script
+    // and "página" in a heading, so a whole-text test would make every pattern
+    // above unconditional again.
+    const NEARBY = 60;
+
+    const hedgesIn = (text: string) => [
+      ...alwaysAHedge.filter((hedge) => hedge.test(text)),
+      ...hedgeAboutAVersion.filter((hedge) =>
+        [...text.matchAll(new RegExp(hedge.source, `${hedge.flags}g`))].some((match) =>
+          aboutAVersionOfTheSite.test(
+            text.slice(Math.max(0, match.index - NEARBY), match.index + match[0].length + NEARBY)
+          )
+        )
+      ),
+    ];
+
+    // What a visitor reads, including what only some of them read. ADR 0004
+    // bans a hedge in a *tooltip* by name, and a tooltip is an attribute, which
+    // `textContent` cannot see.
+    it('renders no hedge, in its text or in an attribute a reader is shown', () => {
+      render(<App content={edition.content} />);
+      const attributes = [...document.body.querySelectorAll('[title], [alt], [aria-label]')].flatMap((element) =>
+        ['title', 'alt', 'aria-label'].map((name) => element.getAttribute(name) ?? '')
+      );
+
+      expect(hedgesIn([document.body.textContent, ...attributes].join(' '))).toEqual([]);
+    });
+
+    // The other half of the promise, and the surface that matters more: a
+    // scraper reads the document and stops (ADR 0003), so a hedge in the
+    // description is a hedge in the LinkedIn feed.
+    it('carries no hedge in what a scraper reads', () => {
+      expect(hedgesIn(scraperText(edition.entry))).toEqual([]);
+    });
+
+    // And the picture that card is built around, which a reader cannot check
+    // against anything because it is an image. A badge belongs to the family of
+    // things ADR 0004 bans, and the card is where it would be seen first.
+    it('carries no hedge on its share image', () => {
+      expect(hedgesIn(parseDocument(edition.imageSource).body.textContent ?? '')).toEqual([]);
+    });
+  });
+
   // Guard tests for the content of each edition. Every value in this row of the
   // table traces to that edition's CV, or to a decision recorded in its bullet
   // approval record under `.scratch/`.
@@ -797,8 +911,7 @@ describe.each(editions)('$edition edition', (edition) => {
     // ADR 0001 governs the metadata too: it is copy, and it is the copy most
     // likely to be written once and never reread.
     it('makes no claim its CV does not support', () => {
-      const text =
-        head.textContent + [...head.querySelectorAll('meta')].map((tag) => tag.getAttribute('content')).join(' ');
+      const text = scraperText(edition.entry);
       for (const claim of edition.metadataClaims) {
         expect(text).not.toMatch(claim);
       }
