@@ -67,6 +67,16 @@ const editions = [
       ['MOBIKO GmbH', 'Aug 2020'],
       ['Hiberus Tecnología', 'Jul 2017'],
     ],
+    // The twelve month abbreviations this edition's CV uses, for the date-range
+    // guard below. Here rather than in the guard for the same reason the
+    // employer dates above are here: they are one edition's vocabulary, and the
+    // guard runs over both.
+    months: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+    // The end date of the most recent entry, which is the one that goes stale.
+    // Both editions write it the same way, and it is stated per edition anyway,
+    // because the day one of them writes it in its own words is the day this
+    // stops being a copy of the other row and starts being an assertion.
+    lastWorked: 'Jul 2026',
     // A promotion at one employer is two entries, not one (CONTEXT.md).
     roles: [
       'Principal Software Engineer',
@@ -136,6 +146,8 @@ const editions = [
       ['MOBIKO GmbH', 'Ago 2020'],
       ['Hiberus Tecnología', 'Jul 2017'],
     ],
+    months: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'],
+    lastWorked: 'Jul 2026',
     roles: [
       'Ingeniero de Software Principal',
       'Ingeniero de Software Líder',
@@ -537,6 +549,55 @@ describe.each(editions)('$edition edition', (edition) => {
       for (const link of cvLinks()) {
         expect(publicAssets).toContain(link.getAttribute('href'));
       }
+    });
+  });
+
+  // Guard tests for ADR 0001 arriving at the field it is easiest to break:
+  // employment dates, which go wrong by standing still.
+  //
+  // If you are reading this because you tripped it: the CV is the source of
+  // truth and this file is condensed from it, so the fix is to bring the date
+  // here into line with the CV — never the other way round, and never by
+  // relaxing the guard.
+  //
+  // The site said "Oct 2023 - Present" and "Actualidad" for five days after
+  // Fran's employment ended and both CVs said "Jul 2026", in public, while he
+  // was mid-process elsewhere. Nothing here noticed, because a string that has
+  // stopped being true reads exactly like one that never was.
+  //
+  // Asserted over the *shape* of a range rather than over the words "Present"
+  // and "Actualidad". A banned-word list would catch the instance that prompted
+  // it and be one translation behind from the day a third edition lands; every
+  // entry on a CV is a closed range of two dates once the role has ended, in
+  // every language, so that is what is checked. The CV's own repo asserts the
+  // absence of those two words in its markdown, which is the other end of the
+  // same guard.
+  describe('no date range outlives the CV it was condensed from', () => {
+    // Every range a visitor reads on an experience entry: the employer's span,
+    // and each role inside it. Education's `years` is deliberately not here —
+    // it is a range of bare years rather than months, and a degree does not
+    // acquire a false end date by the passage of time.
+    const dateRanges = () =>
+      content.employers.flatMap((employer) => [employer.span, ...employer.roles.map((role) => role.dates)]);
+
+    const closedRange = new RegExp(`^(?:${edition.months.join('|')}) \\d{4} - (?:${edition.months.join('|')}) \\d{4}$`);
+
+    it('writes every employer span and role date as a closed range of two dates', () => {
+      const ranges = dateRanges();
+      // A content file that stopped exposing ranges would otherwise leave this
+      // passing over an empty list.
+      expect(ranges.length).toBeGreaterThan(5);
+
+      expect(ranges.filter((range) => !closedRange.test(range))).toEqual([]);
+    });
+
+    // The specific fact the shape guard cannot carry: a closed range can still
+    // be the wrong one. This is the entry that was wrong, pinned to the date
+    // the CV gives it.
+    it('ends the most recent employment on the date its CV gives', () => {
+      const [current] = content.employers;
+      expect(current.span.endsWith(edition.lastWorked)).toBe(true);
+      expect(current.roles[0].dates.endsWith(edition.lastWorked)).toBe(true);
     });
   });
 

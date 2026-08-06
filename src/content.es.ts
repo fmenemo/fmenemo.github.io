@@ -45,11 +45,11 @@ export const es: SiteContent = {
     {
       name: 'The Knot Worldwide',
       location: 'Remoto',
-      span: 'Oct 2023 - Actualidad',
+      span: 'Oct 2023 - Jul 2026',
       roles: [
         {
           title: 'Ingeniero de Software Principal',
-          dates: 'Abr 2025 - Actualidad',
+          dates: 'Abr 2025 - Jul 2026',
           bullets: [
             'Reconstruí desde cero la plataforma de e-commerce Shop en un mes yo solo, frente a una estimación de tres meses con varios desarrolladores. Next.js y React sobre la API Rainforest de Amazon y Contentful, dando servicio a cientos de miles de usuarios en producción.',
             'Construí el emparejamiento semántico de productos con OpenSearch, combinando similitud vectorial k-NN y relevancia textual BM25, con un panel de revisión humana en PayloadCMS para los emparejamientos por debajo del umbral de confianza.',
