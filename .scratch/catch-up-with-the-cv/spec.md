@@ -1,6 +1,14 @@
 # Catch up with the CV
 
-Status: in progress
+Status: resolved
+
+Both tickets shipped on 2026-08-06 as one deploy. The four strings are corrected, the guard
+is written over the shape of a date range rather than the two words, both PDFs are the
+current build, and the suite, build and lint pass. **The one item not closed is the live
+verification**: the artefact was published to `gh-pages` and GitHub's own Pages deployment
+then stalled for ten minutes and aborted with `Timeout reached`. It was re-run. Until that
+completes the live site serves the old bundle and the old PDFs, so check
+https://fmenemo.github.io/ before treating the last box as done.
 
 The site is a consumer of the canonical CV (ADR 0001), and it has fallen behind it in two
 ways at once. Both are corrections arriving from the CV's own repo, where the work that
@@ -50,15 +58,15 @@ and not the vocabulary, and a third edition inherits it without a translation.
 
 ## Acceptance
 
-- [ ] Neither `Present` nor `Actualidad` appears as an end date in either content file
-- [ ] The Knot Worldwide reads `Oct 2023 - Jul 2026` and the Principal role
+- [x] Neither `Present` nor `Actualidad` appears as an end date in either content file
+- [x] The Knot Worldwide reads `Oct 2023 - Jul 2026` and the Principal role
       `Apr 2025 - Jul 2026`, in both editions, in each edition's own month vocabulary
-- [ ] Every date range in both content files matches its edition's CV
-- [ ] A guard fails the suite if any employer span or role date is open-ended again, in
+- [x] Every date range in both content files matches its edition's CV
+- [x] A guard fails the suite if any employer span or role date is open-ended again, in
       either edition
-- [ ] Both rebuilt PDFs are committed
-- [ ] `npm run build`, `npm run lint` and `npm test` pass
-- [ ] Deployed, and verified live
+- [x] Both rebuilt PDFs are committed
+- [x] `npm run build`, `npm run lint` and `npm test` pass
+- [ ] Deployed, and verified live — **published, not yet confirmed**; see the status note
 
 ## Out of Scope
 
