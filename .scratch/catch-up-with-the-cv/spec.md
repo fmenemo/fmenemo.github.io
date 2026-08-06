@@ -6,9 +6,16 @@ Both tickets shipped on 2026-08-06 as one deploy. The four strings are corrected
 is written over the shape of a date range rather than the two words, both PDFs are the
 current build, and the suite, build and lint pass. **The one item not closed is the live
 verification**: the artefact was published to `gh-pages` and GitHub's own Pages deployment
-then stalled for ten minutes and aborted with `Timeout reached`. It was re-run. Until that
-completes the live site serves the old bundle and the old PDFs, so check
-https://fmenemo.github.io/ before treating the last box as done.
+then stalled for ten minutes and aborted with `Timeout reached`. Re-running the workflow did
+nothing — the run reported `queued` for thirteen minutes without ever starting, and could not be
+cancelled — so a fresh empty commit was pushed to `gh-pages`, which did start a new run. That one
+was still `in_progress` after seven minutes.
+
+**The artefact on `gh-pages` was verified correct before and after the retry**: `assets/en-*.js`
+contains `Jul 2026` and no `Present`, and `Fran_Menendez_CV.pdf` matches the CV repo's build hash.
+So this is GitHub's publish step and not the build. Until it completes the live site serves the old
+bundle and the old PDFs, so check https://fmenemo.github.io/ before treating the last box as done —
+the check is that the `en-*.js` the page references contains `Jul 2026`.
 
 The site is a consumer of the canonical CV (ADR 0001), and it has fallen behind it in two
 ways at once. Both are corrections arriving from the CV's own repo, where the work that
