@@ -2,20 +2,29 @@
 
 Status: resolved
 
-Both tickets shipped on 2026-08-06 as one deploy. The four strings are corrected, the guard
-is written over the shape of a date range rather than the two words, both PDFs are the
-current build, and the suite, build and lint pass. **The one item not closed is the live
-verification**: the artefact was published to `gh-pages` and GitHub's own Pages deployment
-then stalled for ten minutes and aborted with `Timeout reached`. Re-running the workflow did
-nothing — the run reported `queued` for thirteen minutes without ever starting, and could not be
-cancelled — so a fresh empty commit was pushed to `gh-pages`, which did start a new run. That one
-was still `in_progress` after seven minutes.
+Both tickets shipped on 2026-08-06 and went live on 2026-08-08. The four strings are
+corrected, the guard is written over the shape of a date range rather than the two words,
+both PDFs are the current build, and the suite, build and lint pass.
 
-**The artefact on `gh-pages` was verified correct before and after the retry**: `assets/en-*.js`
-contains `Jul 2026` and no `Present`, and `Fran_Menendez_CV.pdf` matches the CV repo's build hash.
-So this is GitHub's publish step and not the build. Until it completes the live site serves the old
-bundle and the old PDFs, so check https://fmenemo.github.io/ before treating the last box as done —
-the check is that the `en-*.js` the page references contains `Jul 2026`.
+**The two-day gap was the publish step, never the build.** The artefact on `gh-pages` was
+correct from 2026-08-06 onward; GitHub's legacy Pages builder failed it twice with a bare
+`Page build failed.` at `duration: 0`, during a platform incident. Three things then kept
+the retry from happening, and the first two were misreadings worth recording:
+
+- A run left wedged in `queued` for 40+ hours looked like the cause. It was not: a later
+  run started and completed alongside it, so it never held the queue. GitHub's own API
+  will not cancel it (`409`, force-cancel included). It is inert; leave it.
+- The obvious retry — rebuild and `npm run deploy` — was a **no-op**. The build was
+  byte-identical to what was already on `gh-pages`, so no commit was made and no build was
+  triggered. `gh-pages` still prints `Published`. Nothing had actually been retried since
+  the incident ended; verify the branch HEAD moved, not the command's output.
+- `.nojekyll` was then added and silently dropped, because `gh-pages` omits dotfiles unless
+  passed `--dotfiles`. Fixed in `package.json`.
+
+Jekyll is now out of the path entirely (`public/.nojekyll`), which is what a Vite build
+should have had all along. Verified live: the referenced `en-*.js` and `es-*.js` each
+contain `Jul 2026` and zero `Present`/`Actualidad`, both PDF hashes match the local build,
+and `/es/` returns 200.
 
 The site is a consumer of the canonical CV (ADR 0001), and it has fallen behind it in two
 ways at once. Both are corrections arriving from the CV's own repo, where the work that
@@ -73,7 +82,7 @@ and not the vocabulary, and a third edition inherits it without a translation.
       either edition
 - [x] Both rebuilt PDFs are committed
 - [x] `npm run build`, `npm run lint` and `npm test` pass
-- [ ] Deployed, and verified live — **published, not yet confirmed**; see the status note
+- [x] Deployed, and verified live on 2026-08-08
 
 ## Out of Scope
 
