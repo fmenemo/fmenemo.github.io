@@ -2,6 +2,13 @@
 
 Status: ready-for-human
 
+The sweep is done and the diff is prepared: `bullet-approval.md` in this directory. It is
+waiting on Fran, and on nothing else. **What it found narrows the problem below** rather than
+widening it: the drift is not a long tail, it is four corrections the CV made and the site was
+never told about, in both editions — eight strings. Every other bullet still matches. The
+"assume there are more" prior was reasonable and turned out to be wrong in a specific and
+useful way; see the record's opening section.
+
 Found on 2026-08-06 while correcting the employment dates
 (`.scratch/catch-up-with-the-cv/`), and deliberately not fixed there: a date fix carrying a
 rewritten bullet is what this repo's bullet-approval convention exists to prevent.
