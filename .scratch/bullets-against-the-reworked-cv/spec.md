@@ -2,8 +2,10 @@
 
 Status: ready-for-human
 
-The sweep is done and the diff is prepared: `bullet-approval.md` in this directory. It is
-waiting on Fran, and on nothing else. **What it found narrows the problem below** rather than
+The sweep is done, the diff is prepared in `bullet-approval.md`, and the work is broken into
+six tickets under `issues/`. All of it is waiting on Fran, and on nothing else: tickets 01–03
+are `needs-info` until the record's C1–C4 boxes are ticked, 04 and 05 are `needs-triage`
+pending decisions D1 and D2, and 06 is blocked on the corrections landing. **What it found narrows the problem below** rather than
 widening it: the drift is not a long tail, it is four corrections the CV made and the site was
 never told about, in both editions — eight strings. Every other bullet still matches. The
 "assume there are more" prior was reasonable and turned out to be wrong in a specific and
