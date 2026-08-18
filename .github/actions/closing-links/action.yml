@@ -1,0 +1,35 @@
+name: "Act on a closing link"
+description: >-
+  Closes the Tickets a push to a Spec branch closes, and comments on each one
+  saying which commit carried the link.
+
+# Nothing here is this repository's: the repository comes off the event, the
+# default branch is read from it rather than named, and the Spec's number comes
+# off the branch that was pushed. Any repository whose Tickets are sub-issues of
+# a Spec runs this unchanged, from a copy of this directory that
+# `/setup-sandcastle` writes there (ADR-0017).
+
+inputs:
+  token:
+    description: >-
+      A token with `issues: write`, which is what closing a Ticket and
+      commenting on it need. The GITHUB_TOKEN a workflow is given is enough.
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    # The script reads the event file and calls `gh`, and never looks at the
+    # tree it is standing in — so nothing below depends on what was checked out
+    # beyond this directory itself.
+    - uses: actions/setup-node@v4
+      with:
+        node-version: "24"
+
+    # No install step and no build: every import is Node's own or a module
+    # beside it, and Node runs the TypeScript by stripping the types.
+    - name: Close the Tickets this push's closing links name
+      shell: bash
+      run: node "$GITHUB_ACTION_PATH/act.ts"
+      env:
+        GH_TOKEN: ${{ inputs.token }}

@@ -1,0 +1,20 @@
+name: Act on a closing link
+
+on:
+  push:
+    branches:
+      - "spec/**"
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  closing-links:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: ./.github/actions/closing-links
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}

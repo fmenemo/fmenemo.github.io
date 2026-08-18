@@ -4,11 +4,11 @@
 
 ### Issue tracker
 
-Issues and specs live as markdown files under `.scratch/<feature-slug>/` in this repo. See `docs/agents/issue-tracker.md`.
+Issues and specs live as GitHub issues in `fmenemo/fmenemo.github.io`, driven by the `gh` CLI. See `docs/agents/issue-tracker.md`.
 
 ### Triage labels
 
-The default five-role vocabulary, recorded as a `Status:` line in each issue file. See `docs/agents/triage-labels.md`.
+The default five-role vocabulary, applied as GitHub labels. See `docs/agents/triage-labels.md`.
 
 ### Domain docs
 
