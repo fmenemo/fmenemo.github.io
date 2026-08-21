@@ -33,7 +33,7 @@ An award or competition placement from a named organisation, with a date. Render
 _Avoid_: Award section, accolade
 
 **Differentiator**:
-The AI-layer thread that distinguishes Fran from other engineers with ten years of experience: production semantic search, MCP tooling, agentic development workflows. Every part of the site should be readable as supporting it.
+The AI-layer thread that distinguishes Fran from other engineers with ten years of experience: production semantic search, MCP tooling, a multi-agent delivery system built and run solo. Every part of the site should be readable as supporting it.
 _Avoid_: USP, specialty, focus area
 
 ### Editions
