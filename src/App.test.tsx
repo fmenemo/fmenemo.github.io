@@ -99,6 +99,9 @@ const editions = [
       '72%',
       '70%',
       '99.95%',
+      // Added by #6, with the reworked Principal bullets that state them.
+      '90%',
+      '50ms',
     ],
     // The three figures this pass added were read on the rendered CV rather
     // than extracted from the PDF, as ADR 0001 asks: the record of that read is
@@ -141,7 +144,7 @@ const editions = [
     // Carried by every copy of the identity, including the share image, which
     // has room for the identity but not for the differentiator that follows.
     identityPhrases: ['Software Engineer', '10+ years', 'millions of users', 'AI layer'],
-    differentiator: ['semantic search', 'MCP', 'agentic'],
+    differentiator: ['semantic search', 'MCP', 'multi-agent'],
     // The claims ADR 0001 removed, in the language they would come back in.
     availability: /available|open to (new )?opportunities|actively (exploring|looking)|hiring/i,
     claims: [
@@ -1031,6 +1034,93 @@ describe.each(editions)('$edition edition', (edition) => {
       }
       expect(text).not.toContain('∞');
     });
+  });
+});
+
+// Guard tests for ticket 06 of the CV catch-up: three corrections and one added
+// bullet in the Principal role. English only, and out of the table for that
+// reason — the spec freezes the Spanish edition knowingly, so `/es` goes on
+// making two of the statements the English side stops making, and a row per
+// edition here would assert the opposite of what was decided.
+//
+// These read the whole sentence rather than a phrase from it. Each one is a
+// wording approved against the CV in
+// `.scratch/bullets-against-the-reworked-cv/bullet-approval.md`, and a bullet
+// that drifts a clause off one of them is back to saying something its CV does
+// not.
+describe('the Principal role says what the CV says', () => {
+  const english = editions.find((edition) => edition.edition === 'English')!;
+
+  const bulletSaying = (phrase: string) => {
+    render(<App content={english.content} />);
+    return [...document.querySelectorAll('li')].find((item) => item.textContent?.includes(phrase));
+  };
+
+  // C1. The stronger claim as well as the truer one: he built it, ran it, and
+  // then drove its practices into the team's process.
+  it('says Fran built and ran the agentic workflow for his own delivery', () => {
+    expect(renderedText(english)).toContain(
+      'Built and ran an agentic AI development workflow for my own production delivery: four stages, eight role-scoped agents, model routing by task, and review roles barred from writing the code they audit. Used it to deliver a security hardening programme, where the independent step caught defects the implementing pass had missed; drove its practices into the team’s process.'
+    );
+  });
+
+  // The same overclaim lives one level up, in the first sentence a visitor
+  // reads: the hero used to end on "agentic engineering workflows made
+  // team-wide standards". The CV attaches the team-wide standard to MCP tooling
+  // alone. Both shapes are guarded, because correcting the bullet and leaving
+  // the hero is how this one survived the last sweep.
+  it('attributes the workflow to nobody but Fran, in the hero as well as the bullet', () => {
+    const text = renderedText(english);
+    expect(text).not.toMatch(/team[’']s agentic/i);
+    expect(text).not.toMatch(/agentic[^.]*team-wide/i);
+  });
+
+  // C3, in its fuller variant. The figure-light one was preferred for matching
+  // a convention this role does not have: it already carries 850ms, 34ms,
+  // 100,000+ and 2M+.
+  it('routes the uncertain band to review and discards the weakest matches', () => {
+    expect(renderedText(english)).toContain(
+      'Built semantic product matching on OpenSearch with k-NN vector similarity and BM25 text relevance, banded by confidence: the strongest matches served automatically with no human review — about 90% of throughput — the weakest discarded, and the band between them routed to a review dashboard I built in PayloadCMS. p95 query latency stayed under 50ms across 100,000+ products.'
+    );
+  });
+
+  // The old wording described a system spending human attention on its own
+  // rejects, which is both untrue and a worse design than the real one.
+  it('never says the reviewed set is the one below the threshold', () => {
+    expect(renderedText(english)).not.toMatch(/below (the )?confidence threshold/i);
+  });
+
+  // C4. The audit found four classes; the IDOR turned up later, in remediation.
+  it('names the four vulnerability classes the audit found', () => {
+    expect(renderedText(english)).toContain(
+      'Ran the API security audit and hardening programme for the public e-commerce service: eight findings across four vulnerability classes — SQL injection, over-open collection access, PII projection and identity trust — with remediation closing a write-side IDOR in a shared authorisation primitive covering five collections; built the service’s first automated test harness and an access-coverage matrix that flags any loosening of access as a diff.'
+    );
+  });
+
+  it('keeps the remediation finding out of the audit’s taxonomy', () => {
+    const text = renderedText(english);
+    expect(text).not.toMatch(/broken access control/i);
+    expect(text).not.toMatch(/PII exposure/i);
+  });
+
+  // "Tripwire" was a gloss over something more specific: a lint gate at error
+  // level and a regenerable access-coverage matrix. Both editions, because the
+  // Spanish one has never carried the word and this is what keeps it that way.
+  it('describes the CI artefact by what it does rather than as a tripwire', () => {
+    for (const edition of editions) {
+      expect(renderedText(edition)).not.toMatch(/tripwire/i);
+    }
+  });
+
+  // D1, the CV's sentence unchanged. Its placement is the point: session
+  // continuity was the other half of the same programme and reads on its own
+  // without it.
+  it('puts unified sign-on immediately before session continuity', () => {
+    const signOn = bulletSaying(
+      'Unified sign-on across five products — Bump articles, baby names, registry, shop and the native apps — so that one account replaced five separate logins.'
+    );
+    expect(signOn).toBeDefined();
+    expect(signOn?.nextElementSibling?.textContent).toContain('Built session continuity');
   });
 });
 
