@@ -7,6 +7,13 @@ take a commit message's word for it.
 
 ## Every figure that ships was read on the rendered CV page
 
+> **2026-08-21.** The review of this branch judged this section attested but not
+> evidenced, and it was right: what follows is prose. The pages are now rendered
+> and committed beside it, with every figure in the guard tabulated against the
+> sentence it was read in — see
+> [`every-figure-on-the-render.md`](./every-figure-on-the-render.md). The section
+> below stands as the original read.
+
 ADR 0001 says why: the CV's text layer was extracted against embedded subset
 fonts, and some ligature glyphs and digits did not survive. `pdftotext` output
 is not evidence for a figure. The pages have to be rendered and read.

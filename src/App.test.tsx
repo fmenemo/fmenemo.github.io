@@ -91,6 +91,10 @@ const editions = [
       '34ms',
       '100,000+',
       '2M+',
+      // Read on the render at .scratch/bullets-against-the-reworked-cv/
+      // ticket-06-rendered-checks/cv-render-page-2.png. Distinct from the 2M+
+      // above, which the inclusion-only guard would otherwise match inside it.
+      '$2M+',
       '500k+',
       '1M+',
       '100k+',
