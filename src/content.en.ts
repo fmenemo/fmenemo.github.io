@@ -12,6 +12,19 @@
 // Each bullet was approved against its CV original in
 // `.scratch/site-refresh/bullet-approval.md`, which also records why anything on
 // the CV is missing here. Do not add a statement that is not in that document.
+//
+// This copy was approved against `cv/en.md` at commit `36eab4d` in the
+// `professional-record` repository. Next sweep: run
+// `git -C ~/Projects/professional-record diff 36eab4d..HEAD -- cv/en.md` and
+// bring across what it shows.
+//
+// That history begins on 2026-08-12, the day the CV changed repositories.
+// Everything written before it lives in the retired `about-me` repo and
+// resolves nowhere from here, so a record aimed further back is already dead.
+//
+// What the commit buys is a bounded sweep: one diff, rather than two documents
+// read end to end. It does not prevent drift, and nothing fails when this file
+// falls behind. No test asserts over it and no build checks it.
 
 import type { SiteContent } from './content';
 
