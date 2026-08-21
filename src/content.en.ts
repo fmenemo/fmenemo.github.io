@@ -61,9 +61,9 @@ export const en: SiteContent = {
           title: 'Lead Software Engineer',
           dates: 'Oct 2023 - Mar 2025',
           bullets: [
-            'Built an A/B testing system for a platform where edge caching had made experimentation impossible: Akamai assigns a variant cookie at the edge and the app renders the matching tagged build, sticky across reloads. The platform had run no experiments in over 3 years before it; 10+ have run since.',
+            'Built an A/B testing system for a platform where edge caching had made experimentation impossible: Akamai assigns a variant cookie at the edge and the app renders the matching tagged build, sticky across reloads. The platform had run no experiments in over 3 years before it; 10+ have run since. The winning variant in an ad-layout test lifted served ad impressions 23% against control.',
             'Cut deployment time from over 2 hours to 1 minute, enabling daily deployments.',
-            'Led development of the integrated commerce platform, taking it from proposal to a live MVP.',
+            'Took the integrated commerce platform from proposal to a live MVP, on a $2M+ annual revenue projection.',
             'Managed an 8-person cross-functional team; mentored 5 developers, resulting in 2 promotions.',
           ],
         },
@@ -79,7 +79,7 @@ export const en: SiteContent = {
           dates: 'Mar 2023 - Sep 2023',
           bullets: [
             'Set the technical strategy and built the microservices architecture behind the company’s enterprise expansion, processing 500k+ daily mobility events: a NestJS API gateway fronting serverless functions over NATS, on Kubernetes with Keda-driven autoscaling.',
-            'Grew the engineering team and shortened delivery cycles by restructuring the review and release process and mentoring engineers into ownership.',
+            'Restructured the review and release process and mentored engineers into ownership; the team grew and delivery cycles shortened over the period.',
           ],
         },
         {
@@ -87,7 +87,7 @@ export const en: SiteContent = {
           dates: 'Aug 2020 - Mar 2023',
           bullets: [
             'Migrated the entire product onto a new Vue platform and built the PWA intended to replace the existing multiplatform applications, on a Vuex/Flux state architecture.',
-            'Rebuilt the API surface on NestJS with Swagger-annotated contracts and TypeORM against PostgreSQL, cutting response times through caching and query optimization.',
+            'Rebuilt the API surface on NestJS with Swagger-annotated contracts and TypeORM against PostgreSQL, cutting response times 72% through caching and query optimization; page loads dropped 70% in Lighthouse.',
             'Automated the deployment pipeline from multi-day release cycles to continuous deployment, on Kubernetes with CircleCI.',
           ],
         },
@@ -110,7 +110,7 @@ export const en: SiteContent = {
           title: 'Full-Stack Developer',
           dates: 'Nov 2017 - Jan 2020',
           bullets: [
-            'Built a platform processing 1M+ daily entries with real-time sync across 5 geographic locations, on CouchDB as an offline-capable distributed database; still in production.',
+            'Built a platform processing 1M+ daily entries with real-time sync across 5 geographic locations, on CouchDB as an offline-capable distributed database, at 99.95% uptime; still in production.',
           ],
         },
         {

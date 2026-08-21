@@ -86,7 +86,49 @@ const editions = [
       'Full-Stack Developer',
       'Junior Developer, E-commerce',
     ],
-    figures: ['850ms', '34ms', '100,000+', '2M+', '500k+', '1M+', '100k+', '8-person'],
+    figures: [
+      '850ms',
+      '34ms',
+      '100,000+',
+      '2M+',
+      '500k+',
+      '1M+',
+      '100k+',
+      '8-person',
+      '23%',
+      '72%',
+      '70%',
+      '99.95%',
+    ],
+    // The three figures this pass added were read on the rendered CV rather
+    // than extracted from the PDF, as ADR 0001 asks: the record of that read is
+    // `.scratch/english-figures-against-the-render.md`.
+    //
+    // The figures this edition's CV states that the page deliberately leaves
+    // off. Eight were weighed for this pass and three were taken; these four
+    // were declined, and listing them here is what keeps that a decision
+    // rather than an omission nobody can tell from an oversight.
+    //
+    // Each is matched as its number beside the thing that number counts, which
+    // is what a declined figure is. A bare number would fail the day an
+    // unrelated 85% is earned somewhere else on the page, and a bare phrase
+    // would let the same claim back in under a rewording.
+    declinedFigures: [
+      { figure: '100% retention', pattern: /100\s?%[^.]{0,40}retention|retention[^.]{0,40}100\s?%/i },
+      {
+        figure: 'the 85% design-with-components cut',
+        pattern: /85\s?%[^.]{0,60}(design|component|week|day)|(design|component|week|day)[^.]{0,60}85\s?%/i,
+      },
+      {
+        figure: 'three global enterprise partnerships',
+        pattern: /(three|3)\s+global\s+enterprise\s+partnerships/i,
+      },
+      {
+        figure: 'the 3,000 to 10,000+ user growth, and its 233%',
+        pattern:
+          /(3,000|10,000\+|233\s?%)[^.]{0,60}(user|growth)|(user|growth)[^.]{0,60}(3,000|10,000\+|233\s?%)/i,
+      },
+    ],
     // The organisations and awards are names, and so are the month
     // abbreviations, but each edition names them as its own CV does.
     recognitions: [
@@ -159,6 +201,10 @@ const editions = [
     // The same evidence as the English row, written as the Spanish CV writes
     // it: a decimal point for thousands, and a space before the unit.
     figures: ['850 ms', '34 ms', '100.000', '2M', '500k', '1M', '100k', '8 personas'],
+    // The declines above were made against the English CV in an English-only
+    // pass, and this edition is frozen against a CV of its own, so it has no
+    // list of its own to carry yet.
+    declinedFigures: [] as { figure: string; pattern: RegExp }[],
     recognitions: [
       'Finalista global',
       '100 Ideas Zaragoza',
@@ -783,6 +829,13 @@ describe.each(editions)('$edition edition', (edition) => {
       const text = renderedText(edition);
       for (const figure of edition.figures) {
         expect(text).toContain(figure);
+      }
+    });
+
+    it('carries none of the figures its CV states that this page declined', () => {
+      const text = renderedText(edition);
+      for (const { figure, pattern } of edition.declinedFigures) {
+        expect(text, figure).not.toMatch(pattern);
       }
     });
 
