@@ -29,8 +29,9 @@ export const en: SiteContent = {
     linkedinLabel: 'linkedin.com/in/fmenemo',
     github: 'https://github.com/fmenemo',
     // The original, and the only CV this edition offers. The Spanish edition
-    // offers this one too, so it is republished with its Spanish translation
-    // and never on its own (ADR 0004, and the note on `CvDownload`).
+    // offers this one too, so it normally ships with its Spanish translation;
+    // it may ship alone while that edition's source stays retired upstream
+    // (ADR 0004, as amended, and the note on `CvDownload`).
     cvs: [{ href: '/Fran_Menendez_CV.pdf', label: 'Download CV' }],
   },
 

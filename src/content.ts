@@ -49,6 +49,14 @@ export interface Identity {
  * one alone lets `/es` assert things that have stopped being true. No test can
  * catch that: a PDF's text is not in the build, and a text-extraction drift
  * test was considered and rejected in ADR 0004. The rule is the guard.
+ *
+ * Amended 2026-08-21, with ADR 0004: one edition may be published alone where
+ * the other edition's source has been retired upstream. That is now true of the
+ * Spanish CV, whose markdown was deleted on 2026-08-17 and which is generated
+ * from the English source, so there is no second document to regenerate in
+ * step. The cost is that `/es` offers a current English original beside a
+ * Spanish CV two versions behind it. While both sources exist, the rule above
+ * stands: "only English changed this pass" is not the condition.
  */
 export interface CvDownload {
   /** Root-relative path of the file in `public/`, under a name carrying no version. */
