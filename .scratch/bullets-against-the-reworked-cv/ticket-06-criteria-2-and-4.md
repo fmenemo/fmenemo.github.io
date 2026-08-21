@@ -59,3 +59,21 @@ a quiet edit here.
 
 I would not do this inside ticket 06. Three corrections to an edition the spec
 froze is a change to the spec, and it should be visible as one.
+
+## Signed
+
+**2026-08-21, Fran Menendez: the smaller option.** Criteria 2 and 4 are amended
+to name the English edition, and read as:
+
+- **Criterion 2** — The English edition does not attribute the agentic workflow
+  to the team anywhere.
+- **Criterion 4** — Nothing on the English edition says or implies that the
+  reviewed set is the below-threshold set.
+
+The Spanish module stays frozen, as criterion 9, the ticket body and #4 all say
+it does. No code moves: the branch already meets both criteria as amended, which
+is what made this a wording slip rather than a decision.
+
+The amendment lives here rather than in #6's body, which still carries the
+original wording and closes with it. This file and the merge commit that carries
+it are the record of what was actually judged.
