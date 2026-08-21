@@ -1,4 +1,4 @@
-import { cleanup, fireEvent, render, screen } from '@testing-library/react';
+import { cleanup, fireEvent, render, screen, within } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import App from './App';
 import { en } from './content.en';
@@ -141,6 +141,16 @@ const editions = [
       'ImagineCode',
       'Google Hash Code',
     ],
+    // Every entry the independent-work section carries, in the order it renders
+    // them, so that a row says how many entries its edition has as well as
+    // which. The English edition gained the harness in #10; the Spanish one is
+    // frozen at one entry and this is where that shows.
+    //
+    // Instagram Checker stays first. Its description opens "the same agentic
+    // workflow as the work above", which points at the Principal role in the
+    // section above it, and putting a second entry between the two would leave
+    // that reference reading as the entry directly overhead.
+    independentWork: ['Instagram Checker', 'Multi-agent delivery harness'],
     // Carried by every copy of the identity, including the share image, which
     // has room for the identity but not for the differentiator that follows.
     identityPhrases: ['Software Engineer', '10+ years', 'millions of users', 'AI layer'],
@@ -215,6 +225,7 @@ const editions = [
       'ImagineCode',
       'Google Hash Code',
     ],
+    independentWork: ['Instagram Checker'],
     identityPhrases: ['Ingeniero de software', 'más de 10 años', 'millones de usuarios', 'capa de IA'],
     differentiator: ['búsqueda semántica', 'MCP', 'agéntico'],
     availability: /disponible|abierto a (nuevas )?oportunidades|buscando activamente|contratando/i,
@@ -842,10 +853,27 @@ describe.each(editions)('$edition edition', (edition) => {
       }
     });
 
-    // D1: the mention ships, the URL does not, and no claim leans on a click.
-    it('mentions the independent work without linking it', () => {
+    // D1: the mentions ship, the URLs do not, and no claim leans on a click.
+    //
+    // The assertion belongs to the section rather than to one project. Instagram
+    // Checker is live behind a login wall, and the harness is not a thing a
+    // visitor can go and look at at all, so neither name is an anchor and a
+    // third entry arriving with a URL should have to argue for it here.
+    //
+    // Naming the entries in order is also what holds the count: an edition
+    // renders the entries its row lists and no others, which is how "two in
+    // English, still one in Spanish" survives the next pass.
+    it('names every piece of independent work, and links none of it', () => {
       render(<App content={content} />);
-      expect(document.body.textContent).toContain('Instagram Checker');
+      const section = document.getElementById('independent-work');
+      expect(section).not.toBeNull();
+
+      const names = [...section!.querySelectorAll('strong')].map((name) =>
+        (name.textContent ?? '').replace(/\.$/, '')
+      );
+      expect(names).toEqual([...edition.independentWork]);
+
+      expect(within(section!).queryAllByRole('link')).toEqual([]);
       const hrefs = screen.getAllByRole('link').map((link) => link.getAttribute('href'));
       expect(hrefs.some((href) => href?.includes('instagram-checker'))).toBe(false);
     });

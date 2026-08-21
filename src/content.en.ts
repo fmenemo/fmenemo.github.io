@@ -135,6 +135,24 @@ export const en: SiteContent = {
       description:
         'Built end to end with the same agentic workflow as the work above: it turns an Instagram data export the user supplies into a follower and following dashboard, reading only what the user provides rather than scraping.',
     },
+    // Second by design. The entry above opens "the same agentic workflow as the
+    // work above", meaning the Principal role, and that reference only stays
+    // unambiguous while nothing sits between the two.
+    //
+    // No link, because there is nothing to visit: the harness is not a product.
+    // No figure and no dependency name either — the CV's paragraph carries
+    // none, and this is a condensation of it (ADR 0001), not an expansion.
+    //
+    // It leads on what the thing does mechanically rather than on the fact that
+    // AI is involved, which is the whole difference between this and having
+    // used a coding assistant. Two mechanisms from the CV paragraph are left
+    // out because each needs a sentence to mean anything: the typed transition
+    // stream, and the per-role model and effort routing.
+    {
+      name: 'Multi-agent delivery harness',
+      description:
+        "Built and run solo: it derives the order work runs in from a tracker's own dependency edges, scheduling in parallel whatever nothing blocks. An independent review answers in a schema the harness parses, and that parsed verdict gates the merge; a finding returns to the session that wrote the code as a bounded retry rather than a rewrite.",
+    },
   ],
 
   recognitions: [
