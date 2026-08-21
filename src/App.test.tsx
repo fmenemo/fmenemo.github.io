@@ -105,10 +105,30 @@ const editions = [
     // `.scratch/english-figures-against-the-render.md`.
     //
     // The figures this edition's CV states that the page deliberately leaves
-    // off. Eight were weighed for this pass and three were taken; these five
+    // off. Eight were weighed for this pass and three were taken; these four
     // were declined, and listing them here is what keeps that a decision
     // rather than an omission nobody can tell from an oversight.
-    declinedFigures: ['100% retention', '85%', 'three global enterprise partnerships', '3,000', '10,000+'],
+    //
+    // Each is matched as its number beside the thing that number counts, which
+    // is what a declined figure is. A bare number would fail the day an
+    // unrelated 85% is earned somewhere else on the page, and a bare phrase
+    // would let the same claim back in under a rewording.
+    declinedFigures: [
+      { figure: '100% retention', pattern: /100\s?%[^.]{0,40}retention|retention[^.]{0,40}100\s?%/i },
+      {
+        figure: 'the 85% design-with-components cut',
+        pattern: /85\s?%[^.]{0,60}(design|component|week|day)|(design|component|week|day)[^.]{0,60}85\s?%/i,
+      },
+      {
+        figure: 'three global enterprise partnerships',
+        pattern: /(three|3)\s+global\s+enterprise\s+partnerships/i,
+      },
+      {
+        figure: 'the 3,000 to 10,000+ user growth, and its 233%',
+        pattern:
+          /(3,000|10,000\+|233\s?%)[^.]{0,60}(user|growth)|(user|growth)[^.]{0,60}(3,000|10,000\+|233\s?%)/i,
+      },
+    ],
     // The organisations and awards are names, and so are the month
     // abbreviations, but each edition names them as its own CV does.
     recognitions: [
@@ -184,7 +204,7 @@ const editions = [
     // The declines above were made against the English CV in an English-only
     // pass, and this edition is frozen against a CV of its own, so it has no
     // list of its own to carry yet.
-    declinedFigures: [] as string[],
+    declinedFigures: [] as { figure: string; pattern: RegExp }[],
     recognitions: [
       'Finalista global',
       '100 Ideas Zaragoza',
@@ -814,8 +834,8 @@ describe.each(editions)('$edition edition', (edition) => {
 
     it('carries none of the figures its CV states that this page declined', () => {
       const text = renderedText(edition);
-      for (const figure of edition.declinedFigures) {
-        expect(text).not.toContain(figure);
+      for (const { figure, pattern } of edition.declinedFigures) {
+        expect(text, figure).not.toMatch(pattern);
       }
     });
 

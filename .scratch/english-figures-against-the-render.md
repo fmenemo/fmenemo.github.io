@@ -43,10 +43,12 @@ sentence above, and "Restructured the review and release process and mentored
 engineers into ownership; the team grew and delivery cycles shortened over the
 period."
 
-## The five declined
+## The four declined
 
 The render also carries 100% retention, the 85% design-with-components cut,
 three global enterprise partnerships, and the 3,000 to 10,000+ growth figure with
-its 233%. Issue #4 declined all of them. `src/App.test.tsx` asserts they are
-absent from the rendered page, so that decision fails a build rather than living
-here.
+its 233%. Issue #4 declined all four. `src/App.test.tsx` asserts each is absent
+from the rendered page, so that decision fails a build rather than living here.
+Each is matched as its number beside what that number counts, so the growth
+figure is caught by its 233% as well as by its endpoints, and no entry is a bare
+number that an unrelated future figure could trip.
