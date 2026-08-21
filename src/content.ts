@@ -71,6 +71,11 @@ export interface Contact {
   cvs: CvDownload[];
 }
 
+/**
+ * One thing Fran built and shipped outside an employer. The section holds a
+ * list of these: it is the plural category, and a second entry is copy rather
+ * than a type change.
+ */
 export interface IndependentWork {
   name: string;
   description: string;
@@ -164,7 +169,7 @@ export interface SiteContent {
   identity: Identity;
   contact: Contact;
   employers: Employer[];
-  independentWork: IndependentWork;
+  independentWork: IndependentWork[];
   recognitions: string[];
   education: Education;
   technologies: string[];
