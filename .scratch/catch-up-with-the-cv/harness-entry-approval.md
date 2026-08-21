@@ -59,8 +59,9 @@ residual reading it introduces, which #10 asked be raised rather than reworded.
 
 ## Signature
 
-Mark one. A comment on #10 saying the same thing counts, and is the version the
-review gate reads.
+Mark one, then fill in the two lines under it. A comment on #10 saying the same
+thing counts and is the easier version for a review gate to find, but the boxes
+below are the record either way.
 
 - [ ] **Approved** — ships as written.
 - [ ] **Changed** — ships with the edit written below.
@@ -68,3 +69,25 @@ review gate reads.
 
 Signed by:
 Date:
+
+## Where the ask has got to
+
+Open. Nothing below is a signature, and an agent ticking a box above would not
+be one either — the point of the convention is that a person did it.
+
+- **2026-08-21** — the entry landed in `src/content.en.ts` at `f53b2805`, drawn
+  word for word from the draft in #10, and the copy was put to Fran for a yes or
+  no in the session that wrote it. No reply.
+- **2026-08-21** — a review gate read the branch, found the signature missing,
+  and sent it back. This file was written, the copy was put again, and an
+  attempt to post it to #10 failed: `gh issue comment` returns `GraphQL:
+  Resource not accessible by personal access token (addComment)`. The token this
+  repo's agents run under reads issues and cannot write to them, which is why
+  the tracker shows no comment asking for the signature. Recorded at `bc888399`.
+- **2026-08-21** — read again, sent back again on the same criterion, correctly.
+  Third time of asking. Still open.
+
+There is no further agent move here, and the ticket is `ready-for-human` for
+exactly this reason. What unblocks it is Fran replying **approved**, **changed**
+or **cut**, in the session or on #10. Everything else #10 asks for is done and
+is recorded beside this file.
