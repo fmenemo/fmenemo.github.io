@@ -12,6 +12,18 @@
 // `.scratch/spanish-edition/bullet-approval-es.md`, which also records why
 // anything on the Spanish CV is missing here. Do not add a statement that is
 // not in that document.
+//
+// The PDF this copy traces to is the one in the public directory, SHA-256
+// `a7ce21c9135e72875fc904c7f614d9605488207fa859478a56d80cfc639fb2d9`. A digest
+// rather than a commit because the Spanish markdown was retired upstream on
+// 2026-08-17: this edition's CV has no source file left to diff and no commit
+// to name, and a digest is the one thing about a generated artefact that still
+// compares. Next sweep: run `shasum -a 256 public/Fran_Menendez_CV_ES.pdf`, and
+// if it differs from the digest above, read the new PDF against this file.
+//
+// What the digest buys is knowing in a second whether the CV moved at all. It
+// does not say what moved, it does not prevent drift, and nothing fails when
+// this file falls behind. No test asserts over it and no build checks it.
 
 import type { SiteContent } from './content';
 
