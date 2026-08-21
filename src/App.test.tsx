@@ -100,6 +100,10 @@ const editions = [
       '70%',
       '99.95%',
     ],
+    // The three figures this pass added were read on the rendered CV rather
+    // than extracted from the PDF, as ADR 0001 asks: the record of that read is
+    // `.scratch/english-figures-against-the-render.md`.
+    //
     // The figures this edition's CV states that the page deliberately leaves
     // off. Eight were weighed for this pass and three were taken; these five
     // were declined, and listing them here is what keeps that a decision
