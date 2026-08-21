@@ -18,7 +18,7 @@ import type { SiteContent } from './content';
 export const en: SiteContent = {
   identity: {
     name: 'Fran Menéndez',
-    line: 'Software Engineer, 10+ years building platforms that serve millions of users, working at the AI layer: semantic search in production, MCP tooling, and agentic engineering workflows made team-wide standards.',
+    line: 'Software Engineer, 10+ years building platforms that serve millions of users, working at the AI layer: a multi-agent delivery system built and run solo, semantic search in production, and MCP tooling made the team-wide standard.',
     location: 'Zaragoza, Spain',
     mode: 'Remote',
   },

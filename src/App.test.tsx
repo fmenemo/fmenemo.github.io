@@ -99,7 +99,7 @@ const editions = [
     // Carried by every copy of the identity, including the share image, which
     // has room for the identity but not for the differentiator that follows.
     identityPhrases: ['Software Engineer', '10+ years', 'millions of users', 'AI layer'],
-    differentiator: ['semantic search', 'MCP', 'agentic'],
+    differentiator: ['semantic search', 'MCP', 'multi-agent'],
     // The claims ADR 0001 removed, in the language they would come back in.
     availability: /available|open to (new )?opportunities|actively (exploring|looking)|hiring/i,
     claims: [
@@ -1008,8 +1008,15 @@ describe('the Principal role says what the CV says', () => {
     );
   });
 
-  it('attributes the workflow to nobody but Fran', () => {
-    expect(renderedText(english)).not.toMatch(/team[’']s agentic/i);
+  // The same overclaim lives one level up, in the first sentence a visitor
+  // reads: the hero used to end on "agentic engineering workflows made
+  // team-wide standards". The CV attaches the team-wide standard to MCP tooling
+  // alone. Both shapes are guarded, because correcting the bullet and leaving
+  // the hero is how this one survived the last sweep.
+  it('attributes the workflow to nobody but Fran, in the hero as well as the bullet', () => {
+    const text = renderedText(english);
+    expect(text).not.toMatch(/team[’']s agentic/i);
+    expect(text).not.toMatch(/agentic[^.]*team-wide/i);
   });
 
   // C3, in its fuller variant. The figure-light one was preferred for matching
