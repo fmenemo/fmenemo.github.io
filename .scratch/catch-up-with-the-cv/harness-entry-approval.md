@@ -63,16 +63,16 @@ Mark one, then fill in the two lines under it. A comment on #10 saying the same
 thing counts and is the easier version for a review gate to find, but the boxes
 below are the record either way.
 
-- [ ] **Approved** — ships as written.
+- [x] **Approved** — ships as written.
 - [ ] **Changed** — ships with the edit written below.
 - [ ] **Cut** — the entry does not ship, and #10 loses its reason to exist.
 
-Signed by:
-Date:
+Signed by: Fran Menendez
+Date: 2026-08-21
 
 ## Where the ask has got to
 
-Open. Nothing below is a signature, and an agent ticking a box above would not
+Signed. Nothing below the 2026-08-21 signature line is a signature, and an agent ticking a box above would not
 be one either — the point of the convention is that a person did it.
 
 - **2026-08-21** — the entry landed in `src/content.en.ts` at `f53b2805`, drawn
@@ -91,3 +91,4 @@ There is no further agent move here, and the ticket is `ready-for-human` for
 exactly this reason. What unblocks it is Fran replying **approved**, **changed**
 or **cut**, in the session or on #10. Everything else #10 asks for is done and
 is recorded beside this file.
+- **2026-08-21** — Fran signed it **approved**, as written, in the `/sandcastle-run` session that scoped Spec #4's remaining Tickets and found #10 stopped on this one item. The entry ships unchanged.
