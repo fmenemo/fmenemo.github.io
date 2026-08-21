@@ -33,7 +33,7 @@ export type ClosingLink = {
  * links this reads. It holds its own copy rather than importing this one: what
  * an action publishes is what a consumer runs, and a consumer runs none of the
  * harness. A guard there reads both copies whole — these words, the matching
- * rule below and the commit shape above — and fails where they have drifted.
+ * rule and the commit shape above — and fails where they have drifted.
  */
 export const CLOSING_KEYWORDS = [
   "close",
@@ -48,6 +48,31 @@ export const CLOSING_KEYWORDS = [
 ] as const;
 
 /**
+ * One grammar a closing link is read in: the words it may be written in.
+ *
+ * The words and nothing else. The separator, the `#` and the word boundaries
+ * are the same whichever words a grammar holds, which is why they are in the
+ * matching rule below rather than here.
+ *
+ * The harness has a second grammar, the one a file Ticket closes on, and a
+ * field naming the word each grammar writes a link in. Both belong to writing a
+ * link, and this action only reads one: a repository whose Tickets are files
+ * installs no workflow to close them, and a workflow that read `Settles #44` as
+ * a close would close whichever issue happened to be #44. So what is here is
+ * GitHub's grammar alone, which is the whole of what a consumer runs
+ * (ADR-0017).
+ */
+export type LinkGrammar = {
+  /** Every word this grammar closes a Ticket on, lower-cased. */
+  keywords: readonly string[];
+};
+
+/** GitHub's own grammar, which a Ticket that is a GitHub issue closes on. */
+export const GITHUB_GRAMMAR: LinkGrammar = {
+  keywords: CLOSING_KEYWORDS,
+};
+
+/**
  * How a closing link is written: a keyword, then a separator, then `#` and a
  * number.
  *
@@ -55,22 +80,23 @@ export const CLOSING_KEYWORDS = [
  * and a hand-worked commit writes it as a sentence, and both spellings mean the
  * same thing. `Closes#50` is not one of them, which is what GitHub does with it
  * too. Each end of the keyword is a word boundary, so `unclosed #50` closes
- * nothing.
+ * nothing — and one keyword covers one number, so `Closes #50, #51` leaves #51
+ * alone.
  *
- * The keywords and the number are the caller's, because the two sides of
- * ADR-0017 ask for different ones: this asks for every keyword and any number,
- * where the harness asks after one issue it already wrote a link for. The rest
- * is the matching rule, and the rule is what both sides have to spell the same
- * way — `boundary.test.ts` reads this declaration beside the harness's and
- * fails where the two have drifted.
+ * The grammar and the number are the caller's, because the two sides of
+ * ADR-0017 ask for different ones: this asks GitHub's grammar for any number,
+ * where the harness asks after one issue it already wrote a link for, in the
+ * grammar the Run's tracker calls for. The rest is the matching rule, and the
+ * rule is what both sides have to spell the same way — `boundary.test.ts` reads
+ * this declaration beside the harness's and fails where the two have drifted.
  */
-function closingLinkPattern(keywords: string, issue: string): string {
-  return String.raw`\b(${keywords})\b(?::[ \t]*|[ \t]+)#(${issue})`;
+function closingLinkPattern(grammar: LinkGrammar, issue: string): string {
+  return String.raw`\b(${grammar.keywords.join("|")})\b(?::[ \t]*|[ \t]+)#(${issue})`;
 }
 
 /** `Closes #50`, and the trailer form `Closes: #50`, however capitalised. */
 const CLOSING_LINK = new RegExp(
-  closingLinkPattern(CLOSING_KEYWORDS.join("|"), String.raw`\d+`),
+  closingLinkPattern(GITHUB_GRAMMAR, String.raw`\d+`),
   "gi",
 );
 

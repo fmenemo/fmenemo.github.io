@@ -44,12 +44,29 @@ Used by `/wayfinder`. The **map** is a single issue with **child** issues as tic
 - **Claim**: `gh issue edit <n> --add-assignee @me` — the session's first write.
 - **Resolve**: `gh issue comment <n> --body "<answer>"`, then `gh issue close <n>`, then append a context pointer (gist + link) to the map's Decisions-so-far.
 
-## What the closing workflow needs of a Ticket
+## What Sandcastle needs of this repository
 
-> Written by `/setup-sandcastle` on 2026-08-19: this section, and any sentence
+> Written by `/setup-sandcastle` on 2026-08-21: this section, and any sentence
 > above redirected to it. The rest of this file belongs to the mattpocock setup,
 > and a later run of that setup overwrites both — visibly, because this note is
 > here to be found.
+
+`/sandcastle-run` reads two axes off this table, and a repository that records
+neither is run as `github` on both.
+
+| Axis         | This repository   |
+| ------------ | ----------------- |
+| **Tracking** | `github`          |
+| **Hosting**  | `github`          |
+
+**Tracking** is `github` where Specs and Tickets are this repository's GitHub
+issues, and `files` where they are markdown files in this repository.
+**Hosting** is `github` where work lands through pull requests on this
+repository's GitHub remote, and `none` where it lands by a local merge into the
+default branch. The two are independent, and this repository's row is the one
+answer to each: a repository is set up again to change either.
+
+### What the closing workflow needs of a Ticket
 
 A Spec is a container issue, worked through its Tickets. What relates the two is
 GitHub's own features rather than anything written in a body. Both calls below
