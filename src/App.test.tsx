@@ -86,7 +86,25 @@ const editions = [
       'Full-Stack Developer',
       'Junior Developer, E-commerce',
     ],
-    figures: ['850ms', '34ms', '100,000+', '2M+', '500k+', '1M+', '100k+', '8-person'],
+    figures: [
+      '850ms',
+      '34ms',
+      '100,000+',
+      '2M+',
+      '500k+',
+      '1M+',
+      '100k+',
+      '8-person',
+      '23%',
+      '72%',
+      '70%',
+      '99.95%',
+    ],
+    // The figures this edition's CV states that the page deliberately leaves
+    // off. Eight were weighed for this pass and three were taken; these five
+    // were declined, and listing them here is what keeps that a decision
+    // rather than an omission nobody can tell from an oversight.
+    declinedFigures: ['100% retention', '85%', 'three global enterprise partnerships', '3,000', '10,000+'],
     // The organisations and awards are names, and so are the month
     // abbreviations, but each edition names them as its own CV does.
     recognitions: [
@@ -159,6 +177,10 @@ const editions = [
     // The same evidence as the English row, written as the Spanish CV writes
     // it: a decimal point for thousands, and a space before the unit.
     figures: ['850 ms', '34 ms', '100.000', '2M', '500k', '1M', '100k', '8 personas'],
+    // The declines above were made against the English CV in an English-only
+    // pass, and this edition is frozen against a CV of its own, so it has no
+    // list of its own to carry yet.
+    declinedFigures: [] as string[],
     recognitions: [
       'Finalista global',
       '100 Ideas Zaragoza',
@@ -783,6 +805,13 @@ describe.each(editions)('$edition edition', (edition) => {
       const text = renderedText(edition);
       for (const figure of edition.figures) {
         expect(text).toContain(figure);
+      }
+    });
+
+    it('carries none of the figures its CV states that this page declined', () => {
+      const text = renderedText(edition);
+      for (const figure of edition.declinedFigures) {
+        expect(text).not.toContain(figure);
       }
     });
 
