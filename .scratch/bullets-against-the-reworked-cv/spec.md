@@ -1,6 +1,30 @@
 # Bullets against the reworked CV
 
-Status: ready-for-human
+Status: superseded by [#4](https://github.com/fmenemo/fmenemo.github.io/issues/4)
+
+**This sweep is superseded and its six tickets are dead. Do not work them.** It was prepared
+on 2026-08-08 against the CV as it stood on 2026-08-06, and the CV moved twice more after
+that. `8e89f72` rewrote the summary and added an independent-work entry on 2026-08-18, and
+`36eab4d` took three prose rewrites the same morning. #4 also freezes the Spanish edition, so
+the Spanish half of every correction below is deferred rather than waiting on a signature.
+All six tickets changed under #4's decisions: 01 loses C2 entirely, 02 switches to the fuller
+variant, 03 and 04 narrow to English only, 05 drops from eight figure candidates to three,
+and 06 swaps a commit that does not resolve for a commit and a PDF digest.
+
+**C2 is dead rather than deferred.** It proposed a hero line ending on an agentic engineering
+workflow Fran built and ran for his own production delivery. `8e89f72` removed that from the
+CV on 2026-08-18, because the workflow had been dismantled on 2026-08-03. There is nothing
+left to sign. Shipping C2 as written would have put a fresher-looking falsehood in the hero
+than the one already there, and #4 settles an identity line of its own instead. Every other
+wording prepared here still holds.
+
+**`bullet-approval.md` stays, and that is why this directory is marked rather than deleted.**
+It holds the approved English wordings for C1, C3 and C4 and for the unified sign-on bullet,
+which #4's tickets take verbatim. All four were rechecked against `36eab4d` during #4's grill
+and still match the CV. Deleting this directory would take out the source of copy that is
+live or about to be.
+
+Everything from here down is the record as prepared on 2026-08-08. Read it as history.
 
 The sweep is done, the diff is prepared in `bullet-approval.md`, and the work is broken into
 six tickets under `issues/`. All of it is waiting on Fran, and on nothing else: tickets 01–03
