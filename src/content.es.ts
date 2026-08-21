@@ -135,11 +135,13 @@ export const es: SiteContent = {
   // the project is live but lands on a login wall. The Spanish CV hyperlinks the
   // name exactly as the English one does, so both editions differ from their CV
   // in the same way. The copy stands alone either way.
-  independentWork: {
-    name: 'Instagram Checker',
-    description:
-      'Construido de extremo a extremo con el mismo flujo agéntico que el trabajo de arriba: convierte la exportación de datos de Instagram que aporta el usuario en un panel de seguidores y seguidos, leyendo únicamente lo que el usuario proporciona en lugar de hacer scraping.',
-  },
+  independentWork: [
+    {
+      name: 'Instagram Checker',
+      description:
+        'Construido de extremo a extremo con el mismo flujo agéntico que el trabajo de arriba: convierte la exportación de datos de Instagram que aporta el usuario en un panel de seguidores y seguidos, leyendo únicamente lo que el usuario proporciona en lugar de hacer scraping.',
+    },
+  ],
 
   // Organisation and award names are names, not chrome. The month abbreviations
   // the CV uses here happen to be spelled the same in both languages.

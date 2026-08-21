@@ -127,11 +127,13 @@ export const en: SiteContent = {
   // No public URL by decision D1: the project is live but lands on a login wall,
   // which is a worse click than no click. The copy stands alone, so adding an
   // `href` here later is the whole change.
-  independentWork: {
-    name: 'Instagram Checker',
-    description:
-      'Built end to end with the same agentic workflow as the work above: it turns an Instagram data export the user supplies into a follower and following dashboard, reading only what the user provides rather than scraping.',
-  },
+  independentWork: [
+    {
+      name: 'Instagram Checker',
+      description:
+        'Built end to end with the same agentic workflow as the work above: it turns an Instagram data export the user supplies into a follower and following dashboard, reading only what the user provides rather than scraping.',
+    },
+  ],
 
   recognitions: [
     'NASA Space Apps Global Finalist & Galactic Impact Award (May 2017)',
