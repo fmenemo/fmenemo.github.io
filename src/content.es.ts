@@ -198,6 +198,7 @@ export const es: SiteContent = {
   ],
 
   chrome: {
+    skipToContent: 'Saltar al contenido',
     nav: {
       label: 'Secciones',
       // Not the section heading below: "Experiencia profesional" cannot sit in

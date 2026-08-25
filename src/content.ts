@@ -128,6 +128,14 @@ export interface OtherEdition {
 }
 
 export interface Chrome {
+  /**
+   * The first link in the document, which a keyboard visitor meets before the
+   * masthead and which jumps past it to the main landmark. It is hidden until
+   * it has focus, so it is the one label on the page that only some visitors
+   * ever read — which is why it is chrome and written in the edition's
+   * language rather than left in English for everyone.
+   */
+  skipToContent: string;
   // The nav labels are separate from the section headings below rather than
   // reused from them, and the two are free to differ. They coincide in English
   // and will not in Spanish: the CV's heading is "Experiencia profesional",
