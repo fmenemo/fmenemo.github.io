@@ -1,5 +1,5 @@
 import React from 'react';
-import { metaVoice } from '../styles';
+import { labelVoice } from '../styles';
 import Container from './Container';
 
 // The page is one editorial grid: a fixed measure, left-aligned, with the
@@ -19,7 +19,7 @@ const Section: React.FC<SectionProps> = ({ id, index, title, children }) => (
     <Container className='py-20 md:py-28'>
       <div className='grid gap-10 md:grid-cols-12'>
         <header className='md:col-span-3'>
-          <p className={`${metaVoice} text-accent dark:text-accent-dark`}>{index}</p>
+          <p className={`${labelVoice} text-accent dark:text-accent-dark`}>{index}</p>
           <h2 className='mt-2 text-xl font-semibold tracking-tight'>{title}</h2>
         </header>
         <div className='md:col-span-9'>{children}</div>

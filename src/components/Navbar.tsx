@@ -1,7 +1,7 @@
 import React from 'react';
 import { useContent } from '../hooks/useContent';
 import { useDarkMode } from '../hooks/useDarkMode';
-import { mastheadControl, metaVoice } from '../styles';
+import { mastheadControl, labelVoice } from '../styles';
 import Container from './Container';
 import LanguageSelector from './LanguageSelector';
 
@@ -74,7 +74,7 @@ const Navbar: React.FC = () => {
                 <a
                   key={link.name}
                   href={link.href}
-                  className={`${metaVoice} ${mastheadControl}`}
+                  className={`${labelVoice} ${mastheadControl}`}
                 >
                   {link.name}
                 </a>
