@@ -206,6 +206,7 @@ export const en: SiteContent = {
   ],
 
   chrome: {
+    skipToContent: 'Skip to content',
     nav: {
       label: 'Sections',
       experience: 'Experience',
