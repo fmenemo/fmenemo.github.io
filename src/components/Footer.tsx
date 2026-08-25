@@ -1,6 +1,6 @@
 import React from 'react';
 import { useContent } from '../hooks/useContent';
-import { metaVoice } from '../styles';
+import { labelVoice } from '../styles';
 import Container from './Container';
 
 const githubIcon =
@@ -24,7 +24,7 @@ const Footer: React.FC = () => {
   return (
     <footer className='border-t border-rule dark:border-rule-dark'>
       <Container className='py-10'>
-        <div className={`flex flex-wrap items-center justify-between gap-6 ${metaVoice} text-muted dark:text-muted-dark`}>
+        <div className={`flex flex-wrap items-center justify-between gap-6 ${labelVoice} text-muted dark:text-muted-dark`}>
           <p>
             &copy; {currentYear} {identity.name}
           </p>

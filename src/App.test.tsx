@@ -1,6 +1,7 @@
 import { cleanup, fireEvent, render, screen, within } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import App from './App';
+import { labelVoice, primaryAction, valueVoice } from './styles';
 import { en } from './content.en';
 import { es } from './content.es';
 // The shipped entry documents, the stylesheet holding the palette, and the
@@ -55,7 +56,11 @@ const editions = [
     // The first words of the identity line, which several guards need to find
     // the paragraph without asserting the whole of it.
     identityLead: /^Software Engineer, 10\+ years/,
-    themeToggle: /switch to (dark|light) mode/i,
+    // The toggle is a word rather than a sentence: it says the state it will
+    // switch to, and that one string is both what the eye reads and what a
+    // screen reader announces.
+    themeToggle: /^(dark|light)$/i,
+    theme: { toDark: 'Dark', toLight: 'Light' },
     // The first link in the document, which only a keyboard visitor ever reads.
     skipToContent: 'Skip to content',
     // The selector as a visitor meets it on this edition: its own label marked,
@@ -196,7 +201,8 @@ const editions = [
     imageSource: ogImageEsHtml,
     imageAlt: 'Fran Menéndez, ingeniero de software, Zaragoza, España.',
     identityLead: /^Ingeniero de software, más de 10 años/,
-    themeToggle: /cambiar a modo (oscuro|claro)/i,
+    themeToggle: /^(oscuro|claro)$/i,
+    theme: { toDark: 'Oscuro', toLight: 'Claro' },
     skipToContent: 'Saltar al contenido',
     language: {
       label: 'Idioma',
@@ -518,6 +524,28 @@ describe.each(editions)('$edition edition', (edition) => {
       expect(document.documentElement.classList.contains('dark')).toBe(true);
     });
 
+    // Guard test for ticket 19 (the toggle is text). The control is a word in
+    // the edition's language, and the word names the state a click will move
+    // to rather than the state the reader is in. Its visible text and its
+    // accessible name are the same string, so a voice-control visitor can say
+    // what they can see (WCAG 2.5.3, Label in Name) — which is what an icon
+    // with an aria-label could not offer. Asserted in both states, because the
+    // string a toggle carries after it is pressed is the one a reader checks
+    // to see that anything happened.
+    it('reads the word for the state it will switch to, in text and in name', () => {
+      render(<App content={content} />);
+
+      // Queried by accessible name and read for its text: the two assertions
+      // together are what says the two strings are one.
+      expect(toggle().textContent).toBe(edition.theme.toDark);
+      expect(screen.getAllByRole('button', { name: edition.theme.toDark })[0]).toBe(toggle());
+
+      fireEvent.click(toggle());
+
+      expect(toggle().textContent).toBe(edition.theme.toLight);
+      expect(screen.getAllByRole('button', { name: edition.theme.toLight })[0]).toBe(toggle());
+    });
+
     // A visitor who chose a theme on one edition keeps it on the other. The
     // two documents share an origin and a storage key, so this is the same
     // assertion as "a stored choice is honoured" made from the other edition's
@@ -683,6 +711,42 @@ describe.each(editions)('$edition edition', (edition) => {
     });
   });
 
+  // Guard tests for the Technologies fold. The section became a row under
+  // Education, and the two things a reader would notice if that were undone are
+  // a gap in the numbering and a link to `#technologies` landing on nothing.
+  describe('technologies sit in the Recognitions band', () => {
+    it('numbers the sections 01 to 04 with no gap', () => {
+      render(<App content={content} />);
+      // The hero carries no number, so it drops out here; every band below it
+      // wears one, and a missing band shows up as a short list rather than as
+      // a hole.
+      const numbers = [...document.querySelectorAll('main section')]
+        .map((section) => [...section.querySelectorAll('p')].find((text) => /^\d\d$/.test(text.textContent ?? '')))
+        .filter((number) => number !== undefined)
+        .map((number) => number.textContent);
+
+      expect(numbers).toEqual(['01', '02', '03', '04']);
+    });
+
+    it('lands a link to #technologies inside Recognitions', () => {
+      render(<App content={content} />);
+      const row = document.querySelector('#technologies');
+      expect(row).not.toBeNull();
+      expect(document.querySelector('section#recognitions')!.contains(row)).toBe(true);
+    });
+
+    // The label is chrome, so each edition says it in its own language, and the
+    // technologies themselves are the same names in both (they are not words in
+    // a language).
+    it('labels the row from this edition and keeps the running text', () => {
+      render(<App content={content} />);
+      const recognitions = within(document.getElementById('recognitions')!);
+
+      expect(recognitions.getByText(content.chrome.recognitions.technologies)).not.toBeNull();
+      expect(recognitions.getByText(content.technologies.join(' / '))).not.toBeNull();
+    });
+  });
+
   // Guard tests for ticket 05 of the Spanish edition (both CVs on the Spanish
   // edition). Running from the table is what pins the asymmetry: each row states
   // the whole list, so an edition quietly growing or losing a download fails
@@ -722,6 +786,30 @@ describe.each(editions)('$edition edition', (edition) => {
       for (const link of cvLinks()) {
         expect(publicAssets).toContain(link.getAttribute('href'));
       }
+    });
+  });
+
+  // Guard test for the ticket that moved the routes to Fran off the hero. The
+  // hero is where a visitor lands, so every action on it competes with the CV;
+  // Contact is the one place an address or a handle is read as text, and the
+  // test above that each contact route is a real link is what still covers it.
+  describe('what the hero offers', () => {
+    const heroLinks = () => {
+      render(<App content={content} />);
+      return [...document.getElementById('home')!.querySelectorAll('a')];
+    };
+
+    it('offers the edition’s CVs and nothing else', () => {
+      expect(heroLinks().map((link) => ({ href: link.getAttribute('href'), label: link.textContent }))).toEqual(
+        edition.cvs.map(({ href, label }) => ({ href, label }))
+      );
+    });
+
+    it('carries no email address and no route to LinkedIn', () => {
+      const hrefs = heroLinks().map((link) => link.getAttribute('href') ?? '');
+      expect(hrefs.filter((href) => href.startsWith('mailto:'))).toEqual([]);
+      expect(hrefs.filter((href) => /linkedin/i.test(href))).toEqual([]);
+      expect(document.getElementById('home')!.textContent).not.toContain(content.contact.email);
     });
   });
 
@@ -1498,6 +1586,110 @@ describe('the site is set in Geist', () => {
       expect(screen.getByText(edition.identityLead).className).not.toMatch(
         /font-(thin|extralight|light|medium|semibold|bold|extrabold|black)\b/
       );
+    });
+  });
+});
+
+// The evidence bullets are what a recruiter came to read, so they are set as
+// the page's primary text rather than as a caption under the role title.
+//
+// jsdom applies no stylesheet, so what an element is set in is not observable
+// here; the class it wears is. These read the shared voices out of the style
+// module rather than naming utilities inline, so a restyle of either voice is
+// still one edit and these go on saying what they mean. The measure, the
+// tabular figures and the pressed state itself are browser checks, recorded on
+// the ticket, for the same reason the faces are.
+describe('the evidence is the primary text', () => {
+  describe('the two metadata voices', () => {
+    it('sets a label in tracked mono caps', () => {
+      expect(labelVoice).toMatch(/\bfont-mono\b/);
+      expect(labelVoice).toMatch(/\buppercase\b/);
+      expect(labelVoice).toMatch(/\btracking-\[/);
+    });
+
+    // A value is an address or a handle: read as itself, not announced. Caps
+    // and letterspacing are what made the hero's email hard to read.
+    it('sets a value in lowercase mono at normal tracking', () => {
+      expect(valueVoice).toMatch(/\bfont-mono\b/);
+      expect(valueVoice).toMatch(/\blowercase\b/);
+      expect(valueVoice).toMatch(/\btracking-normal\b/);
+      expect(valueVoice).not.toMatch(/\buppercase\b/);
+    });
+  });
+
+  // A control that does not move under the pointer does not feel pressed. The
+  // reduced-motion block in `index.css` takes both of these back off.
+  describe('the CV button', () => {
+    it('moves down a pixel while it is held', () => {
+      expect(primaryAction).toMatch(/\bactive:translate-y-px\b/);
+    });
+
+    it('takes 200ms over its fill rather than the 150ms default', () => {
+      expect(primaryAction).toMatch(/\bduration-200\b/);
+    });
+  });
+
+  describe.each(editions)('on the $edition edition', (edition) => {
+    /** The first bullet of the most recent role, as an element on the page. */
+    const firstBullet = () => {
+      render(<App content={edition.content} />);
+      return screen.getByText(edition.content.employers[0].roles[0].bullets[0]);
+    };
+
+    it('sets the bullets at the body size in the ink colour', () => {
+      const bullet = firstBullet();
+      expect(bullet.className).not.toMatch(/\btext-(2xs|xs|sm)\b/);
+      expect(bullet.className).not.toMatch(/\btext-muted\b/);
+    });
+
+    it('keeps the hairline down the left of each bullet', () => {
+      expect(firstBullet().className).toMatch(/\bborder-l\b/);
+    });
+
+    // About 65 characters, and on the list: capping the column instead would
+    // pull the employer name and its dates in with it. What 65 characters comes
+    // to in this face is a browser measurement, recorded on the ticket; the
+    // band here is what that measurement leaves room to adjust within.
+    it('caps the bullet list at a readable measure and nothing above it', () => {
+      const list = firstBullet().parentElement!;
+      const measure = list.className.match(/\bmax-w-\[([\d.]+)rem\]/);
+
+      expect(measure).not.toBeNull();
+      expect(Number(measure![1])).toBeGreaterThanOrEqual(28);
+      expect(Number(measure![1])).toBeLessThanOrEqual(32);
+
+      const header = list.closest('article')!.querySelector('header')!;
+      expect(header.className).not.toMatch(/\bmax-w-/);
+    });
+
+    it('gives the metadata beside the bullets the muted colour and the label voice', () => {
+      render(<App content={edition.content} />);
+      const dates = screen.getByText(edition.content.employers[0].roles[0].dates);
+      expect(dates.className).toContain(labelVoice);
+    });
+
+    // The row labels wear the label voice, the addresses beside them the value
+    // voice: that difference is the whole point of naming two.
+    it('sets the Contact email and LinkedIn in the value voice', () => {
+      render(<App content={edition.content} />);
+      const { contact, chrome } = edition.content;
+      const section = within(document.getElementById('contact')!);
+
+      for (const name of [contact.email, contact.linkedinLabel]) {
+        expect(section.getByRole('link', { name }).className).toContain(valueVoice);
+      }
+
+      expect(section.getByText(chrome.contact.email).className).toContain(labelVoice);
+    });
+
+    // The other value on the page: a place and a way of working, read as
+    // themselves rather than announced in caps.
+    it('sets the hero’s location and mode line in the value voice', () => {
+      render(<App content={edition.content} />);
+      const line = within(document.getElementById('home')!).getByText(edition.content.identity.location, {
+        exact: false,
+      });
+      expect(line.className).toContain(valueVoice);
     });
   });
 });

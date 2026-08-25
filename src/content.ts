@@ -145,9 +145,16 @@ export interface Chrome {
     label: string;
     experience: string;
     contact: string;
-    /** Accessible names for the theme toggle, by what it will do next. */
-    toDarkMode: string;
-    toLightMode: string;
+    /**
+     * The theme toggle's word, by what a click will do next: a reader in light
+     * mode sees `toDark`. One string, not two: it is the visible label and the
+     * accessible name at once, so it has to be short enough to sit in the
+     * masthead and say enough to be a name (WCAG 2.5.3, Label in Name). Where
+     * an edition's word is too long to fit beside the language selector at
+     * 320px, it is that edition's word that is shortened.
+     */
+    toDark: string;
+    toLight: string;
   };
   /**
    * The language selector: two short labels, the current one marked and the
@@ -166,7 +173,6 @@ export interface Chrome {
     experience: string;
     independentWork: string;
     recognitions: string;
-    technologies: string;
     contact: string;
   };
   /** The labels down the left of the contact list, not the values beside them. */
@@ -175,8 +181,14 @@ export interface Chrome {
     linkedin: string;
     location: string;
   };
+  /**
+   * The labels down the left of the Recognitions band's rows. Technologies is
+   * one of them rather than a section heading: it folded into this band and
+   * kept its anchor, so a row label is all the chrome it needs (ADR 0005).
+   */
   recognitions: {
     education: string;
+    technologies: string;
   };
 }
 

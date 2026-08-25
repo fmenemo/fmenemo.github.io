@@ -75,6 +75,18 @@ body {
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  /* The page is read for its figures. Geist's default figures are
+     proportional, so 850ms beside 34ms sits at two different widths and the
+     numbers jitter; tabular ones line up wherever they land. */
+  font-variant-numeric: tabular-nums;
+}
+
+/* Running text, which on this page means the evidence bullets and the
+   paragraphs: the browser looks ahead over the last few lines rather than
+   greedily, so no bullet ends on a single stranded word. */
+p,
+li {
+  text-wrap: pretty;
 }
 
 html {
@@ -106,5 +118,12 @@ html {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
+  }
+
+  /* A pressed control drops a pixel, which is motion whether or not anything
+     transitions to it. Tailwind's translate utilities set the `translate`
+     property, so this is the one that takes the drop back off. */
+  *:active {
+    translate: none !important;
   }
 }

@@ -1,6 +1,6 @@
 import React from 'react';
 import { useContent } from '../hooks/useContent';
-import { metaVoice } from '../styles';
+import { labelVoice } from '../styles';
 
 /**
  * The id the main landmark carries and this link jumps to. Exported so that
@@ -25,7 +25,7 @@ const SkipLink: React.FC = () => {
   return (
     <a
       href={`#${MAIN_ID}`}
-      className={`sr-only ${metaVoice} focus:not-sr-only focus:fixed focus:top-3 focus:left-6 focus:z-60 focus:border-2 focus:border-accent focus:bg-paper focus:px-4 focus:py-2 focus:text-accent dark:focus:border-accent-dark dark:focus:bg-canvas dark:focus:text-accent-dark`}
+      className={`sr-only ${labelVoice} focus:not-sr-only focus:fixed focus:top-3 focus:left-6 focus:z-60 focus:border-2 focus:border-accent focus:bg-paper focus:px-4 focus:py-2 focus:text-accent dark:focus:border-accent-dark dark:focus:bg-canvas dark:focus:text-accent-dark`}
     >
       {chrome.skipToContent}
     </a>
