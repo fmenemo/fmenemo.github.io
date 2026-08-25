@@ -13,6 +13,16 @@ export const metaVoice = 'font-mono text-2xs tracking-[0.2em] uppercase';
 export const mastheadControl =
   'text-muted transition-colors hover:text-accent dark:text-muted-dark dark:hover:text-accent-dark';
 
+/**
+ * A control that moves when it is pressed: one pixel down while it is held,
+ * so that a click reads as a click. Worn by the theme toggle, and by the
+ * other controls a visitor presses rather than follows as they get it.
+ * There is no transition on it: the offset lasts exactly as long as the press
+ * and arrives with it, which is why the reduced-motion block has nothing to
+ * take away here.
+ */
+export const pressable = 'active:translate-y-px';
+
 /** The bordered block that carries a section's main action. */
 export const primaryAction = `inline-block border-2 border-ink px-6 py-3 ${metaVoice} transition-colors hover:bg-ink hover:text-paper dark:border-chalk dark:hover:bg-chalk dark:hover:text-canvas`;
 

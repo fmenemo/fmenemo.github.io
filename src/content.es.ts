@@ -204,8 +204,10 @@ export const es: SiteContent = {
       // the masthead and keep it one line at every width.
       experience: 'Experiencia',
       contact: 'Contacto',
-      toDarkMode: 'Cambiar a modo oscuro',
-      toLightMode: 'Cambiar a modo claro',
+      // Una palabra, no "Modo oscuro": el control ya está junto al selector de
+      // idioma, y "modo" es lo único que las dos palabras comparten.
+      toDark: 'Oscuro',
+      toLight: 'Claro',
     },
     // "EN" y "ES" son códigos de idioma, no palabras, así que se escriben igual
     // en las dos ediciones. Lo que cambia es cuál de los dos es el otro.
