@@ -18,7 +18,7 @@ const Contact: React.FC = () => {
   ];
 
   return (
-    <Section id='contact' index='05' title={chrome.sections.contact}>
+    <Section id='contact' index='04' title={chrome.sections.contact}>
       <dl className='border-t border-rule dark:border-rule-dark'>
         {routes.map((route) => (
           <div key={route.label} className='grid gap-1 border-b border-rule py-6 sm:grid-cols-4 sm:gap-8 dark:border-rule-dark'>

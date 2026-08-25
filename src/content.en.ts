@@ -222,7 +222,6 @@ export const en: SiteContent = {
       experience: 'Experience',
       independentWork: 'Independent work',
       recognitions: 'Recognitions',
-      technologies: 'Technologies',
       contact: 'Contact',
     },
     contact: {
@@ -232,6 +231,7 @@ export const en: SiteContent = {
     },
     recognitions: {
       education: 'Education',
+      technologies: 'Technologies',
     },
   },
 };

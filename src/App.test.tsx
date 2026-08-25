@@ -606,6 +606,42 @@ describe.each(editions)('$edition edition', (edition) => {
     });
   });
 
+  // Guard tests for the Technologies fold. The section became a row under
+  // Education, and the two things a reader would notice if that were undone are
+  // a gap in the numbering and a link to `#technologies` landing on nothing.
+  describe('technologies sit in the Recognitions band', () => {
+    it('numbers the sections 01 to 04 with no gap', () => {
+      render(<App content={content} />);
+      // The hero carries no number, so it drops out here; every band below it
+      // wears one, and a missing band shows up as a short list rather than as
+      // a hole.
+      const numbers = [...document.querySelectorAll('main section')]
+        .map((section) => [...section.querySelectorAll('p')].find((text) => /^\d\d$/.test(text.textContent ?? '')))
+        .filter((number) => number !== undefined)
+        .map((number) => number.textContent);
+
+      expect(numbers).toEqual(['01', '02', '03', '04']);
+    });
+
+    it('lands a link to #technologies inside Recognitions', () => {
+      render(<App content={content} />);
+      const row = document.querySelector('#technologies');
+      expect(row).not.toBeNull();
+      expect(document.querySelector('section#recognitions')!.contains(row)).toBe(true);
+    });
+
+    // The label is chrome, so each edition says it in its own language, and the
+    // technologies themselves are the same names in both (they are not words in
+    // a language).
+    it('labels the row from this edition and keeps the running text', () => {
+      render(<App content={content} />);
+      const recognitions = within(document.getElementById('recognitions')!);
+
+      expect(recognitions.getByText(content.chrome.recognitions.technologies)).not.toBeNull();
+      expect(recognitions.getByText(content.technologies.join(' / '))).not.toBeNull();
+    });
+  });
+
   // Guard tests for ticket 05 of the Spanish edition (both CVs on the Spanish
   // edition). Running from the table is what pins the asymmetry: each row states
   // the whole list, so an edition quietly growing or losing a download fails
