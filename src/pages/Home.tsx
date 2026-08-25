@@ -24,7 +24,7 @@ const Home: React.FC = () => {
           ))}
         </h1>
 
-        <p className='mt-8 max-w-2xl text-lg leading-relaxed font-light text-muted dark:text-muted-dark'>{identity.line}</p>
+        <p className='mt-8 max-w-2xl text-lg leading-relaxed text-muted dark:text-muted-dark'>{identity.line}</p>
 
         <div className='mt-12 flex flex-wrap items-center gap-x-8 gap-y-4'>
           {/* The first CV is the edition's own and wears the bordered block;
