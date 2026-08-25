@@ -1,11 +1,15 @@
-/* Self-hosted subset woff2 fonts (latin only). */
-@import '@fontsource/inter/latin-300.css';
-@import '@fontsource/inter/latin-400.css';
-@import '@fontsource/inter/latin-500.css';
-@import '@fontsource/inter/latin-600.css';
-@import '@fontsource/inter/latin-700.css';
-@import '@fontsource/ibm-plex-mono/latin-400.css';
-@import '@fontsource/ibm-plex-mono/latin-500.css';
+/* Self-hosted subset woff2 fonts (latin only).
+
+   Five files, and each one is worn somewhere: sans 400 for the body and the
+   identity line, 500 for the role titles, 600 for the headings; mono 400 for
+   the metadata voice and 500 for the masthead name. A weight nothing asks for
+   is a file the browser never fetches and a line that reads as a decision,
+   so the list stays this short. */
+@import '@fontsource/geist-sans/latin-400.css';
+@import '@fontsource/geist-sans/latin-500.css';
+@import '@fontsource/geist-sans/latin-600.css';
+@import '@fontsource/geist-mono/latin-400.css';
+@import '@fontsource/geist-mono/latin-500.css';
 
 @import 'tailwindcss';
 
@@ -20,8 +24,8 @@
    colour that differs between themes has a `-dark` counterpart applied with
    the `dark:` variant, so light stays the primary composition. */
 @theme {
-  --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
-  --font-mono: 'IBM Plex Mono', ui-monospace, monospace;
+  --font-sans: 'Geist Sans', ui-sans-serif, system-ui, sans-serif;
+  --font-mono: 'Geist Mono', ui-monospace, monospace;
 
   /* Surfaces and text. The two surfaces are mirrored by the `theme-color`
      meta tags in index.html, which paint the browser's own chrome and are

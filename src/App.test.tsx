@@ -12,6 +12,10 @@ import esHtml from '../es/index.html?raw';
 import ogImageHtml from '../tools/assets/og-image.html?raw';
 import ogImageEsHtml from '../tools/assets/og-image.es.html?raw';
 import faviconSvg from '../public/favicon.svg?raw';
+// The manifest, read as text and parsed here rather than imported as a module:
+// `package.json` sits outside the app project's `include`, and a resolved JSON
+// import would drag it in.
+import packageJson from '../package.json?raw';
 
 const SITE = 'https://fmenemo.github.io';
 
@@ -1305,5 +1309,40 @@ describe.each(editions)('the $edition share image stays a condensation of the id
       if (mine.includes(phrase)) continue;
       expect(shareImageCopy).not.toContain(phrase);
     }
+  });
+});
+
+// The typefaces. Neither of the two places they are actually set can be read
+// here — the tokens and the `@font-face` imports live in `index.css`, and
+// Vitest stubs a CSS import to the empty string whatever query it carries (see
+// the theme-color test above for the same limitation). What is left is the
+// half a stale swap would survive in: a face removed from the stylesheet but
+// left in the manifest goes on being installed, and the next import of it
+// resolves and ships bytes nobody chose.
+describe('the site is set in Geist', () => {
+  const dependencies: Record<string, string> = JSON.parse(packageJson).dependencies;
+
+  it.each(['@fontsource/geist-sans', '@fontsource/geist-mono'])('depends on %s', (name) => {
+    expect(dependencies).toHaveProperty(name);
+  });
+
+  // Self-hosted, both of them: a face fetched from a CDN is a third party
+  // between the visitor and the first paint, and the latin subsets are what
+  // keeps the swap from costing bytes.
+  it.each(['@fontsource/inter', '@fontsource/ibm-plex-mono'])('no longer depends on %s', (name) => {
+    expect(dependencies).not.toHaveProperty(name);
+  });
+
+  // The identity line wore `font-light`, which was a weight Inter had and the
+  // swap does not load. Left in place it would be synthesised or silently
+  // rounded, so the line is asserted to wear no weight utility at all: it
+  // inherits the 400 the body is set in.
+  describe.each(editions)('on the $edition edition', (edition) => {
+    it('renders the identity line at the body weight', () => {
+      render(<App content={edition.content} />);
+      expect(screen.getByText(edition.identityLead).className).not.toMatch(
+        /font-(thin|extralight|light|medium|semibold|bold|extrabold|black)\b/
+      );
+    });
   });
 });
