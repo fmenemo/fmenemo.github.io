@@ -1,7 +1,7 @@
 import React, { Fragment } from 'react';
 import Container from '../components/Container';
 import { useContent } from '../hooks/useContent';
-import { accentAction, metaVoice, primaryAction } from '../styles';
+import { accentAction, labelVoice, primaryAction } from '../styles';
 
 // The hero states who Fran is and puts the CV one click away. It carries no
 // availability signalling and no greeting: a reader who arrived already knowing
@@ -50,7 +50,7 @@ const Home: React.FC = () => {
           </a>
         </div>
 
-        <p className={`mt-16 border-t border-rule pt-4 ${metaVoice} text-muted dark:border-rule-dark dark:text-muted-dark`}>
+        <p className={`mt-16 border-t border-rule pt-4 ${labelVoice} text-muted dark:border-rule-dark dark:text-muted-dark`}>
           {identity.location}
           <span className='mx-3 text-rule dark:text-rule-dark'>/</span>
           {identity.mode}

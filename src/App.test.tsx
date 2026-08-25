@@ -1,6 +1,7 @@
 import { cleanup, fireEvent, render, screen, within } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import App from './App';
+import { labelVoice, primaryAction, valueVoice } from './styles';
 import { en } from './content.en';
 import { es } from './content.es';
 // The shipped entry documents, the stylesheet holding the palette, and the
@@ -1343,6 +1344,102 @@ describe('the site is set in Geist', () => {
       expect(screen.getByText(edition.identityLead).className).not.toMatch(
         /font-(thin|extralight|light|medium|semibold|bold|extrabold|black)\b/
       );
+    });
+  });
+});
+
+// The evidence bullets are what a recruiter came to read, so they are set as
+// the page's primary text rather than as a caption under the role title.
+//
+// jsdom applies no stylesheet, so what an element is set in is not observable
+// here; the class it wears is. These read the shared voices out of the style
+// module rather than naming utilities inline, so a restyle of either voice is
+// still one edit and these go on saying what they mean. The measure, the
+// tabular figures and the pressed state itself are browser checks, recorded on
+// the ticket, for the same reason the faces are.
+describe('the evidence is the primary text', () => {
+  describe('the two metadata voices', () => {
+    it('sets a label in tracked mono caps', () => {
+      expect(labelVoice).toMatch(/\bfont-mono\b/);
+      expect(labelVoice).toMatch(/\buppercase\b/);
+      expect(labelVoice).toMatch(/\btracking-\[/);
+    });
+
+    // A value is an address or a handle: read as itself, not announced. Caps
+    // and letterspacing are what made the hero's email hard to read.
+    it('sets a value in lowercase mono at normal tracking', () => {
+      expect(valueVoice).toMatch(/\bfont-mono\b/);
+      expect(valueVoice).toMatch(/\blowercase\b/);
+      expect(valueVoice).toMatch(/\btracking-normal\b/);
+      expect(valueVoice).not.toMatch(/\buppercase\b/);
+    });
+  });
+
+  // A control that does not move under the pointer does not feel pressed. The
+  // reduced-motion block in `index.css` takes both of these back off.
+  describe('the CV button', () => {
+    it('moves down a pixel while it is held', () => {
+      expect(primaryAction).toMatch(/\bactive:translate-y-px\b/);
+    });
+
+    it('takes 200ms over its fill rather than the 150ms default', () => {
+      expect(primaryAction).toMatch(/\bduration-200\b/);
+    });
+  });
+
+  describe.each(editions)('on the $edition edition', (edition) => {
+    /** The first bullet of the most recent role, as an element on the page. */
+    const firstBullet = () => {
+      render(<App content={edition.content} />);
+      return screen.getByText(edition.content.employers[0].roles[0].bullets[0]);
+    };
+
+    it('sets the bullets at the body size in the ink colour', () => {
+      const bullet = firstBullet();
+      expect(bullet.className).not.toMatch(/\btext-(2xs|xs|sm)\b/);
+      expect(bullet.className).not.toMatch(/\btext-muted\b/);
+    });
+
+    it('keeps the hairline down the left of each bullet', () => {
+      expect(firstBullet().className).toMatch(/\bborder-l\b/);
+    });
+
+    // About 65 characters, and on the list: capping the column instead would
+    // pull the employer name and its dates in with it. What 65 characters comes
+    // to in this face is a browser measurement, recorded on the ticket; the
+    // band here is what that measurement leaves room to adjust within.
+    it('caps the bullet list at a readable measure and nothing above it', () => {
+      const list = firstBullet().parentElement!;
+      const measure = list.className.match(/\bmax-w-\[([\d.]+)rem\]/);
+
+      expect(measure).not.toBeNull();
+      expect(Number(measure![1])).toBeGreaterThanOrEqual(28);
+      expect(Number(measure![1])).toBeLessThanOrEqual(32);
+
+      const header = list.closest('article')!.querySelector('header')!;
+      expect(header.className).not.toMatch(/\bmax-w-/);
+    });
+
+    it('gives the metadata beside the bullets the muted colour and the label voice', () => {
+      render(<App content={edition.content} />);
+      const dates = screen.getByText(edition.content.employers[0].roles[0].dates);
+      expect(dates.className).toContain(labelVoice);
+    });
+
+    // The row labels wear the label voice, the addresses beside them the value
+    // voice: that difference is the whole point of naming two.
+    it('sets the Contact email and LinkedIn in the value voice', () => {
+      render(<App content={edition.content} />);
+      const { contact, chrome } = edition.content;
+      // Scoped to the section: the hero still repeats both routes until the
+      // ticket that moves them here takes them off it.
+      const section = within(document.getElementById('contact')!);
+
+      for (const name of [contact.email, contact.linkedinLabel]) {
+        expect(section.getByRole('link', { name }).className).toContain(valueVoice);
+      }
+
+      expect(section.getByText(chrome.contact.email).className).toContain(labelVoice);
     });
   });
 });
