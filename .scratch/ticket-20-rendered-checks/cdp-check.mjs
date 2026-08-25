@@ -1,7 +1,13 @@
 import { writeFileSync, mkdirSync } from 'node:fs';
 
+// Usage: node cdp-check.mjs <output-dir> [base-url]
+//
+// The base URL is an argument so that the same script runs against the local
+// build and, once this branch is merged and published, against the deployed
+// site: https://fmenemo.github.io. The half of the ticket's browser criterion
+// that a Run cannot reach is the deployment, not the check.
 const OUT = process.argv[2];
-const BASE = 'http://127.0.0.1:4174';
+const BASE = (process.argv[3] ?? 'http://127.0.0.1:4174').replace(/\/$/, '');
 mkdirSync(OUT, { recursive: true });
 
 const targets = await (await fetch('http://127.0.0.1:9333/json/list')).json();
@@ -114,6 +120,8 @@ for (const [edition, url] of [['en', `${BASE}/`], ['es', `${BASE}/es/`]]) {
   await shot(`skip-link-${edition}-activated`);
   report[edition] = { beforeTab, focused, landed };
 }
+
+report['404-status'] = (await fetch(`${BASE}/this-page-does-not-exist`)).status;
 
 for (const scheme of ['light', 'dark']) {
   await send('Emulation.setEmulatedMedia', { features: [{ name: 'prefers-color-scheme', value: scheme }] });
