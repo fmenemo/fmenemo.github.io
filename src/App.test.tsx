@@ -52,7 +52,11 @@ const editions = [
     // The first words of the identity line, which several guards need to find
     // the paragraph without asserting the whole of it.
     identityLead: /^Software Engineer, 10\+ years/,
-    themeToggle: /switch to (dark|light) mode/i,
+    // The toggle is a word rather than a sentence: it says the state it will
+    // switch to, and that one string is both what the eye reads and what a
+    // screen reader announces.
+    themeToggle: /^(dark|light)$/i,
+    theme: { toDark: 'Dark', toLight: 'Light' },
     // The selector as a visitor meets it on this edition: its own label marked,
     // the sibling's label linked, and the link named in this edition's language.
     language: {
@@ -191,7 +195,8 @@ const editions = [
     imageSource: ogImageEsHtml,
     imageAlt: 'Fran Menéndez, ingeniero de software, Zaragoza, España.',
     identityLead: /^Ingeniero de software, más de 10 años/,
-    themeToggle: /cambiar a modo (oscuro|claro)/i,
+    themeToggle: /^(oscuro|claro)$/i,
+    theme: { toDark: 'Oscuro', toLight: 'Claro' },
     language: {
       label: 'Idioma',
       current: 'ES',
@@ -412,6 +417,28 @@ describe.each(editions)('$edition edition', (edition) => {
       localStorage.setItem('theme', 'banana');
       render(<App content={content} />);
       expect(document.documentElement.classList.contains('dark')).toBe(true);
+    });
+
+    // Guard test for ticket 19 (the toggle is text). The control is a word in
+    // the edition's language, and the word names the state a click will move
+    // to rather than the state the reader is in. Its visible text and its
+    // accessible name are the same string, so a voice-control visitor can say
+    // what they can see (WCAG 2.5.3, Label in Name) — which is what an icon
+    // with an aria-label could not offer. Asserted in both states, because the
+    // string a toggle carries after it is pressed is the one a reader checks
+    // to see that anything happened.
+    it('reads the word for the state it will switch to, in text and in name', () => {
+      render(<App content={content} />);
+
+      // Queried by accessible name and read for its text: the two assertions
+      // together are what says the two strings are one.
+      expect(toggle().textContent).toBe(edition.theme.toDark);
+      expect(screen.getAllByRole('button', { name: edition.theme.toDark })[0]).toBe(toggle());
+
+      fireEvent.click(toggle());
+
+      expect(toggle().textContent).toBe(edition.theme.toLight);
+      expect(screen.getAllByRole('button', { name: edition.theme.toLight })[0]).toBe(toggle());
     });
 
     // A visitor who chose a theme on one edition keeps it on the other. The

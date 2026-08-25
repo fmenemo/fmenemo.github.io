@@ -1,31 +1,9 @@
 import React from 'react';
 import { useContent } from '../hooks/useContent';
 import { useDarkMode } from '../hooks/useDarkMode';
-import { mastheadControl, labelVoice } from '../styles';
+import { mastheadControl, labelVoice, pressable } from '../styles';
 import Container from './Container';
 import LanguageSelector from './LanguageSelector';
-
-const SunIcon = () => (
-  <svg className='h-4 w-4' fill='none' stroke='currentColor' viewBox='0 0 24 24' aria-hidden='true'>
-    <path
-      strokeLinecap='round'
-      strokeLinejoin='round'
-      strokeWidth={1.5}
-      d='M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z'
-    />
-  </svg>
-);
-
-const MoonIcon = () => (
-  <svg className='h-4 w-4' fill='none' stroke='currentColor' viewBox='0 0 24 24' aria-hidden='true'>
-    <path
-      strokeLinecap='round'
-      strokeLinejoin='round'
-      strokeWidth={1.5}
-      d='M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z'
-    />
-  </svg>
-);
 
 // The masthead is a hairline rule and three short labels. It carries no
 // scroll state, no blur and no mobile menu: at this length the links fit
@@ -83,13 +61,21 @@ const Navbar: React.FC = () => {
 
             <LanguageSelector />
 
+            {/* A word, not a sun and a moon. The word is the state a click
+                moves to, because the state a reader is already in is the one
+                thing the page in front of them already says.
+
+                It carries no `aria-label`: the text is the accessible name,
+                which is the whole point of the control being text. A label
+                that restated it in a longer sentence would leave a
+                voice-control visitor unable to say what they can see (WCAG
+                2.5.3, Label in Name). */}
             <button
               type='button'
               onClick={toggleDarkMode}
-              aria-label={isDarkMode ? chrome.nav.toLightMode : chrome.nav.toDarkMode}
-              className={`-mr-1 p-1 ${mastheadControl}`}
+              className={`${labelVoice} -mr-1 p-1 ${mastheadControl} ${pressable}`}
             >
-              {isDarkMode ? <SunIcon /> : <MoonIcon />}
+              {isDarkMode ? chrome.nav.toLight : chrome.nav.toDark}
             </button>
           </div>
         </div>

@@ -137,9 +137,16 @@ export interface Chrome {
     label: string;
     experience: string;
     contact: string;
-    /** Accessible names for the theme toggle, by what it will do next. */
-    toDarkMode: string;
-    toLightMode: string;
+    /**
+     * The theme toggle's word, by what a click will do next: a reader in light
+     * mode sees `toDark`. One string, not two: it is the visible label and the
+     * accessible name at once, so it has to be short enough to sit in the
+     * masthead and say enough to be a name (WCAG 2.5.3, Label in Name). Where
+     * an edition's word is too long to fit beside the language selector at
+     * 320px, it is that edition's word that is shortened.
+     */
+    toDark: string;
+    toLight: string;
   };
   /**
    * The language selector: two short labels, the current one marked and the

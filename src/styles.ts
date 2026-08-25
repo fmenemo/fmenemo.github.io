@@ -21,12 +21,22 @@ export const mastheadControl =
   'text-muted transition-colors hover:text-accent dark:text-muted-dark dark:hover:text-accent-dark';
 
 /**
+ * A control that moves when it is pressed: one pixel down while it is held,
+ * so that a click reads as a click. Worn by the theme toggle and by the
+ * primary action, which are the controls a visitor presses rather than
+ * follows. Nothing transitions to the offset — it arrives with the press and
+ * lasts exactly as long — so the `*:active` rule in `index.css` is what takes
+ * it back off under reduced motion.
+ */
+export const pressable = 'active:translate-y-px';
+
+/**
  * The bordered block that carries a section's main action. It is a control and
  * not a value, so it wears the label voice. The pixel it drops on `:active` and
  * the slower fill are what make a click read as a press; the reduced-motion
  * block in `index.css` takes both back off.
  */
-export const primaryAction = `inline-block border-2 border-ink px-6 py-3 ${labelVoice} transition-colors duration-200 active:translate-y-px hover:bg-ink hover:text-paper dark:border-chalk dark:hover:bg-chalk dark:hover:text-canvas`;
+export const primaryAction = `inline-block border-2 border-ink px-6 py-3 ${labelVoice} ${pressable} transition-colors duration-200 hover:bg-ink hover:text-paper dark:border-chalk dark:hover:bg-chalk dark:hover:text-canvas`;
 
 /** The accent-underlined action that sits beside a primary one. */
 export const accentAction = `${labelVoice} text-accent underline decoration-1 underline-offset-4 transition-colors hover:text-ink dark:text-accent-dark dark:hover:text-chalk`;
