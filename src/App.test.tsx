@@ -648,6 +648,30 @@ describe.each(editions)('$edition edition', (edition) => {
     });
   });
 
+  // Guard test for the ticket that moved the routes to Fran off the hero. The
+  // hero is where a visitor lands, so every action on it competes with the CV;
+  // Contact is the one place an address or a handle is read as text, and the
+  // test above that each contact route is a real link is what still covers it.
+  describe('what the hero offers', () => {
+    const heroLinks = () => {
+      render(<App content={content} />);
+      return [...document.getElementById('home')!.querySelectorAll('a')];
+    };
+
+    it('offers the edition’s CVs and nothing else', () => {
+      expect(heroLinks().map((link) => ({ href: link.getAttribute('href'), label: link.textContent }))).toEqual(
+        edition.cvs.map(({ href, label }) => ({ href, label }))
+      );
+    });
+
+    it('carries no email address and no route to LinkedIn', () => {
+      const hrefs = heroLinks().map((link) => link.getAttribute('href') ?? '');
+      expect(hrefs.filter((href) => href.startsWith('mailto:'))).toEqual([]);
+      expect(hrefs.filter((href) => /linkedin/i.test(href))).toEqual([]);
+      expect(document.getElementById('home')!.textContent).not.toContain(content.contact.email);
+    });
+  });
+
   // Guard tests for ADR 0001 arriving at the field it is easiest to break:
   // employment dates, which go wrong by standing still.
   //
@@ -1458,8 +1482,6 @@ describe('the evidence is the primary text', () => {
     it('sets the Contact email and LinkedIn in the value voice', () => {
       render(<App content={edition.content} />);
       const { contact, chrome } = edition.content;
-      // Scoped to the section: the hero still repeats both routes until the
-      // ticket that moves them here takes them off it.
       const section = within(document.getElementById('contact')!);
 
       for (const name of [contact.email, contact.linkedinLabel]) {
@@ -1467,6 +1489,16 @@ describe('the evidence is the primary text', () => {
       }
 
       expect(section.getByText(chrome.contact.email).className).toContain(labelVoice);
+    });
+
+    // The other value on the page: a place and a way of working, read as
+    // themselves rather than announced in caps.
+    it('sets the hero’s location and mode line in the value voice', () => {
+      render(<App content={edition.content} />);
+      const line = within(document.getElementById('home')!).getByText(edition.content.identity.location, {
+        exact: false,
+      });
+      expect(line.className).toContain(valueVoice);
     });
   });
 });
