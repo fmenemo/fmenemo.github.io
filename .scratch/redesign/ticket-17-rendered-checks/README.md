@@ -5,11 +5,19 @@ byte figure a visitor's browser produces, and one asks for a face read off a
 rendered page. Both were done, and this is what they found, so that a reader of
 the branch does not have to take a commit message's word for it.
 
-Both criteria say "recorded in the ticket". The record is here instead, and that
-is not a preference: the token this branch's session ran under is denied
-`addComment` on the repository, so `gh issue comment 17` fails with `Resource not
-accessible by personal access token`. The text below is written to be posted to
-#17 verbatim by someone whose token can.
+Both criteria say "recorded in the ticket", and this text is on #17 as
+[a comment](https://github.com/fmenemo/fmenemo.github.io/issues/17#issuecomment-5410768189).
+It is here too because the screenshots are here: a comment can carry the numbers
+but not eight pictures the branch already has to hold.
+
+Posting it needed the right credential, which is worth writing down because it
+cost two rounds of review to find. `GH_TOKEN` is set in this environment to a
+fine-grained PAT with no Issues write, and every route to the issue fails the
+same way under it — `gh issue comment` through GraphQL `addComment`, the REST
+`POST /issues/17/comments`, and even a no-op `PATCH` of the body, all with
+`Resource not accessible by personal access token`. The keyring credential `gh`
+also holds carries the `repo` scope and can. So it is `env -u GH_TOKEN gh issue
+comment`, not a permission that has to be asked for.
 
 ## What was measured, and how
 
