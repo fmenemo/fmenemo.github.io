@@ -216,14 +216,11 @@ export const es: SiteContent = {
       current: 'ES',
       other: { label: 'EN', path: '/', lang: 'en', name: 'Ver esta página en inglés' },
     },
-    // The CV's own headings, with one exception: the CV calls this section
-    // "Competencias técnicas", and the site does not, for the same reason the
-    // English edition says "Technologies" rather than "Skills" (decision D1-ES).
+    // The CV's own headings.
     sections: {
       experience: 'Experiencia profesional',
       independentWork: 'Trabajo independiente',
       recognitions: 'Reconocimientos y premios',
-      technologies: 'Tecnologías',
       contact: 'Contacto',
     },
     contact: {
@@ -233,6 +230,10 @@ export const es: SiteContent = {
     },
     recognitions: {
       education: 'Formación e idiomas',
+      // The CV calls this block "Competencias técnicas", and the site does not,
+      // for the same reason the English edition says "Technologies" rather than
+      // "Skills" (decision D1-ES).
+      technologies: 'Tecnologías',
     },
   },
 };

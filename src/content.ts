@@ -165,7 +165,6 @@ export interface Chrome {
     experience: string;
     independentWork: string;
     recognitions: string;
-    technologies: string;
     contact: string;
   };
   /** The labels down the left of the contact list, not the values beside them. */
@@ -174,8 +173,14 @@ export interface Chrome {
     linkedin: string;
     location: string;
   };
+  /**
+   * The labels down the left of the Recognitions band's rows. Technologies is
+   * one of them rather than a section heading: it folded into this band and
+   * kept its anchor, so a row label is all the chrome it needs (ADR 0005).
+   */
   recognitions: {
     education: string;
+    technologies: string;
   };
 }
 
