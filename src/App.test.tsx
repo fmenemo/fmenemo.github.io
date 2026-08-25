@@ -1375,10 +1375,33 @@ describe('the 404 page', () => {
   const page = parseDocument(notFoundHtml);
   const linkTo = (href: string) => page.querySelector(`a[href="${href}"]`);
 
-  it('parses as a document with a title, in English', () => {
+  it('is well-formed markup', () => {
+    // Parsed a second time as XML, which is the only parser that can fail.
+    // The HTML parser recovers from anything — an unclosed `<style>` swallows
+    // the rest of the page and still yields a document — so asserting over the
+    // HTML parse says nothing about whether the file is what its author wrote.
+    // This page is hand-written and never built, so nothing else is checking.
+    //
+    // The doctype comes off first: it is `<!doctype html>` in lower case, as it
+    // is in both entry documents, and XML wants it in upper case. That is the
+    // one HTML-only thing in the file, and it is what the assertion below is
+    // written around rather than a difference worth changing the page for.
+    const asXml = new DOMParser().parseFromString(
+      notFoundHtml.replace(/^\s*<!doctype html>/i, ''),
+      'application/xhtml+xml'
+    );
+
+    expect(asXml.querySelector('parsererror')?.textContent ?? null).toBeNull();
+  });
+
+  it('is a document with a title, in English', () => {
     expect(page.documentElement.getAttribute('lang')).toBe('en');
     expect(page.querySelector('title')?.textContent?.trim()).toBeTruthy();
-    expect(page.querySelector('parsererror')).toBeNull();
+    // What the HTML parse can be held to: the page ends up with the structure
+    // it was written with, rather than with everything after some unclosed tag
+    // absorbed into one element.
+    expect(page.querySelector('main h1')?.textContent?.trim()).toBeTruthy();
+    expect(page.body.children.length).toBe(1);
   });
 
   it('offers both editions, with hreflang on the Spanish link', () => {

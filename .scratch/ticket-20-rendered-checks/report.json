@@ -1,0 +1,108 @@
+{
+  "en": {
+    "beforeTab": "BODY",
+    "focused": {
+      "tag": "A",
+      "text": "Skip to content",
+      "href": "#main",
+      "isFirstLink": true,
+      "box": {
+        "x": 24,
+        "y": 12,
+        "w": 168,
+        "h": 37
+      },
+      "inViewport": true,
+      "color": "rgb(204, 34, 0)",
+      "background": "rgb(255, 255, 255)",
+      "outline": "rgb(204, 34, 0) solid 2px",
+      "clip": "none",
+      "position": "fixed",
+      "visibility": "visible",
+      "matchesFocusVisible": true
+    },
+    "landed": {
+      "hash": "#main",
+      "activeElement": "MAIN#main",
+      "nextTabWouldStartInMain": true,
+      "mainTop": 0,
+      "firstHeading": "Fran Menéndez"
+    }
+  },
+  "es": {
+    "beforeTab": "BODY",
+    "focused": {
+      "tag": "A",
+      "text": "Saltar al contenido",
+      "href": "#main",
+      "isFirstLink": true,
+      "box": {
+        "x": 24,
+        "y": 12,
+        "w": 203,
+        "h": 37
+      },
+      "inViewport": true,
+      "color": "rgb(204, 34, 0)",
+      "background": "rgb(255, 255, 255)",
+      "outline": "rgb(204, 34, 0) solid 2px",
+      "clip": "none",
+      "position": "fixed",
+      "visibility": "visible",
+      "matchesFocusVisible": true
+    },
+    "landed": {
+      "hash": "#main",
+      "activeElement": "MAIN#main",
+      "nextTabWouldStartInMain": true,
+      "mainTop": 0,
+      "firstHeading": "Fran Menéndez"
+    }
+  },
+  "404-light": {
+    "title": "Page not found | Fran Menéndez",
+    "lang": "en",
+    "darkClass": false,
+    "background": "rgb(255, 255, 255)",
+    "color": "rgb(17, 17, 17)",
+    "fontFamily": "\"Geist Sans\", ui-sans-serif, system-ui, sans-serif",
+    "headingFontLoaded": true,
+    "monoFontLoaded": true,
+    "eyebrowColor": "rgb(204, 34, 0)",
+    "links": [
+      {
+        "text": "English",
+        "href": "/",
+        "hreflang": null
+      },
+      {
+        "text": "Español",
+        "href": "/es/",
+        "hreflang": "es"
+      }
+    ]
+  },
+  "404-dark": {
+    "title": "Page not found | Fran Menéndez",
+    "lang": "en",
+    "darkClass": true,
+    "background": "rgb(13, 13, 13)",
+    "color": "rgb(237, 237, 237)",
+    "fontFamily": "\"Geist Sans\", ui-sans-serif, system-ui, sans-serif",
+    "headingFontLoaded": true,
+    "monoFontLoaded": true,
+    "eyebrowColor": "rgb(255, 85, 64)",
+    "links": [
+      {
+        "text": "English",
+        "href": "/",
+        "hreflang": null
+      },
+      {
+        "text": "Español",
+        "href": "/es/",
+        "hreflang": "es"
+      }
+    ]
+  }
+}
