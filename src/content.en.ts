@@ -206,13 +206,12 @@ export const en: SiteContent = {
   ],
 
   chrome: {
-    skipToContent: 'Skip to content',
     nav: {
       label: 'Sections',
       experience: 'Experience',
       contact: 'Contact',
-      toDark: 'Dark',
-      toLight: 'Light',
+      toDarkMode: 'Switch to dark mode',
+      toLightMode: 'Switch to light mode',
     },
     language: {
       label: 'Language',
@@ -223,6 +222,7 @@ export const en: SiteContent = {
       experience: 'Experience',
       independentWork: 'Independent work',
       recognitions: 'Recognitions',
+      technologies: 'Technologies',
       contact: 'Contact',
     },
     contact: {
@@ -232,7 +232,6 @@ export const en: SiteContent = {
     },
     recognitions: {
       education: 'Education',
-      technologies: 'Technologies',
     },
   },
 };

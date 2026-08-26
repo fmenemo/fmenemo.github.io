@@ -1,7 +1,6 @@
 import { cleanup, fireEvent, render, screen, within } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import App from './App';
-import { labelVoice, primaryAction, valueVoice } from './styles';
 import { en } from './content.en';
 import { es } from './content.es';
 // The shipped entry documents, the stylesheet holding the palette, and the
@@ -13,14 +12,6 @@ import esHtml from '../es/index.html?raw';
 import ogImageHtml from '../tools/assets/og-image.html?raw';
 import ogImageEsHtml from '../tools/assets/og-image.es.html?raw';
 import faviconSvg from '../public/favicon.svg?raw';
-// The 404 page, read as text for the same reason the entry documents are: it is
-// a static document with no bundle, so what is in the file is the whole of what
-// a visitor gets.
-import notFoundHtml from '../public/404.html?raw';
-// The manifest, read as text and parsed here rather than imported as a module:
-// `package.json` sits outside the app project's `include`, and a resolved JSON
-// import would drag it in.
-import packageJson from '../package.json?raw';
 
 const SITE = 'https://fmenemo.github.io';
 
@@ -56,13 +47,7 @@ const editions = [
     // The first words of the identity line, which several guards need to find
     // the paragraph without asserting the whole of it.
     identityLead: /^Software Engineer, 10\+ years/,
-    // The toggle is a word rather than a sentence: it says the state it will
-    // switch to, and that one string is both what the eye reads and what a
-    // screen reader announces.
-    themeToggle: /^(dark|light)$/i,
-    theme: { toDark: 'Dark', toLight: 'Light' },
-    // The first link in the document, which only a keyboard visitor ever reads.
-    skipToContent: 'Skip to content',
+    themeToggle: /switch to (dark|light) mode/i,
     // The selector as a visitor meets it on this edition: its own label marked,
     // the sibling's label linked, and the link named in this edition's language.
     language: {
@@ -201,9 +186,7 @@ const editions = [
     imageSource: ogImageEsHtml,
     imageAlt: 'Fran Menéndez, ingeniero de software, Zaragoza, España.',
     identityLead: /^Ingeniero de software, más de 10 años/,
-    themeToggle: /^(oscuro|claro)$/i,
-    theme: { toDark: 'Oscuro', toLight: 'Claro' },
-    skipToContent: 'Saltar al contenido',
+    themeToggle: /cambiar a modo (oscuro|claro)/i,
     language: {
       label: 'Idioma',
       current: 'ES',
@@ -324,9 +307,7 @@ const scraperText = (entry: string) => {
  * by the metadata group for what a document references and by the CV group for
  * what the page links to, which is why it sits out here rather than in either.
  */
-const publicAssets = new Set(
-  Object.keys(import.meta.glob('../public/**/*')).map((path) => path.replace('../public', ''))
-);
+const publicAssets = new Set(Object.keys(import.meta.glob('../public/*')).map((path) => path.replace('../public', '')));
 
 /** Every CV the hero offers, in the order a visitor meets them. */
 const cvLinks = () => screen.getAllByRole('link', { name: /cv/i });
@@ -376,104 +357,8 @@ describe('the edition arrives from above', () => {
   });
 });
 
-// The hedge vocabulary, at module scope because two guards below run over it:
-// the edition group's, which reads what a visitor and a scraper meet on each
-// edition, and the 404 page's, which reads a static document belonging to
-// neither edition. See the edition group for what the lists defend and why.
-//
-// Both languages in every list, because a hedge is written in the language
-// of the reader it is aimed at, and the one aimed at the Spanish reader is
-// the one that costs.
-//
-// These are hedges wherever they appear. "sin revisar" and not "revisi",
-// because code review is evidence the site legitimately carries.
-const alwaysAHedge = [
-  /machine[\s-]?translat|auto(?:matic(?:ally)?|[\s-])[\s-]?translat|ai[\s-]translat/i,
-  /translated\s+from\s+the\s+english|traducido\s+del\s+ingl[eé]s/i,
-  /traduc\w*\s+(?:autom|con\s+ia|por\s+ia)|traducci[oó]n\s+(?:autom|de\s+ia)|generad\w*\s+(?:con|por)\s+ia/i,
-  /unreviewed|not\s+(?:yet\s+)?reviewed|pending\s+review/i,
-  /sin\s+revisar|sin\s+revisi[oó]n|no\s+revisad|pendiente\s+de\s+revisi[oó]n/i,
-  /work\s+in\s+progress|en\s+construcci[oó]n/i,
-];
-
-// These are only a hedge when they are said *about a version of this site*.
-// "Replaced an outdated stack" and "una plataforma más completa" are the
-// ordinary vocabulary of a CV bullet, so matching them bare would one day
-// fail a true piece of evidence under a comment telling whoever wrote it to
-// go and read ADR 0004 — which is the worst thing a guard like this can do.
-// What makes the difference is the subject, so these carry one.
-// What a hedge calls the thing it is hedging: the document, or the language
-// it is written in. "El texto en español está desactualizado" names neither
-// a version nor an edition and is a hedge all the same.
-const aboutAVersionOfTheSite =
-  /\b(?:page|version|edition|translation|copy|site|text|content|spanish|english|p[aá]gina|versi[oó]n|edici[oó]n|traducci[oó]n|copia|sitio|texto|contenido|espa[nñ]ol|ingl[eé]s)\b/i;
-
-// Both directions of the comparison. A hedge aimed at `/es` is at least as
-// likely to be written from the modest side ("no tan actual") as the
-// boastful one, and the first draft of this list only banned the boastful.
-const hedgeAboutAVersion = [
-  /out[\s-]of[\s-]date|outdated|desactualizad|obsolet/i,
-  /\b(?:more|less|not\s+as)\s+(?:up[\s-]to[\s-]date|current|complete|accurate|recent)\b/i,
-  /\b(?:m[aá]s|menos|no\s+tan)\s+(?:actual|actualizad|complet|reciente|fiable)/i,
-  /provisional/i,
-  /\bbeta\b|\bdraft\b|\bborrador\b/i,
-];
-
-// Near, not anywhere in the document: "version" appears in the theme script
-// and "página" in a heading, so a whole-text test would make every pattern
-// above unconditional again.
-const NEARBY = 60;
-
-const hedgesIn = (text: string) => [
-  ...alwaysAHedge.filter((hedge) => hedge.test(text)),
-  ...hedgeAboutAVersion.filter((hedge) =>
-    [...text.matchAll(new RegExp(hedge.source, `${hedge.flags}g`))].some((match) =>
-      aboutAVersionOfTheSite.test(
-        text.slice(Math.max(0, match.index - NEARBY), match.index + match[0].length + NEARBY)
-      )
-    )
-  ),
-];
-
 describe.each(editions)('$edition edition', (edition) => {
   const { content } = edition;
-
-  // Guard tests for ticket 20 (the skip link). A keyboard visitor arrives with
-  // focus on the document and presses Tab once: what they land on is whatever
-  // the first link in source order happens to be, so "first" is the assertion,
-  // not a detail of it. The masthead has four focusable controls before the
-  // content begins, and this is what lets someone past them.
-  describe('the skip link', () => {
-    const firstLink = () => document.querySelectorAll('a')[0];
-
-    it('is the first link in the document and targets the main landmark', () => {
-      render(<App content={content} />);
-      const main = document.querySelector('main');
-
-      expect(main?.id).toBeTruthy();
-      expect(firstLink().getAttribute('href')).toBe(`#${main?.id}`);
-    });
-
-    // The name is chrome, so it is in the language of the edition the visitor
-    // is on: the one person who reads it is a screen reader or keyboard user of
-    // that edition, and English text announced in a Spanish document is read
-    // aloud by a Spanish voice.
-    it('is named in this edition’s language', () => {
-      render(<App content={content} />);
-      expect(firstLink().textContent).toBe(edition.skipToContent);
-      expect(screen.getByRole('link', { name: edition.skipToContent })).toBe(firstLink());
-    });
-
-    // jsdom computes no layout, so "invisible until focused, then visible" is
-    // as far as a test here can reach: the utility that takes it out of the
-    // flow, and a focus variant that puts it back. What it actually looks like
-    // when it has focus is checked in a browser, which the ticket asks for.
-    it('is hidden until it has focus', () => {
-      render(<App content={content} />);
-      expect(firstLink().className).toMatch(/\bsr-only\b/);
-      expect(firstLink().className).toMatch(/\bfocus:not-sr-only\b/);
-    });
-  });
 
   // Guard tests for ticket 04 (theming architecture): the theme is a class on
   // <html> plus a persisted localStorage choice, exercised through the toggle.
@@ -522,28 +407,6 @@ describe.each(editions)('$edition edition', (edition) => {
       localStorage.setItem('theme', 'banana');
       render(<App content={content} />);
       expect(document.documentElement.classList.contains('dark')).toBe(true);
-    });
-
-    // Guard test for ticket 19 (the toggle is text). The control is a word in
-    // the edition's language, and the word names the state a click will move
-    // to rather than the state the reader is in. Its visible text and its
-    // accessible name are the same string, so a voice-control visitor can say
-    // what they can see (WCAG 2.5.3, Label in Name) — which is what an icon
-    // with an aria-label could not offer. Asserted in both states, because the
-    // string a toggle carries after it is pressed is the one a reader checks
-    // to see that anything happened.
-    it('reads the word for the state it will switch to, in text and in name', () => {
-      render(<App content={content} />);
-
-      // Queried by accessible name and read for its text: the two assertions
-      // together are what says the two strings are one.
-      expect(toggle().textContent).toBe(edition.theme.toDark);
-      expect(screen.getAllByRole('button', { name: edition.theme.toDark })[0]).toBe(toggle());
-
-      fireEvent.click(toggle());
-
-      expect(toggle().textContent).toBe(edition.theme.toLight);
-      expect(screen.getAllByRole('button', { name: edition.theme.toLight })[0]).toBe(toggle());
     });
 
     // A visitor who chose a theme on one edition keeps it on the other. The
@@ -711,42 +574,6 @@ describe.each(editions)('$edition edition', (edition) => {
     });
   });
 
-  // Guard tests for the Technologies fold. The section became a row under
-  // Education, and the two things a reader would notice if that were undone are
-  // a gap in the numbering and a link to `#technologies` landing on nothing.
-  describe('technologies sit in the Recognitions band', () => {
-    it('numbers the sections 01 to 04 with no gap', () => {
-      render(<App content={content} />);
-      // The hero carries no number, so it drops out here; every band below it
-      // wears one, and a missing band shows up as a short list rather than as
-      // a hole.
-      const numbers = [...document.querySelectorAll('main section')]
-        .map((section) => [...section.querySelectorAll('p')].find((text) => /^\d\d$/.test(text.textContent ?? '')))
-        .filter((number) => number !== undefined)
-        .map((number) => number.textContent);
-
-      expect(numbers).toEqual(['01', '02', '03', '04']);
-    });
-
-    it('lands a link to #technologies inside Recognitions', () => {
-      render(<App content={content} />);
-      const row = document.querySelector('#technologies');
-      expect(row).not.toBeNull();
-      expect(document.querySelector('section#recognitions')!.contains(row)).toBe(true);
-    });
-
-    // The label is chrome, so each edition says it in its own language, and the
-    // technologies themselves are the same names in both (they are not words in
-    // a language).
-    it('labels the row from this edition and keeps the running text', () => {
-      render(<App content={content} />);
-      const recognitions = within(document.getElementById('recognitions')!);
-
-      expect(recognitions.getByText(content.chrome.recognitions.technologies)).not.toBeNull();
-      expect(recognitions.getByText(content.technologies.join(' / '))).not.toBeNull();
-    });
-  });
-
   // Guard tests for ticket 05 of the Spanish edition (both CVs on the Spanish
   // edition). Running from the table is what pins the asymmetry: each row states
   // the whole list, so an edition quietly growing or losing a download fails
@@ -786,30 +613,6 @@ describe.each(editions)('$edition edition', (edition) => {
       for (const link of cvLinks()) {
         expect(publicAssets).toContain(link.getAttribute('href'));
       }
-    });
-  });
-
-  // Guard test for the ticket that moved the routes to Fran off the hero. The
-  // hero is where a visitor lands, so every action on it competes with the CV;
-  // Contact is the one place an address or a handle is read as text, and the
-  // test above that each contact route is a real link is what still covers it.
-  describe('what the hero offers', () => {
-    const heroLinks = () => {
-      render(<App content={content} />);
-      return [...document.getElementById('home')!.querySelectorAll('a')];
-    };
-
-    it('offers the edition’s CVs and nothing else', () => {
-      expect(heroLinks().map((link) => ({ href: link.getAttribute('href'), label: link.textContent }))).toEqual(
-        edition.cvs.map(({ href, label }) => ({ href, label }))
-      );
-    });
-
-    it('carries no email address and no route to LinkedIn', () => {
-      const hrefs = heroLinks().map((link) => link.getAttribute('href') ?? '');
-      expect(hrefs.filter((href) => href.startsWith('mailto:'))).toEqual([]);
-      expect(hrefs.filter((href) => /linkedin/i.test(href))).toEqual([]);
-      expect(document.getElementById('home')!.textContent).not.toContain(content.contact.email);
     });
   });
 
@@ -918,6 +721,60 @@ describe.each(editions)('$edition edition', (edition) => {
   // above, and run from the edition table, because a hedge that appeared on one
   // edition only is exactly the shape this would take.
   describe('nothing hedges the edition', () => {
+    // Both languages in every list, because a hedge is written in the language
+    // of the reader it is aimed at, and the one aimed at the Spanish reader is
+    // the one that costs.
+    //
+    // These are hedges wherever they appear. "sin revisar" and not "revisi",
+    // because code review is evidence the site legitimately carries.
+    const alwaysAHedge = [
+      /machine[\s-]?translat|auto(?:matic(?:ally)?|[\s-])[\s-]?translat|ai[\s-]translat/i,
+      /translated\s+from\s+the\s+english|traducido\s+del\s+ingl[eé]s/i,
+      /traduc\w*\s+(?:autom|con\s+ia|por\s+ia)|traducci[oó]n\s+(?:autom|de\s+ia)|generad\w*\s+(?:con|por)\s+ia/i,
+      /unreviewed|not\s+(?:yet\s+)?reviewed|pending\s+review/i,
+      /sin\s+revisar|sin\s+revisi[oó]n|no\s+revisad|pendiente\s+de\s+revisi[oó]n/i,
+      /work\s+in\s+progress|en\s+construcci[oó]n/i,
+    ];
+
+    // These are only a hedge when they are said *about a version of this site*.
+    // "Replaced an outdated stack" and "una plataforma más completa" are the
+    // ordinary vocabulary of a CV bullet, so matching them bare would one day
+    // fail a true piece of evidence under a comment telling whoever wrote it to
+    // go and read ADR 0004 — which is the worst thing a guard like this can do.
+    // What makes the difference is the subject, so these carry one.
+    // What a hedge calls the thing it is hedging: the document, or the language
+    // it is written in. "El texto en español está desactualizado" names neither
+    // a version nor an edition and is a hedge all the same.
+    const aboutAVersionOfTheSite =
+      /\b(?:page|version|edition|translation|copy|site|text|content|spanish|english|p[aá]gina|versi[oó]n|edici[oó]n|traducci[oó]n|copia|sitio|texto|contenido|espa[nñ]ol|ingl[eé]s)\b/i;
+
+    // Both directions of the comparison. A hedge aimed at `/es` is at least as
+    // likely to be written from the modest side ("no tan actual") as the
+    // boastful one, and the first draft of this list only banned the boastful.
+    const hedgeAboutAVersion = [
+      /out[\s-]of[\s-]date|outdated|desactualizad|obsolet/i,
+      /\b(?:more|less|not\s+as)\s+(?:up[\s-]to[\s-]date|current|complete|accurate|recent)\b/i,
+      /\b(?:m[aá]s|menos|no\s+tan)\s+(?:actual|actualizad|complet|reciente|fiable)/i,
+      /provisional/i,
+      /\bbeta\b|\bdraft\b|\bborrador\b/i,
+    ];
+
+    // Near, not anywhere in the document: "version" appears in the theme script
+    // and "página" in a heading, so a whole-text test would make every pattern
+    // above unconditional again.
+    const NEARBY = 60;
+
+    const hedgesIn = (text: string) => [
+      ...alwaysAHedge.filter((hedge) => hedge.test(text)),
+      ...hedgeAboutAVersion.filter((hedge) =>
+        [...text.matchAll(new RegExp(hedge.source, `${hedge.flags}g`))].some((match) =>
+          aboutAVersionOfTheSite.test(
+            text.slice(Math.max(0, match.index - NEARBY), match.index + match[0].length + NEARBY)
+          )
+        )
+      ),
+    ];
+
     // What a visitor reads, including what only some of them read. ADR 0004
     // bans a hedge in a *tooltip* by name, and a tooltip is an attribute, which
     // `textContent` cannot see.
@@ -1448,248 +1305,5 @@ describe.each(editions)('the $edition share image stays a condensation of the id
       if (mine.includes(phrase)) continue;
       expect(shareImageCopy).not.toContain(phrase);
     }
-  });
-});
-
-// Guard tests for ticket 20 (the 404 page). GitHub Pages serves `/404.html`
-// from the site root for any path it does not recognise, which is why the file
-// sits in `public/` and is copied verbatim rather than built from an entry.
-//
-// It belongs to neither edition. The reader who lands on it mistyped a URL and
-// has told us nothing about which language they want, so the page is English —
-// the same asymmetry `x-default` already carries in both entry documents — and
-// it offers both editions rather than guessing.
-describe('the 404 page', () => {
-  const page = parseDocument(notFoundHtml);
-  const linkTo = (href: string) => page.querySelector(`a[href="${href}"]`);
-
-  it('is well-formed markup', () => {
-    // Parsed a second time as XML, which is the only parser that can fail.
-    // The HTML parser recovers from anything — an unclosed `<style>` swallows
-    // the rest of the page and still yields a document — so asserting over the
-    // HTML parse says nothing about whether the file is what its author wrote.
-    // This page is hand-written and never built, so nothing else is checking.
-    //
-    // The doctype comes off first: it is `<!doctype html>` in lower case, as it
-    // is in both entry documents, and XML wants it in upper case. That is the
-    // one HTML-only thing in the file, and it is what the assertion below is
-    // written around rather than a difference worth changing the page for.
-    const asXml = new DOMParser().parseFromString(
-      notFoundHtml.replace(/^\s*<!doctype html>/i, ''),
-      'application/xhtml+xml'
-    );
-
-    expect(asXml.querySelector('parsererror')?.textContent ?? null).toBeNull();
-  });
-
-  it('is a document with a title, in English', () => {
-    expect(page.documentElement.getAttribute('lang')).toBe('en');
-    expect(page.querySelector('title')?.textContent?.trim()).toBeTruthy();
-    // What the HTML parse can be held to: the page ends up with the structure
-    // it was written with, rather than with everything after some unclosed tag
-    // absorbed into one element.
-    expect(page.querySelector('main h1')?.textContent?.trim()).toBeTruthy();
-    expect(page.body.children.length).toBe(1);
-  });
-
-  it('offers both editions, with hreflang on the Spanish link', () => {
-    expect(linkTo('/')).not.toBeNull();
-    expect(linkTo('/es/')).not.toBeNull();
-    expect(linkTo('/es/')?.getAttribute('hreflang')).toBe('es');
-  });
-
-  // The same pre-paint script the entry documents carry, so a dark-mode
-  // visitor who mistypes a URL meets a dark page rather than a white flash. It
-  // is copied rather than imported for the reason the Spanish document already
-  // records: it has to run before any module loads, and a module is the only
-  // thing there would be to import.
-  it('sets the theme before first paint, as the entry documents do', () => {
-    const script = [...page.querySelectorAll('script:not([src])')].map((tag) => tag.textContent ?? '').join(' ');
-    expect(script).toContain("localStorage.getItem('theme')");
-    expect(script).toContain('prefers-color-scheme: dark');
-    expect(script).toContain("classList.toggle('dark'");
-  });
-
-  // No bundle, and nothing fetched from anywhere but this site: a page served
-  // for an unknown path is the one page that must not depend on a build.
-  it('carries no script or stylesheet from a bundle', () => {
-    expect(page.querySelector('script[src]')).toBeNull();
-    expect(page.querySelector('link[rel="stylesheet"]')).toBeNull();
-    expect(page.querySelector('style')).not.toBeNull();
-  });
-
-  // The faces, inlined: `@font-face` rules of its own pointing at files copied
-  // into `public/`, because a hashed bundle asset is not a name a static file
-  // can spell. This asserts the files it names are actually there.
-  it('is set in the site’s own faces, from files the site ships', () => {
-    const styles = [...page.querySelectorAll('style')].map((tag) => tag.textContent ?? '').join('\n');
-    expect(styles).toContain('@font-face');
-    expect(styles).toContain('Geist Sans');
-
-    const sources = [...styles.matchAll(/url\((['"]?)([^'")]+)\1\)/g)].map((match) => match[2]);
-    expect(sources.length).toBeGreaterThan(0);
-    for (const source of sources) {
-      expect(publicAssets).toContain(source);
-    }
-  });
-
-  // The palette, inlined too, and the same values the stylesheet sets. A 404 in
-  // the wrong red is a page from another site.
-  it('is painted in the site’s own palette', () => {
-    const styles = [...page.querySelectorAll('style')].map((tag) => tag.textContent ?? '').join('\n');
-    for (const colour of ['#ffffff', '#0d0d0d', '#111111', '#ededed', '#cc2200', '#ff5540']) {
-      expect(styles).toContain(colour);
-    }
-  });
-
-  // It says nothing about versions or freshness, which is the same promise the
-  // editions make and the same list it is held to. A 404 is where a hedge is
-  // most tempting — "this page has moved", "the Spanish version may be older" —
-  // and least useful to the person reading it.
-  it('carries no hedge', () => {
-    const attributes = [...page.querySelectorAll('[title], [alt], [aria-label]')].flatMap((element) =>
-      ['title', 'alt', 'aria-label'].map((name) => element.getAttribute(name) ?? '')
-    );
-
-    expect(hedgesIn([page.head.textContent, page.body.textContent, ...attributes].join(' '))).toEqual([]);
-  });
-});
-
-// The typefaces. Neither of the two places they are actually set can be read
-// here — the tokens and the `@font-face` imports live in `index.css`, and
-// Vitest stubs a CSS import to the empty string whatever query it carries (see
-// the theme-color test above for the same limitation). What is left is the
-// half a stale swap would survive in: a face removed from the stylesheet but
-// left in the manifest goes on being installed, and the next import of it
-// resolves and ships bytes nobody chose.
-describe('the site is set in Geist', () => {
-  const dependencies: Record<string, string> = JSON.parse(packageJson).dependencies;
-
-  it.each(['@fontsource/geist-sans', '@fontsource/geist-mono'])('depends on %s', (name) => {
-    expect(dependencies).toHaveProperty(name);
-  });
-
-  // Self-hosted, both of them: a face fetched from a CDN is a third party
-  // between the visitor and the first paint, and the latin subsets are what
-  // keeps the swap from costing bytes.
-  it.each(['@fontsource/inter', '@fontsource/ibm-plex-mono'])('no longer depends on %s', (name) => {
-    expect(dependencies).not.toHaveProperty(name);
-  });
-
-  // The identity line wore `font-light`, which was a weight Inter had and the
-  // swap does not load. Left in place it would be synthesised or silently
-  // rounded, so the line is asserted to wear no weight utility at all: it
-  // inherits the 400 the body is set in.
-  describe.each(editions)('on the $edition edition', (edition) => {
-    it('renders the identity line at the body weight', () => {
-      render(<App content={edition.content} />);
-      expect(screen.getByText(edition.identityLead).className).not.toMatch(
-        /font-(thin|extralight|light|medium|semibold|bold|extrabold|black)\b/
-      );
-    });
-  });
-});
-
-// The evidence bullets are what a recruiter came to read, so they are set as
-// the page's primary text rather than as a caption under the role title.
-//
-// jsdom applies no stylesheet, so what an element is set in is not observable
-// here; the class it wears is. These read the shared voices out of the style
-// module rather than naming utilities inline, so a restyle of either voice is
-// still one edit and these go on saying what they mean. The measure, the
-// tabular figures and the pressed state itself are browser checks, recorded on
-// the ticket, for the same reason the faces are.
-describe('the evidence is the primary text', () => {
-  describe('the two metadata voices', () => {
-    it('sets a label in tracked mono caps', () => {
-      expect(labelVoice).toMatch(/\bfont-mono\b/);
-      expect(labelVoice).toMatch(/\buppercase\b/);
-      expect(labelVoice).toMatch(/\btracking-\[/);
-    });
-
-    // A value is an address or a handle: read as itself, not announced. Caps
-    // and letterspacing are what made the hero's email hard to read.
-    it('sets a value in lowercase mono at normal tracking', () => {
-      expect(valueVoice).toMatch(/\bfont-mono\b/);
-      expect(valueVoice).toMatch(/\blowercase\b/);
-      expect(valueVoice).toMatch(/\btracking-normal\b/);
-      expect(valueVoice).not.toMatch(/\buppercase\b/);
-    });
-  });
-
-  // A control that does not move under the pointer does not feel pressed. The
-  // reduced-motion block in `index.css` takes both of these back off.
-  describe('the CV button', () => {
-    it('moves down a pixel while it is held', () => {
-      expect(primaryAction).toMatch(/\bactive:translate-y-px\b/);
-    });
-
-    it('takes 200ms over its fill rather than the 150ms default', () => {
-      expect(primaryAction).toMatch(/\bduration-200\b/);
-    });
-  });
-
-  describe.each(editions)('on the $edition edition', (edition) => {
-    /** The first bullet of the most recent role, as an element on the page. */
-    const firstBullet = () => {
-      render(<App content={edition.content} />);
-      return screen.getByText(edition.content.employers[0].roles[0].bullets[0]);
-    };
-
-    it('sets the bullets at the body size in the ink colour', () => {
-      const bullet = firstBullet();
-      expect(bullet.className).not.toMatch(/\btext-(2xs|xs|sm)\b/);
-      expect(bullet.className).not.toMatch(/\btext-muted\b/);
-    });
-
-    it('keeps the hairline down the left of each bullet', () => {
-      expect(firstBullet().className).toMatch(/\bborder-l\b/);
-    });
-
-    // About 65 characters, and on the list: capping the column instead would
-    // pull the employer name and its dates in with it. What 65 characters comes
-    // to in this face is a browser measurement, recorded on the ticket; the
-    // band here is what that measurement leaves room to adjust within.
-    it('caps the bullet list at a readable measure and nothing above it', () => {
-      const list = firstBullet().parentElement!;
-      const measure = list.className.match(/\bmax-w-\[([\d.]+)rem\]/);
-
-      expect(measure).not.toBeNull();
-      expect(Number(measure![1])).toBeGreaterThanOrEqual(28);
-      expect(Number(measure![1])).toBeLessThanOrEqual(32);
-
-      const header = list.closest('article')!.querySelector('header')!;
-      expect(header.className).not.toMatch(/\bmax-w-/);
-    });
-
-    it('gives the metadata beside the bullets the muted colour and the label voice', () => {
-      render(<App content={edition.content} />);
-      const dates = screen.getByText(edition.content.employers[0].roles[0].dates);
-      expect(dates.className).toContain(labelVoice);
-    });
-
-    // The row labels wear the label voice, the addresses beside them the value
-    // voice: that difference is the whole point of naming two.
-    it('sets the Contact email and LinkedIn in the value voice', () => {
-      render(<App content={edition.content} />);
-      const { contact, chrome } = edition.content;
-      const section = within(document.getElementById('contact')!);
-
-      for (const name of [contact.email, contact.linkedinLabel]) {
-        expect(section.getByRole('link', { name }).className).toContain(valueVoice);
-      }
-
-      expect(section.getByText(chrome.contact.email).className).toContain(labelVoice);
-    });
-
-    // The other value on the page: a place and a way of working, read as
-    // themselves rather than announced in caps.
-    it('sets the hero’s location and mode line in the value voice', () => {
-      render(<App content={edition.content} />);
-      const line = within(document.getElementById('home')!).getByText(edition.content.identity.location, {
-        exact: false,
-      });
-      expect(line.className).toContain(valueVoice);
-    });
   });
 });

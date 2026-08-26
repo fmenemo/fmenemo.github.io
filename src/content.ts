@@ -128,14 +128,6 @@ export interface OtherEdition {
 }
 
 export interface Chrome {
-  /**
-   * The first link in the document, which a keyboard visitor meets before the
-   * masthead and which jumps past it to the main landmark. It is hidden until
-   * it has focus, so it is the one label on the page that only some visitors
-   * ever read — which is why it is chrome and written in the edition's
-   * language rather than left in English for everyone.
-   */
-  skipToContent: string;
   // The nav labels are separate from the section headings below rather than
   // reused from them, and the two are free to differ. They coincide in English
   // and will not in Spanish: the CV's heading is "Experiencia profesional",
@@ -145,16 +137,9 @@ export interface Chrome {
     label: string;
     experience: string;
     contact: string;
-    /**
-     * The theme toggle's word, by what a click will do next: a reader in light
-     * mode sees `toDark`. One string, not two: it is the visible label and the
-     * accessible name at once, so it has to be short enough to sit in the
-     * masthead and say enough to be a name (WCAG 2.5.3, Label in Name). Where
-     * an edition's word is too long to fit beside the language selector at
-     * 320px, it is that edition's word that is shortened.
-     */
-    toDark: string;
-    toLight: string;
+    /** Accessible names for the theme toggle, by what it will do next. */
+    toDarkMode: string;
+    toLightMode: string;
   };
   /**
    * The language selector: two short labels, the current one marked and the
@@ -173,6 +158,7 @@ export interface Chrome {
     experience: string;
     independentWork: string;
     recognitions: string;
+    technologies: string;
     contact: string;
   };
   /** The labels down the left of the contact list, not the values beside them. */
@@ -181,14 +167,8 @@ export interface Chrome {
     linkedin: string;
     location: string;
   };
-  /**
-   * The labels down the left of the Recognitions band's rows. Technologies is
-   * one of them rather than a section heading: it folded into this band and
-   * kept its anchor, so a row label is all the chrome it needs (ADR 0005).
-   */
   recognitions: {
     education: string;
-    technologies: string;
   };
 }
 

@@ -198,17 +198,14 @@ export const es: SiteContent = {
   ],
 
   chrome: {
-    skipToContent: 'Saltar al contenido',
     nav: {
       label: 'Secciones',
       // Not the section heading below: "Experiencia profesional" cannot sit in
       // the masthead and keep it one line at every width.
       experience: 'Experiencia',
       contact: 'Contacto',
-      // Una palabra, no "Modo oscuro": el control ya está junto al selector de
-      // idioma, y "modo" es lo único que las dos palabras comparten.
-      toDark: 'Oscuro',
-      toLight: 'Claro',
+      toDarkMode: 'Cambiar a modo oscuro',
+      toLightMode: 'Cambiar a modo claro',
     },
     // "EN" y "ES" son códigos de idioma, no palabras, así que se escriben igual
     // en las dos ediciones. Lo que cambia es cuál de los dos es el otro.
@@ -217,11 +214,14 @@ export const es: SiteContent = {
       current: 'ES',
       other: { label: 'EN', path: '/', lang: 'en', name: 'Ver esta página en inglés' },
     },
-    // The CV's own headings.
+    // The CV's own headings, with one exception: the CV calls this section
+    // "Competencias técnicas", and the site does not, for the same reason the
+    // English edition says "Technologies" rather than "Skills" (decision D1-ES).
     sections: {
       experience: 'Experiencia profesional',
       independentWork: 'Trabajo independiente',
       recognitions: 'Reconocimientos y premios',
+      technologies: 'Tecnologías',
       contact: 'Contacto',
     },
     contact: {
@@ -231,10 +231,6 @@ export const es: SiteContent = {
     },
     recognitions: {
       education: 'Formación e idiomas',
-      // The CV calls this block "Competencias técnicas", and the site does not,
-      // for the same reason the English edition says "Technologies" rather than
-      // "Skills" (decision D1-ES).
-      technologies: 'Tecnologías',
     },
   },
 };
