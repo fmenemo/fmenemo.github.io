@@ -87,10 +87,25 @@ every route a token can reach was tried on 2026-09-04:
 | `POST github.com/upload/policies/assets`, the endpoint the web UI posts to | 422, an HTML error page: it authenticates a session, not a token |
 | GraphQL mutation list, searched for `attach`, `upload`, `asset` | no such mutation |
 
-So the criterion's recording half stands unmet by the branch rather than
-unattempted by it. Dragging the four files into the comment linked above is the
-one step left, and it needs a browser someone is signed into. #32 met the same
-wall and recorded it the same way.
-
-The probe table above is on the ticket too, at
+So the recording half of that criterion stands unmet by the branch rather than
+unattempted by it. The probe table is on the ticket too, at
 <https://github.com/fmenemo/fmenemo.github.io/issues/33#issuecomment-5543081138>.
+
+### The three ways the images could still get there
+
+1. **A signed-in browser.** Drag the four PNGs into the comment linked above.
+   One step, no side effects, and the one this record recommends.
+2. **The branch on the remote.** Once `sandcastle/issue-33` is pushed or merged,
+   every capture has a raw URL and a comment can embed it with
+   `![](https://github.com/fmenemo/fmenemo.github.io/raw/<ref>/.scratch/redesign/ticket-33-rendered-checks/variant-b-light-1280.png)`.
+   A Run does not push its own branch, so this one arrives with the merge rather
+   than before it, which is after the ticket needs it.
+3. **A release asset.** `POST uploads.github.com/repos/:owner/:repo/releases/:id/assets`
+   is the one image upload `GH_TOKEN` is allowed, and GitHub renders a
+   `releases/download/` URL inline in a comment. It was not taken: this
+   repository has no releases, so it means publishing one on a public site
+   repository to host four throwaway prototype screenshots, which is a visible
+   artefact the ticket did not ask for and which outlives the prototype it
+   carries. It is Fran's call, not an agent's, and
+   <https://github.com/fmenemo/fmenemo.github.io/issues/33#issuecomment-5543164266>
+   asks him for it.
