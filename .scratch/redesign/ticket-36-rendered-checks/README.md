@@ -25,14 +25,13 @@ immediately after the third recognition, so recognitions 4 to 7, education,
 technologies, contact and the footer were missing from both. These replace them,
 and the whole document is in each.
 
-They are here and not on the ticket because a Sandcastle sandbox writes to the
-tracker with `GH_TOKEN` and GitHub has no API route that uploads an image to an
-issue: attachments are a web-UI upload, made by a browser session against an
-endpoint the REST and GraphQL APIs do not expose. Posting them is the driving
-session's to do, from this directory.
+The Ticket asks for these four to be named in a comment on #36, and they are:
+`gh issue comment 36` under `GH_TOKEN` posted the table above on 2026-09-04, at
+<https://github.com/fmenemo/fmenemo.github.io/issues/36#issuecomment-5544703733>.
+The token writes comments on this repository without trouble.
 
-That was tried rather than assumed, on 2026-09-04, with the token this work is
-done under:
+What the token cannot do is *attach* the files, which the criterion does not ask
+for. That was tried rather than assumed, on 2026-09-04:
 
 | Attempt | Answer |
 | --- | --- |
@@ -41,10 +40,13 @@ done under:
 | `gh api -X POST repos/fmenemo/fmenemo.github.io/issues/36/assets` | HTTP 404, the route does not exist |
 | every mutation on the GraphQL schema whose name contains `upload`, `attach`, `asset` or `image` | there are none |
 
-The routes that would put an image behind a URL a comment could render are all
-outside what this Ticket asks for: a release asset needs a release published on
-the repository, and a raw or Pages URL needs the file pushed to a branch. A Run
-does not push, and neither is this Ticket's work, so neither was done.
+Issue attachments are a web-UI upload, made by a browser session against an
+endpoint the REST and GraphQL APIs do not expose. The routes that would put an
+image behind a URL a comment could render are all outside what this Ticket asks
+for: a release asset needs a release published on the repository, and a raw or
+Pages URL needs the file pushed to a branch. A Run does not push, and neither is
+this Ticket's work, so neither was done. Dragging the four files onto the issue
+stays a human step, and a separate one from naming them.
 
 ## The route and the switcher
 
