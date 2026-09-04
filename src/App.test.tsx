@@ -1,6 +1,7 @@
 import { cleanup, fireEvent, render, screen, within } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import App from './App';
+import type { Role } from './content';
 import { en } from './content.en';
 import { es } from './content.es';
 // The shipped entry documents, the stylesheet holding the palette, and the
@@ -1069,24 +1070,46 @@ describe.each(editions)('$edition edition', (edition) => {
   });
 });
 
-// Guard tests for ticket 06 of the CV catch-up: three corrections and one added
-// bullet in the Principal role. English only, and out of the table for that
-// reason — the spec freezes the Spanish edition knowingly, so `/es` goes on
-// making two of the statements the English side stops making, and a row per
-// edition here would assert the opposite of what was decided.
+// Guard tests for ticket 27 of the reworked-CV sweep: the Principal role as the
+// CV now tells it, one nested Shop programme, carrying forward the corrections
+// ticket 06 of the CV catch-up left here. English only, and out of the table for
+// that reason — the spec sweeps the Spanish edition in a ticket of its own, so
+// `/es` goes on making statements the English side has stopped making, and a row
+// per edition here would assert the opposite of what was decided.
 //
 // These read the whole sentence rather than a phrase from it. Each one is a
 // wording approved against the CV in
-// `.scratch/bullets-against-the-reworked-cv/bullet-approval.md`, and a bullet
-// that drifts a clause off one of them is back to saying something its CV does
-// not.
+// `.scratch/the-reworked-cv-with-nesting/bullet-approval.md`, and a bullet that
+// drifts a clause off one of them is back to saying something its CV does not.
 describe('the Principal role says what the CV says', () => {
   const english = editions.find((edition) => edition.edition === 'English')!;
 
+  // The item that *says* the phrase, rather than the one it is nested inside: a
+  // sub-bullet's text is part of its headline's text too, so the match to take
+  // is the one no other match contains.
   const bulletSaying = (phrase: string) => {
     render(<App content={english.content} />);
-    return [...document.querySelectorAll('li')].find((item) => item.textContent?.includes(phrase));
+    const matching = [...document.querySelectorAll('li')].filter((item) => item.textContent?.includes(phrase));
+    return matching.find((item) => !matching.some((other) => other !== item && item.contains(other)));
   };
+
+  // The arc the CV opens the role on. Everything indented under it is a part of
+  // this one piece of work, which is the whole reason the nesting exists: the
+  // eight years of Shop were not eight unrelated bullets.
+  it('opens on Shop as one arc from proposal to production', () => {
+    expect(renderedText(english)).toContain(
+      'Took Shop from proposal to production: the e-commerce platform I proposed as Lead, on a $2M+ annual revenue projection, delivered to a live MVP with the team, and took to production as Principal — sole contributor on it at times.'
+    );
+  });
+
+  // The first sub-bullet, and the one that says how the build order was decided.
+  // It is evidence for the headline's claim about arguing from metrics, which is
+  // why the headline can drop that clause and this cannot.
+  it('says the mobile-first order was argued from the product’s own metrics', () => {
+    expect(renderedText(english)).toContain(
+      'After the mobile-only MVP the plan was the desktop build next; I argued from Mixpanel and GA, an onboarding drop-off on a mostly mobile audience, that retention on mobile came first, and that order was adopted.'
+    );
+  });
 
   // C1. The stronger claim as well as the truer one: he built it, ran it, and
   // then drove its practices into the team's process.
@@ -1122,17 +1145,37 @@ describe('the Principal role says what the CV says', () => {
     expect(renderedText(english)).not.toMatch(/below (the )?confidence threshold/i);
   });
 
-  // C4. The audit found four classes; the IDOR turned up later, in remediation.
-  it('names the four vulnerability classes the audit found', () => {
+  // The hardening bullet as the CV now words it: what was closed, and what it
+  // was left guarded by. It replaces the audit bullet that counted findings.
+  it('says what the hardening closed rather than how many findings it had', () => {
     expect(renderedText(english)).toContain(
-      'Ran the API security audit and hardening programme for the public e-commerce service: eight findings across four vulnerability classes — SQL injection, over-open collection access, PII projection and identity trust — with remediation closing a write-side IDOR in a shared authorisation primitive covering five collections; built the service’s first automated test harness and an access-coverage matrix that flags any loosening of access as a diff.'
+      'Hardened the public e-commerce API: closed SQL injection, access-control and PII-exposure holes, including a write-side IDOR in a shared authorisation primitive covering five collections, and left it guarded by regression tests that run in CI.'
     );
   });
 
-  it('keeps the remediation finding out of the audit’s taxonomy', () => {
+  // The count and the taxonomy are the CV's dropped claim, not a rewording of
+  // the one above, so the page must not carry them in any shape. The remediation
+  // finding stays out of an audit taxonomy the page no longer states at all.
+  it('carries no audit count and no vulnerability-class taxonomy', () => {
     const text = renderedText(english);
+    expect(text).not.toMatch(/eight findings/i);
+    expect(text).not.toMatch(/vulnerability classes/i);
     expect(text).not.toMatch(/broken access control/i);
-    expect(text).not.toMatch(/PII exposure/i);
+  });
+
+  // The CV dropped this bullet outright when the SEO incident became one of its
+  // own, and a dropped statement is the easiest thing to leave behind: nothing
+  // else on the page contradicts it.
+  it('drops the cross-service authentication bullet the CV no longer carries', () => {
+    expect(renderedText(english)).not.toMatch(/cross-service authentication/i);
+  });
+
+  // What was traced and what was pinned, which is the diagnosis rather than the
+  // name of the technology it happened on.
+  it('tells the SEO incident as a canonical identity traced and then pinned', () => {
+    expect(renderedText(english)).toContain(
+      'Traced a sitewide collapse in The Bump’s organic traffic to the site taking its own address from whichever host the request arrived on, which an ingress migration had just changed: it was telling search engines its internal origin was canonical. Pinned that identity to the brand domain where it is derived, so no later infrastructure change can move it.'
+    );
   });
 
   // "Tripwire" was a gloss over something more specific: a lint gate at error
@@ -1146,13 +1189,80 @@ describe('the Principal role says what the CV says', () => {
 
   // D1, the CV's sentence unchanged. Its placement is the point: session
   // continuity was the other half of the same programme and reads on its own
-  // without it.
+  // without it. Both are sub-bullets now, and adjacent inside the nested list.
   it('puts unified sign-on immediately before session continuity', () => {
     const signOn = bulletSaying(
       'Unified sign-on across five products — Bump articles, baby names, registry, shop and the native apps — so that one account replaced five separate logins.'
     );
     expect(signOn).toBeDefined();
     expect(signOn?.nextElementSibling?.textContent).toContain('Built session continuity');
+  });
+});
+
+// The shape, asserted where a screen reader meets it. Indentation is not
+// nesting: what makes the Shop programme's parts read as parts is a list inside
+// the item they belong to, so this reads the DOM rather than the content module.
+describe('the Shop programme is a list inside its own list item', () => {
+  const english = editions.find((edition) => edition.edition === 'English')!;
+  const headline = english.content.employers[0].roles[0].bullets[0];
+  const subBullets = typeof headline === 'string' ? [] : headline.subBullets;
+
+  // The role's own bullet list, found by the heading above it rather than by
+  // anything about how it is styled.
+  const principalBullets = () => {
+    render(<App content={english.content} />);
+    return screen.getByText('Principal Software Engineer').closest('div')!.querySelector('ul')!;
+  };
+
+  it('renders the sub-bullets the content declares, inside the first item', () => {
+    expect(subBullets.length).toBeGreaterThan(0);
+
+    const first = principalBullets().firstElementChild!;
+    const nested = first.querySelector('ul');
+
+    expect(nested).not.toBeNull();
+    expect([...nested!.querySelectorAll('li')].map((item) => item.textContent)).toEqual([...subBullets]);
+  });
+
+  // One level and no more, over everything either edition renders: the type
+  // refuses a second level, and this is what would catch a component that
+  // reintroduced one under it.
+  it('nests one level and no deeper, anywhere on either edition', () => {
+    for (const edition of editions) {
+      cleanup();
+      render(<App content={edition.content} />);
+
+      for (const nested of document.querySelectorAll('li ul, li ol')) {
+        expect(nested.querySelector('ul, ol')).toBeNull();
+      }
+    }
+  });
+});
+
+// The type, asserted by compiling. `npm run build` typechecks this file, so an
+// `@ts-expect-error` that stopped being an error would fail the build: a bullet
+// is a string or a text with a list of sub-bullet strings, and a sub-bullet is a
+// string, which is the whole of "one level and no more".
+describe('a bullet carries one level of sub-bullets and no more', () => {
+  it('takes a plain string or a text with sub-bullet strings', () => {
+    const bullets: Role['bullets'] = [
+      'A bullet on its own is a string.',
+      { text: 'A headline.', subBullets: ['A part of it.', 'Another part of it.'] },
+    ];
+
+    expect(bullets).toHaveLength(2);
+  });
+
+  it('refuses a sub-bullet that carries sub-bullets of its own', () => {
+    const bullets: Role['bullets'] = [
+      {
+        text: 'A headline.',
+        // @ts-expect-error a sub-bullet is a string: the second level does not compile.
+        subBullets: [{ text: 'A part of it.', subBullets: ['A part of the part.'] }],
+      },
+    ];
+
+    expect(bullets).toHaveLength(1);
   });
 });
 

@@ -16,11 +16,34 @@
 // (ADR 0001). Every bullet is approved against its CV original in a bullet
 // approval record before it lands here.
 
+/**
+ * A bullet that is a programme rather than a statement: a headline with the
+ * parts it is made of listed under it. The CV's own render carries this shape
+ * and refuses to go deeper, and so does this one.
+ *
+ * `subBullets` is a list of strings and not of bullets, which is what makes a
+ * second level of nesting a compile error rather than a review comment. One
+ * level is what a reader can hold and what the Experience page draws; a third
+ * would need a visual treatment nobody has decided on.
+ */
+export interface NestedBullet {
+  /** The headline, in the same voice and the same style as a plain bullet. */
+  text: string;
+  /** The parts of it, each one evidence on its own. Strings, and only strings. */
+  subBullets: string[];
+}
+
+/**
+ * One statement in a role. Either a bullet on its own, or a headline carrying
+ * the parts of the programme it names.
+ */
+export type Bullet = string | NestedBullet;
+
 export interface Role {
   title: string;
   dates: string;
   /** Each one is evidence: a specific outcome tied to this role. */
-  bullets: string[];
+  bullets: Bullet[];
 }
 
 /** One employer, with a role per entry. A promotion is two roles, not one. */
