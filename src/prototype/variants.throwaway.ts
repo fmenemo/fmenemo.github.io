@@ -14,6 +14,7 @@ import VariantAEditorial from './VariantAEditorial.throwaway';
 import VariantBCleanProduct from './VariantBCleanProduct.throwaway';
 import VariantCBoldAndRaw from './VariantCBoldAndRaw.throwaway';
 import VariantDWarmQuiet from './VariantDWarmQuiet.throwaway';
+import VariantERecord from './VariantERecord.throwaway';
 
 export interface PrototypeVariant {
   /** The value of the `variant` search parameter that selects it. */
@@ -29,5 +30,5 @@ export const variants: PrototypeVariant[] = [
   { key: 'b', name: 'Clean product', Component: VariantBCleanProduct },
   { key: 'c', name: 'Bold and raw', Component: VariantCBoldAndRaw },
   { key: 'd', name: 'Warm and quiet', Component: VariantDWarmQuiet },
-  { key: 'e', name: 'Not built yet', Component: NotBuiltYet },
+  { key: 'e', name: 'The record', Component: VariantERecord },
 ];
