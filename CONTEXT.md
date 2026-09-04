@@ -69,5 +69,5 @@ The Spanish CV, a translation of the original. Not an authority for facts, but t
 _Avoid_: Translated CV, localised CV
 
 **Identity line**:
-The single sentence in the hero stating who Fran is. Sourced from the CV summary of its own language, which says "Software Engineer" and "Ingeniero de software", deliberately not the current job title of Principal Software Engineer.
+The single sentence in the hero stating who Fran is. Sourced from the CV summary of its own language, never from the current job title of Principal Software Engineer. The English summary opens "Full-stack engineer with 10+ years shipping whole products end to end in TypeScript", so the English line leads on "Full-stack engineer" and keeps the summary's three AI-layer items in its order: semantic search in production, MCP tooling made the team-wide standard, an agentic engineering workflow built and run for production delivery. It does not say "Software Engineer"; restoring that would be putting the site back in front of the CV (ADR 0001, amended 2026-09-04). The Spanish line still says "Ingeniero de software", from the Spanish CV.
 _Avoid_: Tagline, headline, bio

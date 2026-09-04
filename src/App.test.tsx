@@ -36,17 +36,17 @@ const editions = [
     entry: enHtml,
     lang: 'en',
     url: `${SITE}/`,
-    title: 'Fran Menéndez | Software Engineer',
+    title: 'Fran Menéndez | Full-stack Engineer',
     // Each edition has a card of its own: the PNG a scraper fetches, the source
     // it is rendered from, and the alt that describes the picture. The alt is a
     // per-edition expectation for the same reason the title is — it is read
     // aloud in the language of the document it sits in.
     image: `${SITE}/og-image.png`,
     imageSource: ogImageHtml,
-    imageAlt: 'Fran Menéndez, Software Engineer, Zaragoza, Spain.',
+    imageAlt: 'Fran Menéndez, Full-stack Engineer, Zaragoza, Spain.',
     // The first words of the identity line, which several guards need to find
     // the paragraph without asserting the whole of it.
-    identityLead: /^Software Engineer, 10\+ years/,
+    identityLead: /^Full-stack engineer, 10\+ years/,
     themeToggle: /switch to (dark|light) mode/i,
     // The selector as a visitor meets it on this edition: its own label marked,
     // the sibling's label linked, and the link named in this edition's language.
@@ -157,8 +157,8 @@ const editions = [
     independentWork: ['Instagram Checker', 'Multi-agent delivery harness'],
     // Carried by every copy of the identity, including the share image, which
     // has room for the identity but not for the differentiator that follows.
-    identityPhrases: ['Software Engineer', '10+ years', 'millions of users', 'AI layer'],
-    differentiator: ['semantic search', 'MCP', 'multi-agent'],
+    identityPhrases: ['Full-stack engineer', '10+ years', 'end to end in TypeScript', 'AI layer'],
+    differentiator: ['semantic search', 'MCP', 'agentic'],
     // The claims ADR 0001 removed, in the language they would come back in.
     availability: /available|open to (new )?opportunities|actively (exploring|looking)|hiring/i,
     claims: [
@@ -167,9 +167,14 @@ const editions = [
       /open source|passionate|passion for/i,
       /freelance/i, // D3: the freelance entry is on the CV, not on the site.
     ],
-    // A description is what a search engine indexes the page as, so the two
-    // titles ADR 0001 took off the page must not survive in it.
-    describedAsNot: /full stack|designer|portfolio/i,
+    // A description is what a search engine indexes the page as, so the
+    // titles ADR 0001 took off the page must not survive in it. "full stack" is
+    // no longer one of them: ADR 0001 banned it because the old site invented
+    // "Full Stack Developer" as a title, and the CV summary has since chosen
+    // "Full-stack engineer" for itself, so the phrase now arrives from the
+    // document rather than around it (ADR 0001, amended 2026-09-04). "designer"
+    // and "portfolio" were never on the CV and stay banned.
+    describedAsNot: /designer|portfolio/i,
     metadataClaims: [
       /passionate|passion for|open source|beautiful|user-friendly/i,
       /years of experience|systems scaled/i,
