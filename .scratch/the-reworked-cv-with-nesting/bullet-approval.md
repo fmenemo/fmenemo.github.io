@@ -137,18 +137,58 @@ one string in the programme whose meaning changed rather than its position.
 
 ## 2. The rest of the role, in the CV's order
 
-Four bullets stand on their own after the programme, unchanged from the previous sweep, plus one
-rewritten.
+Five bullets stand on their own after the programme. Four are unmoved by the CV and carried
+unchanged from the previous sweep; each is set out here beside its CV original anyway, because a
+row that points at another document is a check deferred rather than made. The fifth is rewritten.
 
-| Bullet | Status |
-| --- | --- |
-| MCP tooling, now the team-wide standard | Approved previously, CV unmoved. The 85% design-with-components cut stays declined. |
-| The agentic workflow, built and run for his own delivery | Approved previously, CV unmoved. The thin-orchestrator context budget stays declined. |
-| Steadying the team through the restructuring | Approved previously, CV unmoved. |
-| The Contentful editor app | Approved previously, CV unmoved. |
-| The SEO incident | Rewritten, below. |
+**1. MCP tooling** — approved in the previous sweep, unmoved.
 
-**The SEO incident** — promoted from a trailing clause to a bullet of its own.
+- **CV:** Introduced Model Context Protocol (MCP) tooling that generates production components
+  directly from Figma at token-exact fidelity, removing the manual design-to-code translation
+  step; now the team-wide standard. On my own implementation work it took design-with-components
+  from about a week to under a day, roughly 85%.
+- **Site:** Introduced Model Context Protocol (MCP) tooling that generates production components
+  directly from Figma at token-exact fidelity, removing the manual design-to-code step; now the
+  team-wide standard.
+- The 85% cut stays declined; see part 3. "Translation" goes with it: the sentence says what was
+  removed either way, and the shorter phrase does not invite the figure back.
+- This is the one bullet the team-wide standard attaches to, and `App.test.tsx` keeps it that
+  way: nothing on the page may attach "team-wide" to the agentic workflow.
+
+**2. The agentic workflow** — approved in the previous sweep, unmoved.
+
+- **CV:** Built and ran an agentic AI development workflow for my own production delivery: four
+  stages, eight role-scoped agents, model routing by task, a thin-orchestrator context budget,
+  and review roles barred from writing the code they audit. Used it to deliver a security
+  hardening programme, where the independent step caught defects the implementing pass had
+  missed; drove its practices into the team's process.
+- **Site:** Built and ran an agentic AI development workflow for my own production delivery:
+  four stages, eight role-scoped agents, model routing by task, and review roles barred from
+  writing the code they audit. Used it to deliver a security hardening programme, where the
+  independent step caught defects the implementing pass had missed; drove its practices into the
+  team's process.
+- The thin-orchestrator context budget is the one clause left off; see part 3. The
+  separation-of-duties clause stays, because it is what makes the workflow credible rather than
+  fashionable.
+
+**3. Steadying the team through the restructuring** — approved in the previous sweep, unmoved.
+The CV's sentence verbatim.
+
+- **CV and site:** Steadied the engineering team through a company restructuring, and argued
+  build-capacity against target-attainment in the half-year OKR capacity review; adjudicated
+  review disputes on evidence rather than seniority.
+
+**4. The Contentful editor app** — approved in the previous sweep, unmoved.
+
+- **CV:** Built a custom Contentful editor app for the editorial platform (React, Contentful App
+  SDK), including its S3 + CloudFront hosting infrastructure; propagated the new content model
+  end-to-end across three services with zero-downtime migrations.
+- **Site:** Built a custom Contentful editor app for the editorial platform (React, Contentful
+  App SDK) with its S3 and CloudFront hosting; propagated the new content model end to end
+  across three services with zero-downtime migrations.
+- Same facts, fewer words: "including its ... infrastructure" becomes "with its ... hosting".
+
+**5. The SEO incident** — promoted from a trailing clause to a bullet of its own.
 
 - **CV:** Traced a sitewide collapse in The Bump's organic traffic to the site taking its own
   address from whichever host the request arrived on. An ingress migration had just changed that
@@ -167,7 +207,10 @@ rewritten.
 
 ## 3. Deliberate absences
 
-Everything the CV's Principal role says that the site does not.
+The statements and figures the CV's Principal role carries and the site declines to carry at
+all. Clauses trimmed while condensing a bullet that did land are accounted for in that bullet's
+own row above, and are not repeated here; what follows is the list of decisions that leave a
+whole claim off the page.
 
 | On the CV | Why it is not on the site |
 | --- | --- |
