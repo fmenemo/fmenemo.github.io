@@ -31,14 +31,32 @@ const Experience: React.FC = () => {
                 </h4>
 
                 <ul className='mt-4 space-y-3'>
-                  {role.bullets.map((bullet) => (
-                    <li
-                      key={bullet}
-                      className='border-l border-rule pl-4 text-sm leading-relaxed text-muted dark:border-rule-dark dark:text-muted-dark'
-                    >
-                      {bullet}
-                    </li>
-                  ))}
+                  {role.bullets.map((bullet) => {
+                    const text = typeof bullet === 'string' ? bullet : bullet.text;
+                    const subBullets = typeof bullet === 'string' ? [] : bullet.subBullets;
+
+                    return (
+                      <li
+                        key={text}
+                        className='border-l border-rule pl-4 text-sm leading-relaxed text-muted dark:border-rule-dark dark:text-muted-dark'
+                      >
+                        {text}
+                        {/* A list inside the item it belongs to, so a screen
+                            reader announces the parts as parts of the programme
+                            above them rather than as more bullets. The treatment
+                            is the minimum that reads on this design — indented,
+                            marked, and otherwise the same voice; the redesign
+                            decides how nesting looks. */}
+                        {subBullets.length > 0 && (
+                          <ul className='mt-3 list-disc space-y-2 pl-5 marker:text-rule dark:marker:text-rule-dark'>
+                            {subBullets.map((subBullet) => (
+                              <li key={subBullet}>{subBullet}</li>
+                            ))}
+                          </ul>
+                        )}
+                      </li>
+                    );
+                  })}
                 </ul>
               </div>
             ))}
