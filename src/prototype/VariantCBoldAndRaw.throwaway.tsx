@@ -191,17 +191,9 @@ const VariantCBoldAndRaw: React.FC = () => {
               standfirst: it is the largest running text on the page and the
               only thing in this band, which is what density 3 buys. */}
           <section id='home' className='border-t-2 border-br-ink py-10 sm:py-14 dark:border-br-ink-dark'>
-            <div className='grid gap-8 lg:grid-cols-[minmax(0,1fr)_16rem] lg:gap-16'>
-              <p className='br-narrow max-w-[34ch] text-[clamp(1.375rem,4.2vw,2.375rem)] leading-[1.15] font-semibold tracking-[-0.015em]'>
-                {identity.line}
-              </p>
-
-              <p className={`${label} ${muted} leading-[2] lg:pt-3 lg:text-right`}>
-                {identity.location}
-                <span className='mx-2 text-br-accent'>&#47;</span>
-                {identity.mode}
-              </p>
-            </div>
+            <p className='br-narrow max-w-[34ch] text-[clamp(1.375rem,4.2vw,2.375rem)] leading-[1.15] font-semibold tracking-[-0.015em]'>
+              {identity.line}
+            </p>
 
             {/* One CTA, one label, in one place on the page: the download is a
                 bar rather than a button, and the Contact band at the bottom
