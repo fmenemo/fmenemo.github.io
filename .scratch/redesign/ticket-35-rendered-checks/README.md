@@ -26,9 +26,28 @@ mode" and "Switch to light mode" are not the same length, and at 320px the top
 line wraps one word differently between the themes.
 
 They are here and not on the ticket because a Sandcastle sandbox writes to the
-tracker with `GH_TOKEN` and GitHub has no API route that uploads an image to an
-issue: attachments are a web-UI upload against a signed-in session. Posting them
-is the driving session's to do, from this directory.
+tracker with `GH_TOKEN`, and every route that would put an image on issue #35 is
+closed to that credential. Three were tried on 2026-09-04, and what each
+returned is below, so the next session does not spend the same hour deriving it
+again.
+
+| Route | Attempted as | Result |
+| --- | --- | --- |
+| The native issue attachment | `POST https://github.com/upload/policies/assets` with the repository id, the file name, its size and `image/png`, bearing the token | `422`, GitHub's HTML error page. The endpoint is the web UI's own form, behind a CSRF token and a signed-in session; a PAT is not a session and there is no REST or GraphQL equivalent of it. |
+| Serving the files from the repository, so the comment can link them | `POST /repos/:owner/:repo/git/blobs`, then `/git/trees`, then `/git/commits` | `403 Resource not accessible by personal access token` on all three. The token has no `contents: write`, which also rules out creating a branch or a ref for them, uploading them as release assets, and `git push` — all of them are the same permission. |
+| Embedding them in the comment body itself | An `<img src="data:image/png;base64,...">` posted as a comment, then read back with `Accept: application/vnd.github.html+json` | The comment posts, and the rendered HTML comes back as `<img width="20" style="max-width: 100%;">`: GitHub's sanitiser strips the `src` of a data URI, so the image is empty. It would not have fitted regardless — a comment body caps at 65,536 characters and the smallest of these files is 1.2MB. |
+
+So the criterion's "recorded as screenshots on the ticket" cannot be met by this
+credential, and the four files below are the record standing in its place. What
+closes it is one step in a browser someone is signed into: open issue #35 and
+drag the four files from this directory into a comment. From a checkout of
+`sandcastle/issue-35` they are already on disk here; from anywhere else,
+
+```
+git show sandcastle/issue-35:.scratch/redesign/ticket-35-rendered-checks/variant-d-light-1280.png > variant-d-light-1280.png
+```
+
+and the same for the other three names in the table above.
 
 ## The variant on the switcher
 
