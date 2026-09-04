@@ -7,15 +7,23 @@ file are variant E as it stood at the commit that added them.
 
 | File | Viewport | Theme | Pixels |
 | --- | --- | --- | --- |
-| `variant-e-light-1280.png` | 1280 | light | 2560 x 9934 |
-| `variant-e-dark-1280.png` | 1280 | dark | 2560 x 9934 |
+| `variant-e-light-1280.png` | 1280 | light | 1280 x 4967 |
+| `variant-e-dark-1280.png` | 1280 | dark | 1280 x 4967 |
 | `variant-e-light-320.png` | 320 | light | 320 x 9313 |
 | `variant-e-dark-320.png` | 320 | dark | 320 x 9313 |
 
 Each is one continuous capture of the whole document, and the pixel height of
-each is the page's own height at that width. The 320px pair is taken at a device
-pixel ratio of 1 for the reason #32 recorded: at 2 the image is past what
-Chrome's full-page capture can hold, and what comes back restarts partway down.
+each is the page's own height at that width, which is what says so: the nameplate
+appears once, at the top, and the footer is the last thing in the file.
+
+All four are taken at a device pixel ratio of 1, for the reason #32 recorded: a
+capture past what Chrome's full-page screenshot can hold comes back restarting
+at the top of the page partway down, and everything below the restart is lost.
+The first 1280 pair on this branch had that fault — taken at a ratio of 2 and
+scaled a second time in the capture, they came back 5120 x 19868 and restarted
+immediately after the third recognition, so recognitions 4 to 7, education,
+technologies, contact and the footer were missing from both. These replace them,
+and the whole document is in each.
 
 They are here and not on the ticket because a Sandcastle sandbox writes to the
 tracker with `GH_TOKEN` and GitHub has no API route that uploads an image to an
