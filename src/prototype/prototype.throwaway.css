@@ -77,3 +77,68 @@
 .dark .ed-page :focus-visible {
   outline-color: var(--color-ed-accent-dark);
 }
+
+/* Variant D's faces. Self-hosted subsets, not CDN links, as the bounds require.
+   Two families rather than one: Fraunces at its SOFT instance for the few
+   display moments, where the soft axis is the whole reason it is here, and
+   Literata for every word of the record, which is drawn for reading at length
+   on a screen. Variant A is one family drawn twice; this is deliberately not
+   that. */
+@import '@fontsource-variable/fraunces/soft.css';
+@import '@fontsource-variable/literata/standard.css';
+@import '@fontsource-variable/literata/standard-italic.css';
+
+/* Variant D's tokens, namespaced `wq-` for warm and quiet. Light is the primary
+   composition: a warm off-white paper with a brown-black ink over it. Dark is
+   drawn rather than inverted, on a warm off-black that keeps the same brown
+   cast, with the clay accent lifted and desaturated so it stays quiet at night
+   instead of glowing. */
+@theme {
+  --font-warm-display: 'Fraunces Variable', Georgia, serif;
+  --font-warm-text: 'Literata Variable', Georgia, serif;
+
+  --color-wq-paper: #faf6f0;
+  --color-wq-ink: #2b2521;
+  --color-wq-muted: #6b6055;
+  --color-wq-faint: #9a8d80;
+  --color-wq-accent: #9c5a3c;
+
+  --color-wq-paper-dark: #191512;
+  --color-wq-ink-dark: #ece3d8;
+  --color-wq-muted-dark: #a89a8b;
+  --color-wq-faint-dark: #7d7166;
+  --color-wq-accent-dark: #d9a17c;
+}
+
+/* Motion dial 3: one settling entrance on the opening, and nothing on the page
+   that moves on its own after it. Said here as well as in `index.css` so the
+   variant honours reduced motion on its own terms. */
+@keyframes wq-settle {
+  from {
+    opacity: 0;
+    transform: translateY(0.5rem);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.wq-settle {
+  animation: wq-settle 700ms cubic-bezier(0.22, 0.7, 0.25, 1) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .wq-settle {
+    animation: none;
+  }
+}
+
+/* The site's focus ring, in this variant's accent rather than the site's. */
+.wq-page :focus-visible {
+  outline-color: var(--color-wq-accent);
+}
+
+.dark .wq-page :focus-visible {
+  outline-color: var(--color-wq-accent-dark);
+}
