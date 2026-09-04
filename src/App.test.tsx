@@ -161,7 +161,11 @@ const editions = [
     identityPhrases: ['Full-stack engineer', '10+ years', 'end to end in TypeScript', 'AI layer'],
     differentiator: ['semantic search', 'MCP', 'agentic'],
     // The claims ADR 0001 removed, in the language they would come back in.
-    availability: /available|open to (new )?opportunities|actively (exploring|looking)|hiring/i,
+    // "Hiring" is banned as Fran offering himself, not as a thing he did: he
+    // sat on a hiring panel in the Lead role, which is the CV's own words for
+    // work he was doing for the team. The lookahead is what keeps the ban on
+    // the claim rather than on the word.
+    availability: /available|open to (new )?opportunities|actively (exploring|looking)|hiring(?!\s+panel)/i,
     claims: [
       /\d+\+?\s*(engineers|developers)\s*mentored/i,
       /years of experience|systems scaled/i,
@@ -1201,6 +1205,69 @@ describe('the Principal role says what the CV says', () => {
     );
     expect(signOn).toBeDefined();
     expect(signOn?.nextElementSibling?.textContent).toContain('Built session continuity');
+  });
+});
+
+// The other role at the same employer, swept from the same CV commit. It is a
+// per-edition guard for the same reason the Principal block is: the Spanish
+// edition is condensed from its own document and sweeps on its own ticket.
+describe('the Lead role says what the CV says', () => {
+  const english = editions.find((edition) => edition.edition === 'English')!;
+
+  // The role's own bullets, in the order a reader meets them. Found by the
+  // heading above them, so the assertion survives any change to how a bullet is
+  // styled.
+  const leadBullets = () => {
+    render(<App content={english.content} />);
+    const list = screen.getByText('Lead Software Engineer').closest('div')!.querySelector('ul')!;
+    return [...list.children].map((item) => item.textContent ?? '');
+  };
+
+  // The CV's order, and the argument it makes: what he took on, the system he
+  // built for it, what that system returned, the team he ran, and the release
+  // path he fixed. An order is content, so it is asserted rather than assumed.
+  it('reads in the CV’s order: the handover, the system, its variant, the team, the deployment time', () => {
+    expect(leadBullets()).toEqual([
+      expect.stringMatching(/^Took over The Bump’s web platform/),
+      expect.stringMatching(/^Built an A\/B testing system/),
+      expect.stringMatching(/^The winning variant in an ad-layout test/),
+      expect.stringMatching(/^Managed an 8-person cross-functional team/),
+      expect.stringMatching(/^Cut deployment time/),
+    ]);
+  });
+
+  // New to the site with this sweep. It is the one bullet that says what the
+  // role was: an inherited platform, rebuilt tooling, and a hiring panel he sat
+  // on to staff the team that would own it.
+  it('says he took the platform over and staffed the team that would own it', () => {
+    expect(renderedText(english)).toContain(
+      'Took over The Bump’s web platform from the outgoing team: rebuilt their build and release tooling, environments and runbooks in-house, and sat on the hiring panel for four engineering roles, defining the technical screen, to staff the team that would own it.'
+    );
+  });
+
+  // The mechanism, on its own. The CV split the old single bullet in two, and
+  // the split is the point: a reader can weigh the system without the result
+  // hanging off the end of the same sentence.
+  it('states the A/B system as the mechanism that made experiments possible', () => {
+    expect(renderedText(english)).toContain(
+      'Built an A/B testing system for a platform where edge caching had made experimentation impossible: Akamai assigns a variant cookie at the edge and the app renders the matching tagged build, sticky across reloads. The platform had run no experiments in over 3 years before it; 10+ have run since.'
+    );
+  });
+
+  // The result, as its own statement, and with the reason it shipped: the lift
+  // is only evidence if nothing else moved against it.
+  it('states the winning variant as its own result, with what held at baseline', () => {
+    expect(renderedText(english)).toContain(
+      'The winning variant in an ad-layout test on that system lifted served ad impressions 23% against control; it shipped because engagement depth held at baseline in Mixpanel and GA4.'
+    );
+  });
+
+  // The CV moved this claim into the Shop headline, where it is now made as
+  // Principal. Left here as well it would be the same work counted twice, in
+  // two roles, which is exactly what a recruiter checking the CV would catch.
+  it('leaves the proposal-to-a-live-MVP claim to the Shop headline that now carries it', () => {
+    expect(leadBullets().join(' ')).not.toMatch(/proposal to a live MVP/i);
+    expect(renderedText(english)).not.toMatch(/integrated commerce platform/i);
   });
 });
 

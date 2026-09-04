@@ -9,18 +9,17 @@
 //
 // It is condensed from `public/Fran_Menendez_CV.pdf`, which is the source of
 // truth: where the two disagree, the CV wins and this file is wrong (ADR 0001).
-// Each bullet was approved against its CV original in
-// `.scratch/site-refresh/bullet-approval.md`, which also records why anything on
-// the CV is missing here. Do not add a statement that is not in that document.
+// Every string in it is approved against its CV original in
+// `.scratch/the-reworked-cv-with-nesting/bullet-approval.md`, which also records
+// what the CV says and this file deliberately does not. Do not add a statement
+// that is not in that document. The record it replaced,
+// `.scratch/site-refresh/bullet-approval.md`, is history now rather than the
+// gate: it approved a CV two rewrites back.
 //
-// The Principal role has since been re-approved against the reworked CV in
-// `.scratch/the-reworked-cv-with-nesting/bullet-approval.md`, which is the
-// record for that role and for what the CV dropped from it. The rest of this
-// module is still the record above until that one covers it.
-//
-// This copy was approved against `cv/en.md` at commit `36eab4d` in the
-// `professional-record` repository. Next sweep: run
-// `git -C ~/Projects/professional-record diff 36eab4d..HEAD -- cv/en.md` and
+// This copy was approved against `cv/en.md` at commit `433e72d` in the
+// `professional-record` repository, read at that repo's commit `0996591`. Next
+// sweep: run
+// `git -C ~/Projects/professional-record diff 433e72d..HEAD -- cv/en.md` and
 // bring across what it shows.
 //
 // That history begins on 2026-08-12, the day the CV changed repositories.
@@ -101,11 +100,20 @@ export const en: SiteContent = {
         {
           title: 'Lead Software Engineer',
           dates: 'Oct 2023 - Mar 2025',
+          // The CV's order, and its argument: what he took on, the system he
+          // built for it, what that system returned, the team he ran, and the
+          // release path he fixed. The commerce platform's "proposal to a live
+          // MVP" is not here any more — the CV moved that claim into the Shop
+          // headline in the role above, where it is made once.
           bullets: [
-            'Built an A/B testing system for a platform where edge caching had made experimentation impossible: Akamai assigns a variant cookie at the edge and the app renders the matching tagged build, sticky across reloads. The platform had run no experiments in over 3 years before it; 10+ have run since. The winning variant in an ad-layout test lifted served ad impressions 23% against control.',
-            'Cut deployment time from over 2 hours to 1 minute, enabling daily deployments.',
-            'Took the integrated commerce platform from proposal to a live MVP, on a $2M+ annual revenue projection.',
+            'Took over The Bump’s web platform from the outgoing team: rebuilt their build and release tooling, environments and runbooks in-house, and sat on the hiring panel for four engineering roles, defining the technical screen, to staff the team that would own it.',
+            'Built an A/B testing system for a platform where edge caching had made experimentation impossible: Akamai assigns a variant cookie at the edge and the app renders the matching tagged build, sticky across reloads. The platform had run no experiments in over 3 years before it; 10+ have run since.',
+            // Its own statement, as on the CV: the mechanism above is worth
+            // weighing whether or not any one test won, and the result is worth
+            // reading without the mechanism ahead of it.
+            'The winning variant in an ad-layout test on that system lifted served ad impressions 23% against control; it shipped because engagement depth held at baseline in Mixpanel and GA4.',
             'Managed an 8-person cross-functional team; mentored 5 developers, resulting in 2 promotions.',
+            'Cut deployment time from over 2 hours to 1 minute, enabling daily deployments.',
           ],
         },
       ],
