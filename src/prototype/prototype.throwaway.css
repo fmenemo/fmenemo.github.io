@@ -77,3 +77,114 @@
 .dark .ed-page :focus-visible {
   outline-color: var(--color-ed-accent-dark);
 }
+
+/* ---------------------------------------------------------------------------
+   Variant C, Bold and raw (#34). Its own face and its own tokens, namespaced
+   `br-`, beside variant A's rather than over them: two variants share this
+   stylesheet because they share a Tailwind build, and nothing else.
+
+   Self-hosted subset, not a CDN link. Archivo carries a width axis as well as a
+   weight one, which is what the variant is drawn on: the nameplate is the same
+   face as the evidence, compressed and at 900, rather than a second family
+   brought in to shout. */
+@import '@fontsource-variable/archivo/standard.css';
+
+@theme {
+  --font-brutal: 'Archivo Variable', 'Arial Black', 'Helvetica Neue', sans-serif;
+
+  /* Light is a white ground and a near-black ink at full contrast: the variant
+     is raw, so the two are almost the paper and the toner. */
+  --color-br-ground: #ffffff;
+  --color-br-ink: #0a0a0a;
+  --color-br-muted: #4d4d4d;
+
+  /* Dark is drawn, not inverted: the ground goes to the same near-black the ink
+     was, and the ink to a warm bone rather than to white, so the page at night
+     is a printed negative rather than a flipped switch. */
+  --color-br-ground-dark: #0a0a0a;
+  --color-br-ink-dark: #f4f2ec;
+  --color-br-muted-dark: #a5a29a;
+
+  /* The one uncompromising accent, and it is the same value in both themes. It
+     is used as a field of colour with near-black over it, never as small text,
+     so the Shop panel is the one thing on the page that does not change when
+     the theme does. */
+  --color-br-accent: #ff3d00;
+  --color-br-void: #0a0a0a;
+}
+
+/* The width axis, as two utilities. Tailwind's own `font-stretch` support
+   varies by minor version and this is throwaway code; two classes are cheaper
+   than pinning a version. */
+.br-compress {
+  font-stretch: 66%;
+}
+
+.br-narrow {
+  font-stretch: 84%;
+}
+
+/* Motion dial 5. Three things move: the nameplate arrives a line at a time, the
+   technologies run as a ticker, and every control answers press. Nothing is
+   driven by scroll and nothing loops except the ticker. */
+@keyframes br-slam {
+  from {
+    opacity: 0;
+    transform: translate3d(-0.35em, 0, 0);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.br-slam {
+  animation: br-slam 480ms cubic-bezier(0.16, 0.84, 0.3, 1) both;
+}
+
+@keyframes br-run {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+
+.br-ticker {
+  animation: br-run 34s linear infinite;
+}
+
+/* Reduced motion: the nameplate is simply there, and the ticker stops dead and
+   wraps into a block a reader can read at their own pace. `index.css` flattens
+   animations globally too; this says it in the variant's own terms, because a
+   stopped ticker at `translate3d(0,0,0)` is a list only if it also wraps. */
+@media (prefers-reduced-motion: reduce) {
+  .br-slam {
+    animation: none;
+  }
+
+  .br-ticker {
+    animation: none;
+    flex-wrap: wrap;
+    row-gap: 0.5rem;
+  }
+
+  .br-ticker-echo {
+    display: none;
+  }
+}
+
+/* The focus ring is the site's, in this variant's accent, and it sits on a
+   ground that is nearly black in one theme and white in the other, so it takes
+   an offset that shows on both. */
+.br-page :focus-visible {
+  outline: 3px solid var(--color-br-accent);
+  outline-offset: 2px;
+}
+
+/* The one place the accent ring would land on the accent: the CV bar is a field
+   of it, so its ring is drawn in the near-black the bar's own label is set in. */
+.br-page .bg-br-accent:focus-visible {
+  outline-color: var(--color-br-void);
+}
