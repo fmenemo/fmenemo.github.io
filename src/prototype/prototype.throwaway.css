@@ -18,6 +18,12 @@
 @import '@fontsource-variable/newsreader/standard.css';
 @import '@fontsource-variable/newsreader/standard-italic.css';
 
+/* Variant B's face. A tight grotesk, self-hosted as a subset like the one
+   above: `standard.css` carries both the weight and the width axis, so the
+   nameplate can be drawn narrow at the same weight rather than at a second
+   size. */
+@import '@fontsource-variable/archivo/standard.css';
+
 /* The site's own dark rule, repeated because this stylesheet is compiled apart
    from `index.css`. The class on the root is the same one the pre-paint script
    in `index.html` sets, so a variant is drawn in the theme the visitor arrived
@@ -76,4 +82,93 @@
 
 .dark .ed-page :focus-visible {
   outline-color: var(--color-ed-accent-dark);
+}
+
+
+/* Variant B's tokens, namespaced `pb-` (product B) for the same reason A's are
+   namespaced: they sit beside the site's palette rather than over it. Cool
+   tinted neutrals, one blue, and a body colour a step lighter than the ink so
+   that a figure set in ink is the loudest thing in its line without a second
+   hue. Dark is drawn against a blued near-black, not inverted out of light. */
+@theme {
+  --font-product: 'Archivo Variable', ui-sans-serif, system-ui, sans-serif;
+
+  --color-pb-bg: #f3f5f8;
+  --color-pb-surface: #ffffff;
+  --color-pb-ink: #0b1220;
+  --color-pb-body: #46536a;
+  --color-pb-muted: #6b7789;
+  --color-pb-rule: #e0e5ec;
+  --color-pb-line: #cdd5e0;
+  --color-pb-accent: #1f4fd8;
+
+  --color-pb-bg-dark: #0a0d14;
+  --color-pb-surface-dark: #111726;
+  --color-pb-ink-dark: #eef2f8;
+  --color-pb-body-dark: #a7b2c4;
+  --color-pb-muted-dark: #7b8699;
+  --color-pb-rule-dark: #1c2434;
+  --color-pb-line-dark: #2a344a;
+  --color-pb-accent-dark: #7aa2ff;
+}
+
+/* Motion dial 4: an entrance the shell arrives on, a reveal each section
+   crosses into once, and a switch that travels. Nothing loops, nothing moves
+   after the reader stops. Every rule below is off under reduced motion, and
+   `PbReveal` renders its content visible rather than hidden when the
+   preference is set, so nothing depends on an observer that never fires. */
+@keyframes pb-enter {
+  from {
+    opacity: 0;
+    transform: translateY(0.5rem);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.pb-enter {
+  animation: pb-enter 480ms cubic-bezier(0.22, 0.61, 0.36, 1) both;
+}
+
+/* The reveal is two classes rather than one animation: the section is drawn
+   held back, and crossing into view releases it. A transition rather than a
+   keyframe, so a section already on screen at first paint lands with the
+   entrance above instead of fighting it. */
+.pb-held {
+  opacity: 0;
+  transform: translateY(0.75rem);
+}
+
+.pb-release {
+  opacity: 1;
+  transform: none;
+  transition:
+    opacity 520ms cubic-bezier(0.22, 0.61, 0.36, 1),
+    transform 520ms cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pb-enter {
+    animation: none;
+  }
+
+  .pb-held,
+  .pb-release {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}
+
+/* The site's focus ring, recoloured to this variant's accent. Same treatment
+   variant A gives it and for the same reason: the ring is finish, its colour is
+   the variant's. */
+.pb-page :focus-visible {
+  outline-color: var(--color-pb-accent);
+}
+
+.dark .pb-page :focus-visible {
+  outline-color: var(--color-pb-accent-dark);
 }
