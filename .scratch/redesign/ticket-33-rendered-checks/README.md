@@ -55,11 +55,42 @@ branch showed before they were retaken.
   page, and `npm run build` produces a `dist` containing no `pb-` class, no
   `Archivo` reference and no variant module.
 
-## What the screenshots do not carry
+## What is on the ticket, and what is not
 
-They are not on the ticket, and no credential this ticket is worked under can
-put them there: GitHub's issue attachments are a web-UI upload against a browser
-session, and there is no REST or GraphQL route that uploads an image to an issue
-or a comment. `GH_TOKEN` posted the comment that points here. Dragging the four
-files into that comment is the one step left, and it needs a browser someone is
-signed into.
+Posted to issue #33 with `GH_TOKEN` on 2026-09-04, at
+<https://github.com/fmenemo/fmenemo.github.io/issues/33#issuecomment-5542983547>:
+the table above, what was read in the browser, the design read and dials, and
+the line the ticket asks for on what makes this variant structurally different,
+which reads
+
+> A is one centred serif column with every date in a left margin rail and the
+> evidence set as prose; B is an off-centre two-column application shell in a
+> tight grotesk, where the masthead is a pinned rail rather than a bar, the role
+> titles stay pinned in a fixed column while their evidence scrolls past, the
+> employer spans and recognition dates sit on the right edge, the evidence is
+> ruled rows rather than paragraphs, the Shop programme is a subsystem panel of
+> components rather than a passage between hairlines, and the contact routes are
+> a grid rather than a list.
+
+The same line is in the header of `VariantBCleanProduct.throwaway.tsx`, where
+the ticket asks for the design read; the ticket is where the criterion asks for
+this one, and the comment above is it.
+
+The four PNGs are not on the ticket, and `GH_TOKEN` cannot put them there.
+Attaching an image to an issue is a browser-session upload in the web UI, and
+every route a token can reach was tried on 2026-09-04:
+
+| Attempt | Result |
+| --- | --- |
+| `POST /repos/fmenemo/fmenemo.github.io/issues/33/assets` | 404, no such REST route |
+| `POST uploads.github.com/repos/.../issues/33/assets` | 400; that host takes release assets only |
+| `POST github.com/upload/policies/assets`, the endpoint the web UI posts to | 422, an HTML error page: it authenticates a session, not a token |
+| GraphQL mutation list, searched for `attach`, `upload`, `asset` | no such mutation |
+
+So the criterion's recording half stands unmet by the branch rather than
+unattempted by it. Dragging the four files into the comment linked above is the
+one step left, and it needs a browser someone is signed into. #32 met the same
+wall and recorded it the same way.
+
+The probe table above is on the ticket too, at
+<https://github.com/fmenemo/fmenemo.github.io/issues/33#issuecomment-5543081138>.
