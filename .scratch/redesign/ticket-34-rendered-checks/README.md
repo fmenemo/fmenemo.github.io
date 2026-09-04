@@ -2,7 +2,7 @@
 
 The prototype has no tests of its own by decision, so everything below was read
 off the running dev server (`npm run dev`, headless Chrome 152 over the DevTools
-protocol, 2026-09-04) rather than asserted. The four screenshots beside this
+protocol, 2026-09-04) rather than asserted. The screenshots beside this
 file are variant C as it stood at the commit that added them.
 
 | File | Viewport | Theme | Pixels |
@@ -11,21 +11,27 @@ file are variant C as it stood at the commit that added them.
 | `variant-c-dark-1280.png` | 1280 | dark | 1280 x 11142 |
 | `variant-c-light-320.png` | 320 | light | 320 x 13613 |
 | `variant-c-dark-320.png` | 320 | dark | 320 x 13613 |
+| `variant-c-reduced-motion-1280.png` | 1280 | light | 1280 x 296 |
+| `variant-c-reduced-motion-320.png` | 320 | light | 320 x 416 |
 
-Each is one continuous capture of the whole document, from the nameplate to the
-footer, and each pixel height is the page's own height at that width. All four
-are taken at a device pixel ratio of 1, this variant's pages being taller than
-variant A's: at 2 the 1280px capture is 22284px tall, which is past what
-Chrome's full-page capture can hold, and what comes back restarts partway down.
-#32 lost everything below independent work that way once already.
+The last two are the technologies band alone, under
+`prefers-reduced-motion: reduce`, and they are here because a computed style
+cannot show what they show: all fourteen technologies on the page at once.
+
+The first four are one continuous capture each of the whole document, from the
+nameplate to the footer, and each pixel height is the page's own height at that
+width. All six are taken at a device pixel ratio of 1, this variant's pages
+being taller than variant A's: at 2 the 1280px capture is 22284px tall, which is
+past what Chrome's full-page capture can hold, and what comes back restarts
+partway down. #32 lost everything below independent work that way once already.
 
 The record of them, the table above and everything read beside them, is on the
 ticket: comment `5543023408` on #34, posted under `GH_TOKEN`, which also carries
 the line saying what makes this variant structurally different from variant A.
-The four image files are not on it and cannot be. GitHub's issue attachments are
+The six image files are not on it and cannot be. GitHub's issue attachments are
 a web-UI upload against a browser session; there is no REST or GraphQL route
 that uploads an image to an issue or a comment, so `GH_TOKEN` cannot post one
-however it is spelled. Dragging the four files from this directory into that
+however it is spelled. Dragging the files from this directory into that
 comment is the one step left, and it needs a browser someone is signed into.
 
 ## What makes variant C structurally different from variant A
@@ -82,11 +88,22 @@ Recognitions as the one block on the page drawn in reverse.
   ink to a warm bone, and the education block reverses within each. The accent
   is one value, `#ff3d00`, in both. The page follows the class the pre-paint
   script sets.
-- **Reduced motion.** Under `prefers-reduced-motion: reduce`, read off the
-  running page: the nameplate's entrance resolves to `animation-name: none`, the
-  ticker to `animation-name: none` with `flex-wrap: wrap`, and its second copy
-  to `display: none`, so the technologies stand still as a plain wrapped row
-  rather than as a stopped strip missing its right half.
+- **Reduced motion.** Under `prefers-reduced-motion: reduce`, measured as
+  geometry rather than as computed style: the nameplate's entrance resolves to
+  `animation-name: none`, and every one of the fourteen technologies is inside
+  the band's clipping box, on eight lines at 320px and three at 1280px, with
+  nothing cut off at either width. The two captures above are that state.
+
+  This was wrong until `fdbb4c37` was reviewed, and the way it was wrong is
+  worth keeping. The wrap was declared on `.br-ticker`, the rail that carries
+  the two copies of the list, rather than on the list itself; with the second
+  copy hidden the rail has one child, and one child never wraps, so the row
+  stayed 1859px wide inside a 320px box and eleven of the fourteen technologies
+  were clipped and unreachable. Reading `flex-wrap: wrap` back out of
+  `getComputedStyle` said the declaration had applied, which was true, and said
+  nothing about whether anything had wrapped, which is the thing the criterion
+  asks about. The check that catches this is the one above: measure each item's
+  box against the clipping box and count what is inside it.
 - **Anchors.** All five links in the index resolve to a section on the page:
   `#experience`, `#independent-work`, `#technologies`, `#recognitions`,
   `#contact`.

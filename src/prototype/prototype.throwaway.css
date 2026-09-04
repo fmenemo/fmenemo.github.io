@@ -158,7 +158,17 @@
 /* Reduced motion: the nameplate is simply there, and the ticker stops dead and
    wraps into a block a reader can read at their own pace. `index.css` flattens
    animations globally too; this says it in the variant's own terms, because a
-   stopped ticker at `translate3d(0,0,0)` is a list only if it also wraps. */
+   stopped ticker at `translate3d(0,0,0)` is a list only if every technology in
+   it is on screen.
+
+   Three declarations are needed for that and not one. The wrap has to land on
+   `.br-ticker-row`, the list that actually holds the technologies, because
+   wrapping the rail that holds the two copies of it does nothing: with the
+   second copy hidden the rail has one child, and one child never wraps. The
+   rail also has to give up `w-max` and `whitespace-nowrap`, or the list is
+   handed an intrinsic width as wide as its content and wraps inside a box that
+   is already wider than the window. All three are unlayered rules in this file,
+   so they outrank the Tailwind utilities they overrule whatever the order. */
 @media (prefers-reduced-motion: reduce) {
   .br-slam {
     animation: none;
@@ -166,6 +176,11 @@
 
   .br-ticker {
     animation: none;
+    width: 100%;
+    white-space: normal;
+  }
+
+  .br-ticker-row {
     flex-wrap: wrap;
     row-gap: 0.5rem;
   }

@@ -317,14 +317,17 @@ const VariantCBoldAndRaw: React.FC = () => {
                 thing on it that repeats: a stack of technologies set as chips
                 would be a grid of boxes, which this page does not have. It runs
                 edge to edge, clips rather than scrolls the document, and stands
-                still and wraps into a plain row for a reader who asks. */}
+                still and wraps into a plain block for a reader who asks. The
+                wrap is on the list rather than on the rail that carries the two
+                copies of it: the rail has one child once the echo is hidden,
+                and one child never wraps. */}
             <div className={`${bleed} mt-14 overflow-hidden border-y-4 border-br-ink py-6 dark:border-br-ink-dark`}>
               <div className='br-ticker flex w-max gap-8 whitespace-nowrap px-4 sm:gap-12 sm:px-8'>
                 {[0, 1].map((copy) => (
                   <ul
                     key={copy}
                     aria-hidden={copy === 1 ? 'true' : undefined}
-                    className={`flex gap-8 sm:gap-12 ${copy === 1 ? 'br-ticker-echo' : ''}`}
+                    className={`br-ticker-row flex gap-8 sm:gap-12 ${copy === 1 ? 'br-ticker-echo' : ''}`}
                   >
                     {technologies.map((technology) => (
                       <li
