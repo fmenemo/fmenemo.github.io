@@ -6,10 +6,10 @@
 // point that only becomes one when the second variant lands: the arrows, the
 // wrap and the URL rewrite are all things Fran can see on the dev server today.
 //
-// A ticket that draws a variant replaces its entry, the name and the component
-// together. Nothing else about the scaffold changes.
+// A ticket that draws a variant replaced its entry, the name and the component
+// together. All five are drawn now, so the placeholder the empty slots pointed
+// at is gone with them.
 import type React from 'react';
-import NotBuiltYet from './NotBuiltYet.throwaway';
 import VariantAEditorial from './VariantAEditorial.throwaway';
 import VariantBCleanProduct from './VariantBCleanProduct.throwaway';
 import VariantCBoldAndRaw from './VariantCBoldAndRaw.throwaway';
