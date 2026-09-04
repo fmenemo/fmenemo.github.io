@@ -187,11 +187,11 @@ const editions = [
     entry: esHtml,
     lang: 'es',
     url: `${SITE}/es/`,
-    title: 'Fran Menéndez | Ingeniero de Software',
+    title: 'Fran Menéndez | Ingeniero Full-Stack',
     image: `${SITE}/og-image-es.png`,
     imageSource: ogImageEsHtml,
-    imageAlt: 'Fran Menéndez, ingeniero de software, Zaragoza, España.',
-    identityLead: /^Ingeniero de software, más de 10 años/,
+    imageAlt: 'Fran Menéndez, ingeniero full-stack, Zaragoza, España.',
+    identityLead: /^Ingeniero full-stack, más de 10 años/,
     themeToggle: /cambiar a modo (oscuro|claro)/i,
     language: {
       label: 'Idioma',
@@ -222,12 +222,48 @@ const editions = [
       'Desarrollador Junior, E-commerce',
     ],
     // The same evidence as the English row, written as the Spanish CV writes
-    // it: a decimal point for thousands, and a space before the unit.
-    figures: ['850 ms', '34 ms', '100.000', '2M', '500k', '1M', '100k', '8 personas'],
-    // The declines above were made against the English CV in an English-only
-    // pass, and this edition is frozen against a CV of its own, so it has no
-    // list of its own to carry yet.
-    declinedFigures: [] as { figure: string; pattern: RegExp }[],
+    // it: a decimal point for thousands, a comma for decimals, and a space
+    // before the unit. Read on the rendered Spanish PDF, not extracted from it.
+    figures: [
+      '850 ms',
+      '34 ms',
+      '100.000',
+      '2M',
+      // Distinct from the 2M above, which the inclusion-only guard would
+      // otherwise match inside it. The Spanish CV writes the currency after the
+      // number, so this is not the English row's '$2M+' with the words swapped.
+      '2M$',
+      '500k',
+      '1M',
+      '100k',
+      '8 personas',
+      // Arrived with the sweep of this edition against the new Spanish CV.
+      '90 %',
+      '50 ms',
+      '23 %',
+      '72 %',
+      '70 %',
+      '99,95 %',
+    ],
+    // The same four declines the English edition made, in the words the Spanish
+    // CV states them: this edition is now swept against a CV of its own, so a
+    // figure it left off is a decision here too and not merely an inheritance.
+    declinedFigures: [
+      { figure: 'the 100% retention', pattern: /100\s?%[^.]{0,40}retenci[oó]n|retenci[oó]n[^.]{0,40}100\s?%/i },
+      {
+        figure: 'the 85% design-with-components cut',
+        pattern: /85\s?%[^.]{0,60}(dise[nñ]o|componente|semana|d[ií]a)|(dise[nñ]o|componente|semana|d[ií]a)[^.]{0,60}85\s?%/i,
+      },
+      {
+        figure: 'three global enterprise partnerships',
+        pattern: /(tres|3)\s+alianzas\s+enterprise\s+globales/i,
+      },
+      {
+        figure: 'the 3.000 to 10.000+ user growth, and its 233%',
+        pattern:
+          /(3\.000|10\.000|233\s?%)[^.]{0,60}(usuario|crecimiento)|(usuario|crecimiento)[^.]{0,60}(3\.000|10\.000|233\s?%)/i,
+      },
+    ],
     recognitions: [
       'Finalista global',
       '100 Ideas Zaragoza',
@@ -235,8 +271,8 @@ const editions = [
       'ImagineCode',
       'Google Hash Code',
     ],
-    independentWork: ['Instagram Checker'],
-    identityPhrases: ['Ingeniero de software', 'más de 10 años', 'millones de usuarios', 'capa de IA'],
+    independentWork: ['Instagram Checker', 'Harness de entrega multiagente'],
+    identityPhrases: ['Ingeniero full-stack', 'más de 10 años', 'de principio a fin en TypeScript', 'capa de IA'],
     differentiator: ['búsqueda semántica', 'MCP', 'agéntico'],
     availability: /disponible|abierto a (nuevas )?oportunidades|buscando activamente|contratando/i,
     claims: [
@@ -245,7 +281,14 @@ const editions = [
       /código abierto|apasionad[oa]|pasión por/i,
       /freelance|autónomo/i,
     ],
-    describedAsNot: /full stack|diseñador|portfolio|portafolio/i,
+    // As on the English row, and for the same reason: ADR 0001 banned "full
+    // stack" because the old site invented it as a title, and both CV summaries
+    // have since chosen it for themselves — the Spanish one opens "Ingeniero
+    // full-stack", so the phrase now arrives from the document rather than from
+    // around it (ADR 0001, amended 2026-09-04). "diseñador", "portfolio" and
+    // "portafolio" were never on either CV and stay banned, the last two
+    // because the word a Spanish reader would search for has both spellings.
+    describedAsNot: /diseñador|portfolio|portafolio/i,
     metadataClaims: [
       /apasionad[oa]|pasión por|código abierto|precios[oa]|fácil de usar/i,
       /años de experiencia|sistemas escalados/i,
@@ -1207,16 +1250,16 @@ describe('the Principal role says what the CV says', () => {
 // The shape, asserted where a screen reader meets it. Indentation is not
 // nesting: what makes the Shop programme's parts read as parts is a list inside
 // the item they belong to, so this reads the DOM rather than the content module.
-describe('the Shop programme is a list inside its own list item', () => {
-  const english = editions.find((edition) => edition.edition === 'English')!;
-  const headline = english.content.employers[0].roles[0].bullets[0];
+describe.each(editions)('$edition edition: the Shop programme is a list inside its own list item', (edition) => {
+  const headline = edition.content.employers[0].roles[0].bullets[0];
   const subBullets = typeof headline === 'string' ? [] : headline.subBullets;
 
   // The role's own bullet list, found by the heading above it rather than by
-  // anything about how it is styled.
+  // anything about how it is styled. The heading is the role title as this
+  // edition's CV writes it, which is the first entry of the row's `roles`.
   const principalBullets = () => {
-    render(<App content={english.content} />);
-    return screen.getByText('Principal Software Engineer').closest('div')!.querySelector('ul')!;
+    render(<App content={edition.content} />);
+    return screen.getByText(edition.roles[0]).closest('div')!.querySelector('ul')!;
   };
 
   it('renders the sub-bullets the content declares, inside the first item', () => {
@@ -1228,10 +1271,13 @@ describe('the Shop programme is a list inside its own list item', () => {
     expect(nested).not.toBeNull();
     expect([...nested!.querySelectorAll('li')].map((item) => item.textContent)).toEqual([...subBullets]);
   });
+});
 
-  // One level and no more, over everything either edition renders: the type
-  // refuses a second level, and this is what would catch a component that
-  // reintroduced one under it.
+// One level and no more, over everything either edition renders: the type
+// refuses a second level, and this is what would catch a component that
+// reintroduced one under it. Out of the group above because it is the one
+// assertion there that reads both editions at once rather than one per row.
+describe('nothing nests deeper than one level', () => {
   it('nests one level and no deeper, anywhere on either edition', () => {
     for (const edition of editions) {
       cleanup();

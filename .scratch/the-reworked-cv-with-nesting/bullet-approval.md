@@ -225,6 +225,8 @@ whole claim off the page.
 Two of these were on the site until this ticket — the audit bullet and the
 cross-service-authentication bullet — and both are gone from `src/content.en.ts`.
 
-The Spanish edition still carries both, knowingly: ADR 0004 condenses each edition from its own
-CV, and ticket #31 sweeps `/es` from the new Spanish PDF. That is why the guards for this role
-are English-only and out of the edition table.
+The Spanish edition carried both until ticket #31 swept `/es` from the new Spanish PDF; that
+sweep's record is `bullet-approval-es.md` beside this file. The guards for this role stay
+English-only and out of the edition table all the same: ADR 0004 condenses each edition from
+its own CV, and these assertions quote English wordings that the Spanish edition has no reason
+to reproduce.

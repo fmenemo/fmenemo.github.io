@@ -8,13 +8,22 @@
 // and their bullets may legitimately split, merge or land differently
 // (ADR 0004).
 //
+// Two copies live outside it, both of them condensations of `identity.line`
+// below: the metadata in `es/index.html`, which is what a link scraper reads,
+// and the share image copy in `tools/assets/og-image.es.html`. Change the
+// identity line and all three move together; a test in `App.test.tsx` fails if
+// they drift apart.
+//
 // Each bullet was approved against its CV original in
-// `.scratch/spanish-edition/bullet-approval-es.md`, which also records why
-// anything on the Spanish CV is missing here. Do not add a statement that is
-// not in that document.
+// `.scratch/the-reworked-cv-with-nesting/bullet-approval-es.md`, which is the
+// record for the whole of this module and for everything on the Spanish CV that
+// is deliberately absent from it. It replaces
+// `.scratch/spanish-edition/bullet-approval-es.md`, which approved this edition
+// against the CV as it stood on 2026-08-04 and is now history. Do not add a
+// statement that is not in the current record.
 //
 // The PDF this copy traces to is the one in the public directory, SHA-256
-// `a7ce21c9135e72875fc904c7f614d9605488207fa859478a56d80cfc639fb2d9`. A digest
+// `34727f84d73d2ffaa735a566a83df9de2a93f3d4f7e9dbb8812f7ed3ead10350`. A digest
 // rather than a commit because the Spanish markdown was retired upstream on
 // 2026-08-17: this edition's CV has no source file left to diff and no commit
 // to name, and a digest is the one thing about a generated artefact that still
@@ -30,7 +39,11 @@ import type { SiteContent } from './content';
 export const es: SiteContent = {
   identity: {
     name: 'Fran Menéndez',
-    line: 'Ingeniero de software, más de 10 años construyendo plataformas que dan servicio a millones de usuarios, trabajando en la capa de IA: búsqueda semántica en producción, tooling MCP y flujos de desarrollo agéntico convertidos en estándar de todo el equipo.',
+    // Condensed from the Spanish CV's summary, and it leads as that summary
+    // leads: "Ingeniero full-stack". The three AI-layer items keep the
+    // summary's order, and the team-wide standard attaches to MCP alone, as it
+    // does there — the old line hung it off all three.
+    line: 'Ingeniero full-stack, más de 10 años entregando productos completos de principio a fin en TypeScript, trabajando en la capa de IA: búsqueda semántica en producción, herramientas MCP convertidas en el estándar de todo el equipo y un flujo de ingeniería agéntico construido y operado para entregas en producción.',
     location: 'Zaragoza, España',
     mode: 'Remoto',
   },
@@ -62,28 +75,60 @@ export const es: SiteContent = {
         {
           title: 'Ingeniero de Software Principal',
           dates: 'Abr 2025 - Jul 2026',
+          // Shop es un programa en el CV y un bullet aquí: un titular que lleva
+          // debajo las partes de las que está hecho, en el orden del CV. Los
+          // bullets sueltos que antes lo contaban por separado, repartidos entre
+          // los once del puesto, se leían como trabajos sin relación entre sí,
+          // que es justo lo contrario de lo que son.
           bullets: [
-            'Reconstruí desde cero la plataforma de e-commerce Shop en un mes yo solo, frente a una estimación de tres meses con varios desarrolladores. Next.js y React sobre la API Rainforest de Amazon y Contentful, dando servicio a cientos de miles de usuarios en producción.',
-            'Construí el emparejamiento semántico de productos con OpenSearch, combinando similitud vectorial k-NN y relevancia textual BM25, con un panel de revisión humana en PayloadCMS para los emparejamientos por debajo del umbral de confianza.',
-            'Construí el flujo de desarrollo con IA agéntica del equipo: orquestación y verificación con enrutado de modelos por rol, presupuesto de contexto y revisión independiente obligatoria, usado para entregas en producción, incluido trabajo crítico de seguridad.',
-            'Introduje tooling de Model Context Protocol (MCP) que genera componentes de producción directamente desde Figma con fidelidad exacta a los tokens, eliminando el paso manual de traducir el diseño a código; hoy es el estándar de todo el equipo.',
-            'Dirigí la auditoría de seguridad y el programa de hardening de la API del servicio público de e-commerce: ocho hallazgos en cuatro clases de vulnerabilidad, cerrando una inyección SQL, un control de acceso roto, un IDOR de escritura y una exposición de PII; construí el primer conjunto de pruebas automatizadas del servicio y un detector de regresiones de seguridad en CI.',
-            'Migré PayloadCMS de v2 a v3 para más de 100.000 productos sin downtime; los tiempos de respuesta de las consultas bajaron de 850 ms a 34 ms.',
-            'Rediseñé el cacheo para más de 2M de usuarios semanales: una capa de caché y revalidación por endpoint sobre el CDN existente y sin infraestructura adicional. La menor carga en origen permitió redimensionar los pods a la baja, recortando el recurso facturado por pod sin regresión de disponibilidad.',
-            'Construí una app de editor a medida para Contentful en la plataforma editorial (React, Contentful App SDK) con su alojamiento en S3 y CloudFront; propagué el nuevo modelo de contenido de extremo a extremo en tres servicios con migraciones sin downtime.',
-            'Sostuve al equipo de ingeniería durante una reestructuración de la empresa y defendí la capacidad de construcción frente al cumplimiento de objetivos en la revisión semestral de capacidad de los OKR; resolví disputas de revisión con evidencia y no por antigüedad.',
-            'Construí la continuidad de sesión entre la plataforma Bump y Shop: un traspaso de token OAuth autentica a los usuarios en Shop con su cuenta existente de Bump al navegar, aprovisionando una cuenta al vuelo cuando no existe.',
-            'Diagnostiqué la causa raíz de fallos de autenticación entre servicios en esa misma frontera, aislando un fallo en la capa edge y una llamada de sesión de Cognito que se quedaba colgada; resolví una incidencia de SEO canónico servida desde Kubernetes.',
+            {
+              text: 'Llevé Shop de la propuesta a producción: la plataforma de e-commerce que propuse como Lead, sobre una proyección de más de 2M$ de ingresos anuales, entregada como MVP en vivo con el equipo y llevada a producción como Principal, siendo por momentos su único contribuidor.',
+              // La segunda frase del titular, la de haber defendido el orden de
+              // construcción con lo que mostraban las métricas, se queda fuera:
+              // el primer sub-bullet *es* ese argumento, y decirlo dos veces
+              // convierte el titular en el prólogo de su propia evidencia.
+              subBullets: [
+                'Tras el MVP solo para móvil, el plan era construir la versión de escritorio a continuación; argumenté a partir de Mixpanel y GA, con un abandono en el onboarding en una audiencia mayoritariamente móvil, que la retención en móvil iba primero, y ese orden fue el adoptado.',
+                'Migré PayloadCMS de v2 a v3 para más de 100.000 productos sin tiempo de inactividad; los tiempos de respuesta de las consultas bajaron de 850 ms a 34 ms.',
+                'Reconstruí desde cero la plataforma de e-commerce Shop en un mes y en solitario, frente a una estimación de tres meses con varios desarrolladores. Next.js y React sobre la Rainforest API de Amazon y Contentful, sirviendo a cientos de miles de usuarios en producción.',
+                // "Sin revisión humana" se cae del CV aquí, y no por espacio:
+                // "se servían automáticamente" ya lo dice, y la frase literal
+                // hace saltar el guard de coletillas de ADR 0004, que prohíbe
+                // "sin revisión" en toda la página. Ceder la frase es más
+                // barato que abrir un agujero en ese guard.
+                'Construí el emparejamiento semántico de productos con OpenSearch, combinando similitud vectorial k-NN y relevancia textual BM25, segmentado por confianza: las coincidencias más sólidas se servían automáticamente - cerca del 90 % del volumen -, las más débiles se descartaban y la franja intermedia se enviaba a un panel de revisión a medida que construí dentro de PayloadCMS. La latencia p95 de consulta se mantuvo por debajo de 50 ms sobre más de 100.000 productos.',
+                'Rehíce la caché para más de 2M de usuarios semanales: una capa de caché y revalidación por endpoint sobre la CDN existente y sin infraestructura adicional. La menor carga en origen permitió redimensionar los pods a la baja, recortando el recurso facturado por pod sin regresión en la disponibilidad.',
+                'Amplié el panel de administración de PayloadCMS con páginas a medida: una consola de purgado que da a los editores control sobre la caché de consultas en Redis sin necesitar a un ingeniero, y el panel de revisión manual del emparejador de productos.',
+                'Unifiqué el inicio de sesión en cinco productos - los artículos de Bump, los nombres de bebé, el registro, la tienda y las apps nativas - de modo que una sola cuenta sustituyó a cinco accesos separados.',
+                'Construí la continuidad de sesión entre la plataforma Bump y Shop: un traspaso de token OAuth inicia la sesión del usuario en Shop con su cuenta existente de Bump al navegar, aprovisionando una cuenta al vuelo cuando no existe.',
+                // Sustituye al bullet de la auditoría, que contaba hallazgos. El
+                // CV dejó de dar la cifra y la taxonomía de cuatro clases, así
+                // que este dice qué se cerró y con qué se quedó protegido.
+                'Blindé la API pública de e-commerce: cerré agujeros de inyección SQL, control de acceso y exposición de PII, incluido un IDOR de escritura en una primitiva de autorización compartida que cubría cinco colecciones, y la dejé protegida con pruebas de regresión que se ejecutan en CI.',
+              ],
+            },
+            'Introduje herramientas de Model Context Protocol (MCP) que generan componentes de producción directamente desde Figma con fidelidad exacta a los tokens, eliminando el paso manual de diseño a código; hoy es el estándar de todo el equipo.',
+            'Construí y operé un flujo de desarrollo agéntico con IA para mis propias entregas en producción: cuatro etapas, ocho agentes con roles acotados, enrutamiento de modelo según la tarea y roles de revisión que tienen vetado escribir el código que auditan. Lo usé para entregar un programa de blindaje de seguridad, en el que el paso independiente detectó defectos que la pasada de implementación había pasado por alto; llevé sus prácticas al proceso del equipo.',
+            'Di estabilidad al equipo de ingeniería durante una reestructuración de la empresa y defendí la capacidad de construcción frente al cumplimiento de objetivos en la revisión semestral de capacidad de OKR; arbitré disputas de revisión con evidencias y no por antigüedad.',
+            'Construí una app de editor a medida para Contentful en la plataforma editorial (React, Contentful App SDK) con su alojamiento en S3 y CloudFront; propagué el nuevo modelo de contenido de extremo a extremo en tres servicios con migraciones sin tiempo de inactividad.',
+            // La incidencia que el bullet retirado de los fallos de
+            // autenticación entre servicios mencionaba de pasada. En el CV es
+            // ahora un bullet propio, contado como qué se rastreó y qué se fijó.
+            'Rastreé un desplome generalizado del tráfico orgánico de The Bump hasta que el sitio tomaba su propia dirección del host por el que llegaba cada petición, que una migración del ingress acababa de cambiar: estaba diciendo a los buscadores que su origen interno era el canónico. Fijé esa identidad al dominio de la marca allí donde se deriva, de modo que ningún cambio posterior de infraestructura pueda moverla.',
           ],
         },
         {
           title: 'Ingeniero de Software Líder',
           dates: 'Oct 2023 - Mar 2025',
           bullets: [
-            'Construí un sistema de tests A/B para una plataforma en la que el cacheo en el edge había hecho imposible experimentar: Akamai asigna una cookie de variante en el edge y la aplicación renderiza la build etiquetada correspondiente, estable entre recargas. La plataforma llevaba más de 3 años sin ejecutar un solo experimento; desde entonces se han lanzado más de 10.',
-            'Reduje el tiempo de despliegue de más de 2 horas a 1 minuto, habilitando despliegues diarios.',
-            'Lideré el desarrollo de la plataforma de comercio integrada, llevándola de la propuesta a un MVP en producción.',
+            'Asumí la plataforma web de The Bump del equipo saliente: reconstruí internamente sus herramientas de build y release, sus entornos y sus runbooks, y formé parte del panel de contratación de cuatro puestos de ingeniería, definiendo la prueba técnica, para dotar al equipo que sería su propietario.',
+            'Construí un sistema de pruebas A/B para The Bump, una plataforma donde la caché en el edge había hecho imposible experimentar: Akamai asigna una cookie de variante en el edge y la app renderiza la build etiquetada correspondiente, estable entre recargas. La plataforma llevaba más de 3 años sin ejecutar un solo experimento; desde entonces se han ejecutado más de 10.',
+            // El mecanismo y su resultado, cada uno legible por su cuenta, como
+            // los separa el CV. Antes iban en un solo bullet y el resultado se
+            // leía como una cláusula del sistema.
+            'La variante ganadora de una prueba de disposición de anuncios en ese sistema elevó las impresiones de anuncios servidas un 23 % frente al control en una propiedad monetizada con publicidad.',
             'Gestioné un equipo multidisciplinar de 8 personas; mentoricé a 5 desarrolladores, con 2 promociones como resultado.',
+            'Reduje el tiempo de despliegue de más de 2 horas a 1 minuto, pasando de releases agrupadas a diarias.',
           ],
         },
       ],
@@ -97,17 +142,20 @@ export const es: SiteContent = {
           title: 'Team Lead y Arquitectura',
           dates: 'Mar 2023 - Sep 2023',
           bullets: [
-            'Definí la estrategia técnica y construí la arquitectura de microservicios que sostuvo la expansión enterprise de la empresa, procesando más de 500k eventos de movilidad diarios: un API gateway en NestJS delante de funciones serverless sobre colas NATS, en Kubernetes con autoescalado basado en Keda.',
-            'Hice crecer el equipo de ingeniería y acorté los ciclos de entrega reestructurando el proceso de revisión y publicación, y acompañando a los ingenieros hasta que asumieron la responsabilidad de su propio trabajo.',
+            'Definí la estrategia técnica y construí la arquitectura de microservicios detrás de la expansión enterprise de la empresa, procesando más de 500k eventos de movilidad diarios: un API gateway en NestJS delante de funciones serverless que se comunican por colas NATS, en Kubernetes con autoescalado dirigido por Keda.',
+            // El CV pone al equipo y a los ciclos de entrega junto al periodo,
+            // no como consecuencia de la reestructuración. La versión anterior
+            // atribuía una causa que el CV no afirma.
+            'Reestructuré el proceso de revisión y release y acompañé a los ingenieros hasta que asumieron la responsabilidad; el equipo creció y los ciclos de entrega se acortaron durante el periodo.',
           ],
         },
         {
           title: 'Desarrollador Full-Stack Senior',
           dates: 'Ago 2020 - Mar 2023',
           bullets: [
-            'Migré todo el producto a una nueva plataforma Vue y construí la PWA destinada a sustituir las aplicaciones multiplataforma existentes, sobre una arquitectura de estado Vuex/Flux.',
-            'Rehíce la superficie de API sobre NestJS, con contratos anotados con Swagger y TypeORM contra PostgreSQL, reduciendo los tiempos de respuesta mediante caché y optimización de consultas.',
-            'Automaticé el pipeline de despliegue, pasando de ciclos de publicación de varios días a despliegue continuo, sobre Kubernetes con CircleCI.',
+            'Migré el producto completo a una nueva plataforma Vue y construí la PWA destinada a sustituir las aplicaciones multiplataforma existentes, sobre una arquitectura de estado Vuex/Flux.',
+            'Rehíce la superficie de la API sobre NestJS, con contratos anotados en Swagger y TypeORM contra PostgreSQL, recortando los tiempos de respuesta un 72 % mediante caché y optimización de consultas a la base de datos; las cargas de página bajaron un 70 % en Lighthouse.',
+            'Automaticé el pipeline de despliegue, de ciclos de release de varios días a despliegue continuo, sobre Kubernetes con CircleCI.',
           ],
         },
       ],
@@ -121,22 +169,22 @@ export const es: SiteContent = {
           title: 'Desarrollador Full-Stack Senior',
           dates: 'Ene 2020 - Jul 2020',
           bullets: [
-            'Construí Afición360, un único monorepo Angular que servía los front ends de varios clubes de fútbol más un panel de administración interno, con microservicios REST en NestJS separados mediante Lerna; integré las APIs de La Liga y AVET sobre websockets, deliberadamente regulados para no sobrecargar los servicios externos.',
-            'Rehíce el flujo de compra de una plataforma de ticketing en tiempo real bajo la carga de los días de partido de La Liga, integrando la API oficial para más de 100k usuarios concurrentes.',
+            'Construí Afición360, un único monorepo Angular que sirve los frontales de varios clubes de fútbol más un panel de administración interno, con microservicios REST en NestJS separados mediante Lerna; integré las APIs de La Liga y AVET sobre websockets, usados deliberadamente para regular el tráfico y no sobrecargar los servicios externos.',
+            'Rehíce la ruta de checkout de una plataforma de venta de entradas en tiempo real bajo la carga de un día de partido de La Liga, integrando la API oficial para más de 100k usuarios concurrentes.',
           ],
         },
         {
           title: 'Desarrollador Full-Stack',
           dates: 'Nov 2017 - Ene 2020',
           bullets: [
-            'Construí una plataforma que procesaba más de 1M de registros diarios con sincronización en tiempo real entre 5 ubicaciones geográficas, sobre CouchDB como base de datos distribuida con capacidad offline; sigue en producción.',
+            'Construí una plataforma que procesa más de 1M de entradas diarias con sincronización en tiempo real entre 5 ubicaciones geográficas, sobre CouchDB como base de datos distribuida con capacidad offline, con un 99,95 % de disponibilidad; sigue en producción.',
           ],
         },
         {
           title: 'Desarrollador Junior, E-commerce',
           dates: 'Jul 2017 - Nov 2017',
           bullets: [
-            'Construí desde cero un servicio en NodeJS/Express que agregaba APIs externas, todavía en producción, y una aplicación AngularJS para una multinacional que consumía APIs del ecosistema de Google.',
+            'Construí desde cero un servicio en NodeJS/Express que agrega APIs externas, todavía en producción, y una aplicación AngularJS para una multinacional que consume APIs del ecosistema de Google.',
           ],
         },
       ],
@@ -151,7 +199,27 @@ export const es: SiteContent = {
     {
       name: 'Instagram Checker',
       description:
-        'Construido de extremo a extremo con el mismo flujo agéntico que el trabajo de arriba: convierte la exportación de datos de Instagram que aporta el usuario en un panel de seguidores y seguidos, leyendo únicamente lo que el usuario proporciona en lugar de hacer scraping.',
+        'Construido de principio a fin con el mismo flujo agéntico que el trabajo de arriba: convierte la exportación de datos de Instagram que aporta el usuario en un panel de seguidores y seguidos, leyendo solo lo que el usuario proporciona en lugar de hacer scraping.',
+    },
+    // Segundo a propósito, como en la edición inglesa. La entrada de arriba
+    // abre con "el mismo flujo agéntico que el trabajo de arriba", que apunta
+    // al puesto de Principal de la sección anterior, y meter algo entre las dos
+    // dejaría esa referencia señalando a lo que tiene justo encima.
+    //
+    // Sin enlace, porque no hay nada que visitar: el harness no es un producto.
+    // Sin cifras y sin nombres de dependencias tampoco - el párrafo del CV no
+    // lleva ninguno, y esto es una condensación suya (ADR 0001), no una
+    // ampliación.
+    //
+    // Abre por lo que la cosa hace mecánicamente y no por el hecho de que haya
+    // IA de por medio, que es toda la diferencia entre esto y haber usado un
+    // asistente de código. Del párrafo del CV se quedan fuera dos mecanismos,
+    // porque cada uno necesita una frase para significar algo: el flujo tipado
+    // de transiciones, y el enrutado de modelo y esfuerzo por rol.
+    {
+      name: 'Harness de entrega multiagente',
+      description:
+        'Construido y operado en solitario: deriva el orden en que se ejecuta el trabajo de las propias aristas de dependencia de un tracker, planificando en paralelo todo aquello que nada bloquea. Una revisión independiente responde en un esquema que el harness parsea, y ese veredicto parseado condiciona el merge; un hallazgo vuelve a la sesión que escribió el código como un reintento acotado y no como una reescritura.',
     },
   ],
 
@@ -161,7 +229,7 @@ export const es: SiteContent = {
     'Finalista global y premio Galactic Impact, NASA Space Apps (May 2017)',
     '100 Ideas Zaragoza, Tecnología Más Innovadora (Sep 2017)',
     '100 Ideas Zaragoza, Mejor Uso de la Tarjeta Ciudadana (Sep 2017)',
-    'uCode by Adidas, Mejor Solución de Experiencia para Aficionados (Mar 2018)',
+    'uCode by Adidas, Mejor Solución de Experiencia del Aficionado (Mar 2018)',
     'Ganador del ImagineCode Blockchain Challenge (Oct 2018)',
     'Ganador del hub local de NASA Space Apps Zaragoza (Oct 2018)',
     'Ganador del hub de Google Hash Code Zaragoza (Feb 2019)',
