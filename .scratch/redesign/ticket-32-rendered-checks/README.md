@@ -5,12 +5,20 @@ off the running dev server (`npm run dev`, Chrome, 2026-09-04) rather than
 asserted. The four screenshots beside this file are variant A as it stood at the
 commit that added them.
 
-| File | Viewport | Theme |
-| --- | --- | --- |
-| `variant-a-light-1280.png` | 1280 | light |
-| `variant-a-dark-1280.png` | 1280 | dark |
-| `variant-a-light-320.png` | 320 | light |
-| `variant-a-dark-320.png` | 320 | dark |
+| File | Viewport | Theme | Pixels |
+| --- | --- | --- | --- |
+| `variant-a-light-1280.png` | 1280 | light | 2560 x 13472 |
+| `variant-a-dark-1280.png` | 1280 | dark | 2560 x 13472 |
+| `variant-a-light-320.png` | 320 | light | 320 x 10356 |
+| `variant-a-dark-320.png` | 320 | dark | 320 x 10356 |
+
+Each is one continuous capture of the whole document, and the pixel height of
+each is the page's own height at that width, which is what says so. The two
+320px captures are taken at a device pixel ratio of 1 rather than 2 for that
+reason: at 2 the image is 20712px tall, Chrome's full-page capture cannot hold
+it, and what comes back restarts at the masthead partway down, so everything
+below independent work is lost. The first pair of 320px captures on this branch
+had that fault and these replace them.
 
 They are here and not on the ticket because a Sandcastle sandbox writes to the
 tracker with `GH_TOKEN` and GitHub has no API route that uploads an image to an
