@@ -1,10 +1,15 @@
 // THROWAWAY. The plan: five variants on the existing route, switchable by
 // `variant`.
 //
-// The register the switcher cycles. A variant appears here the moment its
-// ticket lands, and the switcher takes its keys, its names and its order from
-// this list, so adding one is an entry rather than a change to the scaffold.
+// The register the switcher cycles. It carries the five keys #26 asks for from
+// the start, so the cycle is a cycle from the first ticket rather than a fixed
+// point that only becomes one when the second variant lands: the arrows, the
+// wrap and the URL rewrite are all things Fran can see on the dev server today.
+//
+// A ticket that draws a variant replaces its entry, the name and the component
+// together. Nothing else about the scaffold changes.
 import type React from 'react';
+import NotBuiltYet from './NotBuiltYet.throwaway';
 import VariantAEditorial from './VariantAEditorial.throwaway';
 
 export interface PrototypeVariant {
@@ -16,4 +21,10 @@ export interface PrototypeVariant {
   Component: React.FC;
 }
 
-export const variants: PrototypeVariant[] = [{ key: 'a', name: 'Editorial', Component: VariantAEditorial }];
+export const variants: PrototypeVariant[] = [
+  { key: 'a', name: 'Editorial', Component: VariantAEditorial },
+  { key: 'b', name: 'Not built yet', Component: NotBuiltYet },
+  { key: 'c', name: 'Not built yet', Component: NotBuiltYet },
+  { key: 'd', name: 'Not built yet', Component: NotBuiltYet },
+  { key: 'e', name: 'Not built yet', Component: NotBuiltYet },
+];

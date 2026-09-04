@@ -26,13 +26,15 @@ do, from this directory.
 - `/?variant=z` renders variant A and rewrites the URL to `?variant=a`, so an
   unknown key lands on a page rather than on nothing.
 - Reloading `/?variant=a` comes back to variant A.
-- Both arrows and both arrow keys cycle. With one variant registered the cycle
-  is a fixed point, so this was checked with a second stub variant registered
-  temporarily: `a` right to `b`, right again wraps to `a`, left from `a` wraps
-  to `b`, and each step rewrote the URL. The stub was removed afterwards; what
-  is committed registers variant A alone, and #33 to #37 add theirs to the same
-  list.
-- With an `<input>` focused, neither arrow key moved the variant.
+- Both arrows and both arrow keys cycle, and both directions wrap: from `a`,
+  left goes to `e` and right from `e` returns to `a`. Each step rewrites the
+  URL. The register carries all five of #26's keys from the start for exactly
+  this reason, so the cycle is observable on the dev server before the second
+  variant exists; `b` to `e` show a flat "This variant is not built yet." page
+  in the switcher's own voice, and #33 to #37 replace their entry with a drawn
+  variant.
+- With an `<input>` focused, and again with a `contenteditable` element
+  focused, neither arrow key moved the variant.
 - No console errors or warnings on either page.
 
 ## Variant A
