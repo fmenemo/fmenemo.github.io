@@ -27,8 +27,24 @@ and the whole document is in each.
 
 They are here and not on the ticket because a Sandcastle sandbox writes to the
 tracker with `GH_TOKEN` and GitHub has no API route that uploads an image to an
-issue: attachments are a web-UI upload. Posting them is the driving session's to
-do, from this directory.
+issue: attachments are a web-UI upload, made by a browser session against an
+endpoint the REST and GraphQL APIs do not expose. Posting them is the driving
+session's to do, from this directory.
+
+That was tried rather than assumed, on 2026-09-04, with the token this work is
+done under:
+
+| Attempt | Answer |
+| --- | --- |
+| `gh api user --jq .login` | `fmenemo`, so the token authenticates and the repository is its own |
+| `gh api -X POST repos/fmenemo/fmenemo.github.io/issues/36/attachments` | HTTP 404, the route does not exist |
+| `gh api -X POST repos/fmenemo/fmenemo.github.io/issues/36/assets` | HTTP 404, the route does not exist |
+| every mutation on the GraphQL schema whose name contains `upload`, `attach`, `asset` or `image` | there are none |
+
+The routes that would put an image behind a URL a comment could render are all
+outside what this Ticket asks for: a release asset needs a release published on
+the repository, and a raw or Pages URL needs the file pushed to a branch. A Run
+does not push, and neither is this Ticket's work, so neither was done.
 
 ## The route and the switcher
 
