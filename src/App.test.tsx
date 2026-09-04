@@ -1,6 +1,7 @@
 import { cleanup, fireEvent, render, screen, within } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import App from './App';
+import type { Role } from './content';
 import { en } from './content.en';
 import { es } from './content.es';
 // The shipped entry documents, the stylesheet holding the palette, and the
@@ -36,17 +37,17 @@ const editions = [
     entry: enHtml,
     lang: 'en',
     url: `${SITE}/`,
-    title: 'Fran Menéndez | Software Engineer',
+    title: 'Fran Menéndez | Full-stack Engineer',
     // Each edition has a card of its own: the PNG a scraper fetches, the source
     // it is rendered from, and the alt that describes the picture. The alt is a
     // per-edition expectation for the same reason the title is — it is read
     // aloud in the language of the document it sits in.
     image: `${SITE}/og-image.png`,
     imageSource: ogImageHtml,
-    imageAlt: 'Fran Menéndez, Software Engineer, Zaragoza, Spain.',
+    imageAlt: 'Fran Menéndez, Full-stack Engineer, Zaragoza, Spain.',
     // The first words of the identity line, which several guards need to find
     // the paragraph without asserting the whole of it.
-    identityLead: /^Software Engineer, 10\+ years/,
+    identityLead: /^Full-stack engineer, 10\+ years/,
     themeToggle: /switch to (dark|light) mode/i,
     // The selector as a visitor meets it on this edition: its own label marked,
     // the sibling's label linked, and the link named in this edition's language.
@@ -157,19 +158,28 @@ const editions = [
     independentWork: ['Instagram Checker', 'Multi-agent delivery harness'],
     // Carried by every copy of the identity, including the share image, which
     // has room for the identity but not for the differentiator that follows.
-    identityPhrases: ['Software Engineer', '10+ years', 'millions of users', 'AI layer'],
-    differentiator: ['semantic search', 'MCP', 'multi-agent'],
+    identityPhrases: ['Full-stack engineer', '10+ years', 'end to end in TypeScript', 'AI layer'],
+    differentiator: ['semantic search', 'MCP', 'agentic'],
     // The claims ADR 0001 removed, in the language they would come back in.
-    availability: /available|open to (new )?opportunities|actively (exploring|looking)|hiring/i,
+    // "Hiring" is banned as Fran offering himself, not as a thing he did: he
+    // sat on a hiring panel in the Lead role, which is the CV's own words for
+    // work he was doing for the team. The lookahead is what keeps the ban on
+    // the claim rather than on the word.
+    availability: /available|open to (new )?opportunities|actively (exploring|looking)|hiring(?!\s+panel)/i,
     claims: [
       /\d+\+?\s*(engineers|developers)\s*mentored/i,
       /years of experience|systems scaled/i,
       /open source|passionate|passion for/i,
       /freelance/i, // D3: the freelance entry is on the CV, not on the site.
     ],
-    // A description is what a search engine indexes the page as, so the two
-    // titles ADR 0001 took off the page must not survive in it.
-    describedAsNot: /full stack|designer|portfolio/i,
+    // A description is what a search engine indexes the page as, so the
+    // titles ADR 0001 took off the page must not survive in it. "full stack" is
+    // no longer one of them: ADR 0001 banned it because the old site invented
+    // "Full Stack Developer" as a title, and the CV summary has since chosen
+    // "Full-stack engineer" for itself, so the phrase now arrives from the
+    // document rather than around it (ADR 0001, amended 2026-09-04). "designer"
+    // and "portfolio" were never on the CV and stay banned.
+    describedAsNot: /designer|portfolio/i,
     metadataClaims: [
       /passionate|passion for|open source|beautiful|user-friendly/i,
       /years of experience|systems scaled/i,
@@ -181,11 +191,11 @@ const editions = [
     entry: esHtml,
     lang: 'es',
     url: `${SITE}/es/`,
-    title: 'Fran Menéndez | Ingeniero de Software',
+    title: 'Fran Menéndez | Ingeniero Full-Stack',
     image: `${SITE}/og-image-es.png`,
     imageSource: ogImageEsHtml,
-    imageAlt: 'Fran Menéndez, ingeniero de software, Zaragoza, España.',
-    identityLead: /^Ingeniero de software, más de 10 años/,
+    imageAlt: 'Fran Menéndez, ingeniero full-stack, Zaragoza, España.',
+    identityLead: /^Ingeniero full-stack, más de 10 años/,
     themeToggle: /cambiar a modo (oscuro|claro)/i,
     language: {
       label: 'Idioma',
@@ -216,12 +226,48 @@ const editions = [
       'Desarrollador Junior, E-commerce',
     ],
     // The same evidence as the English row, written as the Spanish CV writes
-    // it: a decimal point for thousands, and a space before the unit.
-    figures: ['850 ms', '34 ms', '100.000', '2M', '500k', '1M', '100k', '8 personas'],
-    // The declines above were made against the English CV in an English-only
-    // pass, and this edition is frozen against a CV of its own, so it has no
-    // list of its own to carry yet.
-    declinedFigures: [] as { figure: string; pattern: RegExp }[],
+    // it: a decimal point for thousands, a comma for decimals, and a space
+    // before the unit. Read on the rendered Spanish PDF, not extracted from it.
+    figures: [
+      '850 ms',
+      '34 ms',
+      '100.000',
+      '2M',
+      // Distinct from the 2M above, which the inclusion-only guard would
+      // otherwise match inside it. The Spanish CV writes the currency after the
+      // number, so this is not the English row's '$2M+' with the words swapped.
+      '2M$',
+      '500k',
+      '1M',
+      '100k',
+      '8 personas',
+      // Arrived with the sweep of this edition against the new Spanish CV.
+      '90 %',
+      '50 ms',
+      '23 %',
+      '72 %',
+      '70 %',
+      '99,95 %',
+    ],
+    // The same four declines the English edition made, in the words the Spanish
+    // CV states them: this edition is now swept against a CV of its own, so a
+    // figure it left off is a decision here too and not merely an inheritance.
+    declinedFigures: [
+      { figure: 'the 100% retention', pattern: /100\s?%[^.]{0,40}retenci[oó]n|retenci[oó]n[^.]{0,40}100\s?%/i },
+      {
+        figure: 'the 85% design-with-components cut',
+        pattern: /85\s?%[^.]{0,60}(dise[nñ]o|componente|semana|d[ií]a)|(dise[nñ]o|componente|semana|d[ií]a)[^.]{0,60}85\s?%/i,
+      },
+      {
+        figure: 'three global enterprise partnerships',
+        pattern: /(tres|3)\s+alianzas\s+enterprise\s+globales/i,
+      },
+      {
+        figure: 'the 3.000 to 10.000+ user growth, and its 233%',
+        pattern:
+          /(3\.000|10\.000|233\s?%)[^.]{0,60}(usuario|crecimiento)|(usuario|crecimiento)[^.]{0,60}(3\.000|10\.000|233\s?%)/i,
+      },
+    ],
     recognitions: [
       'Finalista global',
       '100 Ideas Zaragoza',
@@ -229,8 +275,8 @@ const editions = [
       'ImagineCode',
       'Google Hash Code',
     ],
-    independentWork: ['Instagram Checker'],
-    identityPhrases: ['Ingeniero de software', 'más de 10 años', 'millones de usuarios', 'capa de IA'],
+    independentWork: ['Instagram Checker', 'Harness de entrega multiagente'],
+    identityPhrases: ['Ingeniero full-stack', 'más de 10 años', 'de principio a fin en TypeScript', 'capa de IA'],
     differentiator: ['búsqueda semántica', 'MCP', 'agéntico'],
     availability: /disponible|abierto a (nuevas )?oportunidades|buscando activamente|contratando/i,
     claims: [
@@ -239,7 +285,14 @@ const editions = [
       /código abierto|apasionad[oa]|pasión por/i,
       /freelance|autónomo/i,
     ],
-    describedAsNot: /full stack|diseñador|portfolio|portafolio/i,
+    // As on the English row, and for the same reason: ADR 0001 banned "full
+    // stack" because the old site invented it as a title, and both CV summaries
+    // have since chosen it for themselves — the Spanish one opens "Ingeniero
+    // full-stack", so the phrase now arrives from the document rather than from
+    // around it (ADR 0001, amended 2026-09-04). "diseñador", "portfolio" and
+    // "portafolio" were never on either CV and stay banned, the last two
+    // because the word a Spanish reader would search for has both spellings.
+    describedAsNot: /diseñador|portfolio|portafolio/i,
     metadataClaims: [
       /apasionad[oa]|pasión por|código abierto|precios[oa]|fácil de usar/i,
       /años de experiencia|sistemas escalados/i,
@@ -1069,24 +1122,46 @@ describe.each(editions)('$edition edition', (edition) => {
   });
 });
 
-// Guard tests for ticket 06 of the CV catch-up: three corrections and one added
-// bullet in the Principal role. English only, and out of the table for that
-// reason — the spec freezes the Spanish edition knowingly, so `/es` goes on
-// making two of the statements the English side stops making, and a row per
-// edition here would assert the opposite of what was decided.
+// Guard tests for ticket 27 of the reworked-CV sweep: the Principal role as the
+// CV now tells it, one nested Shop programme, carrying forward the corrections
+// ticket 06 of the CV catch-up left here. English only, and out of the table for
+// that reason — the spec sweeps the Spanish edition in a ticket of its own, so
+// `/es` goes on making statements the English side has stopped making, and a row
+// per edition here would assert the opposite of what was decided.
 //
 // These read the whole sentence rather than a phrase from it. Each one is a
 // wording approved against the CV in
-// `.scratch/bullets-against-the-reworked-cv/bullet-approval.md`, and a bullet
-// that drifts a clause off one of them is back to saying something its CV does
-// not.
+// `.scratch/the-reworked-cv-with-nesting/bullet-approval.md`, and a bullet that
+// drifts a clause off one of them is back to saying something its CV does not.
 describe('the Principal role says what the CV says', () => {
   const english = editions.find((edition) => edition.edition === 'English')!;
 
+  // The item that *says* the phrase, rather than the one it is nested inside: a
+  // sub-bullet's text is part of its headline's text too, so the match to take
+  // is the one no other match contains.
   const bulletSaying = (phrase: string) => {
     render(<App content={english.content} />);
-    return [...document.querySelectorAll('li')].find((item) => item.textContent?.includes(phrase));
+    const matching = [...document.querySelectorAll('li')].filter((item) => item.textContent?.includes(phrase));
+    return matching.find((item) => !matching.some((other) => other !== item && item.contains(other)));
   };
+
+  // The arc the CV opens the role on. Everything indented under it is a part of
+  // this one piece of work, which is the whole reason the nesting exists: the
+  // eight years of Shop were not eight unrelated bullets.
+  it('opens on Shop as one arc from proposal to production', () => {
+    expect(renderedText(english)).toContain(
+      'Took Shop from proposal to production: the e-commerce platform I proposed as Lead, on a $2M+ annual revenue projection, delivered to a live MVP with the team, and took to production as Principal — sole contributor on it at times.'
+    );
+  });
+
+  // The first sub-bullet, and the one that says how the build order was decided.
+  // It is evidence for the headline's claim about arguing from metrics, which is
+  // why the headline can drop that clause and this cannot.
+  it('says the mobile-first order was argued from the product’s own metrics', () => {
+    expect(renderedText(english)).toContain(
+      'After the mobile-only MVP the plan was the desktop build next; I argued from Mixpanel and GA, an onboarding drop-off on a mostly mobile audience, that retention on mobile came first, and that order was adopted.'
+    );
+  });
 
   // C1. The stronger claim as well as the truer one: he built it, ran it, and
   // then drove its practices into the team's process.
@@ -1122,17 +1197,37 @@ describe('the Principal role says what the CV says', () => {
     expect(renderedText(english)).not.toMatch(/below (the )?confidence threshold/i);
   });
 
-  // C4. The audit found four classes; the IDOR turned up later, in remediation.
-  it('names the four vulnerability classes the audit found', () => {
+  // The hardening bullet as the CV now words it: what was closed, and what it
+  // was left guarded by. It replaces the audit bullet that counted findings.
+  it('says what the hardening closed rather than how many findings it had', () => {
     expect(renderedText(english)).toContain(
-      'Ran the API security audit and hardening programme for the public e-commerce service: eight findings across four vulnerability classes — SQL injection, over-open collection access, PII projection and identity trust — with remediation closing a write-side IDOR in a shared authorisation primitive covering five collections; built the service’s first automated test harness and an access-coverage matrix that flags any loosening of access as a diff.'
+      'Hardened the public e-commerce API: closed SQL injection, access-control and PII-exposure holes, including a write-side IDOR in a shared authorisation primitive covering five collections, and left it guarded by regression tests that run in CI.'
     );
   });
 
-  it('keeps the remediation finding out of the audit’s taxonomy', () => {
+  // The count and the taxonomy are the CV's dropped claim, not a rewording of
+  // the one above, so the page must not carry them in any shape. The remediation
+  // finding stays out of an audit taxonomy the page no longer states at all.
+  it('carries no audit count and no vulnerability-class taxonomy', () => {
     const text = renderedText(english);
+    expect(text).not.toMatch(/eight findings/i);
+    expect(text).not.toMatch(/vulnerability classes/i);
     expect(text).not.toMatch(/broken access control/i);
-    expect(text).not.toMatch(/PII exposure/i);
+  });
+
+  // The CV dropped this bullet outright when the SEO incident became one of its
+  // own, and a dropped statement is the easiest thing to leave behind: nothing
+  // else on the page contradicts it.
+  it('drops the cross-service authentication bullet the CV no longer carries', () => {
+    expect(renderedText(english)).not.toMatch(/cross-service authentication/i);
+  });
+
+  // What was traced and what was pinned, which is the diagnosis rather than the
+  // name of the technology it happened on.
+  it('tells the SEO incident as a canonical identity traced and then pinned', () => {
+    expect(renderedText(english)).toContain(
+      'Traced a sitewide collapse in The Bump’s organic traffic to the site taking its own address from whichever host the request arrived on, which an ingress migration had just changed: it was telling search engines its internal origin was canonical. Pinned that identity to the brand domain where it is derived, so no later infrastructure change can move it.'
+    );
   });
 
   // "Tripwire" was a gloss over something more specific: a lint gate at error
@@ -1146,13 +1241,146 @@ describe('the Principal role says what the CV says', () => {
 
   // D1, the CV's sentence unchanged. Its placement is the point: session
   // continuity was the other half of the same programme and reads on its own
-  // without it.
+  // without it. Both are sub-bullets now, and adjacent inside the nested list.
   it('puts unified sign-on immediately before session continuity', () => {
     const signOn = bulletSaying(
       'Unified sign-on across five products — Bump articles, baby names, registry, shop and the native apps — so that one account replaced five separate logins.'
     );
     expect(signOn).toBeDefined();
     expect(signOn?.nextElementSibling?.textContent).toContain('Built session continuity');
+  });
+});
+
+// The other role at the same employer, swept from the same CV commit. It is a
+// per-edition guard for the same reason the Principal block is: the Spanish
+// edition is condensed from its own document and sweeps on its own ticket.
+describe('the Lead role says what the CV says', () => {
+  const english = editions.find((edition) => edition.edition === 'English')!;
+
+  // The role's own bullets, in the order a reader meets them. Found by the
+  // heading above them, so the assertion survives any change to how a bullet is
+  // styled.
+  const leadBullets = () => {
+    render(<App content={english.content} />);
+    const list = screen.getByText('Lead Software Engineer').closest('div')!.querySelector('ul')!;
+    return [...list.children].map((item) => item.textContent ?? '');
+  };
+
+  // The CV's order, and the argument it makes: what he took on, the system he
+  // built for it, what that system returned, the team he ran, and the release
+  // path he fixed. An order is content, so it is asserted rather than assumed.
+  it('reads in the CV’s order: the handover, the system, its variant, the team, the deployment time', () => {
+    expect(leadBullets()).toEqual([
+      expect.stringMatching(/^Took over The Bump’s web platform/),
+      expect.stringMatching(/^Built an A\/B testing system/),
+      expect.stringMatching(/^The winning variant in an ad-layout test/),
+      expect.stringMatching(/^Managed an 8-person cross-functional team/),
+      expect.stringMatching(/^Cut deployment time/),
+    ]);
+  });
+
+  // New to the site with this sweep. It is the one bullet that says what the
+  // role was: an inherited platform, rebuilt tooling, and a hiring panel he sat
+  // on to staff the team that would own it.
+  it('says he took the platform over and staffed the team that would own it', () => {
+    expect(renderedText(english)).toContain(
+      'Took over The Bump’s web platform from the outgoing team: rebuilt their build and release tooling, environments and runbooks in-house, and sat on the hiring panel for four engineering roles, defining the technical screen, to staff the team that would own it.'
+    );
+  });
+
+  // The mechanism, on its own. The CV split the old single bullet in two, and
+  // the split is the point: a reader can weigh the system without the result
+  // hanging off the end of the same sentence.
+  it('states the A/B system as the mechanism that made experiments possible', () => {
+    expect(renderedText(english)).toContain(
+      'Built an A/B testing system for a platform where edge caching had made experimentation impossible: Akamai assigns a variant cookie at the edge and the app renders the matching tagged build, sticky across reloads. The platform had run no experiments in over 3 years before it; 10+ have run since.'
+    );
+  });
+
+  // The result, as its own statement, and with the reason it shipped: the lift
+  // is only evidence if nothing else moved against it.
+  it('states the winning variant as its own result, with what held at baseline', () => {
+    expect(renderedText(english)).toContain(
+      'The winning variant in an ad-layout test on that system lifted served ad impressions 23% against control; it shipped because engagement depth held at baseline in Mixpanel and GA4.'
+    );
+  });
+
+  // The CV moved this claim into the Shop headline, where it is now made as
+  // Principal. Left here as well it would be the same work counted twice, in
+  // two roles, which is exactly what a recruiter checking the CV would catch.
+  it('leaves the proposal-to-a-live-MVP claim to the Shop headline that now carries it', () => {
+    expect(leadBullets().join(' ')).not.toMatch(/proposal to a live MVP/i);
+    expect(renderedText(english)).not.toMatch(/integrated commerce platform/i);
+  });
+});
+
+// The shape, asserted where a screen reader meets it. Indentation is not
+// nesting: what makes the Shop programme's parts read as parts is a list inside
+// the item they belong to, so this reads the DOM rather than the content module.
+describe.each(editions)('$edition edition: the Shop programme is a list inside its own list item', (edition) => {
+  const headline = edition.content.employers[0].roles[0].bullets[0];
+  const subBullets = typeof headline === 'string' ? [] : headline.subBullets;
+
+  // The role's own bullet list, found by the heading above it rather than by
+  // anything about how it is styled. The heading is the role title as this
+  // edition's CV writes it, which is the first entry of the row's `roles`.
+  const principalBullets = () => {
+    render(<App content={edition.content} />);
+    return screen.getByText(edition.roles[0]).closest('div')!.querySelector('ul')!;
+  };
+
+  it('renders the sub-bullets the content declares, inside the first item', () => {
+    expect(subBullets.length).toBeGreaterThan(0);
+
+    const first = principalBullets().firstElementChild!;
+    const nested = first.querySelector('ul');
+
+    expect(nested).not.toBeNull();
+    expect([...nested!.querySelectorAll('li')].map((item) => item.textContent)).toEqual([...subBullets]);
+  });
+});
+
+// One level and no more, over everything either edition renders: the type
+// refuses a second level, and this is what would catch a component that
+// reintroduced one under it. Out of the group above because it is the one
+// assertion there that reads both editions at once rather than one per row.
+describe('nothing nests deeper than one level', () => {
+  it('nests one level and no deeper, anywhere on either edition', () => {
+    for (const edition of editions) {
+      cleanup();
+      render(<App content={edition.content} />);
+
+      for (const nested of document.querySelectorAll('li ul, li ol')) {
+        expect(nested.querySelector('ul, ol')).toBeNull();
+      }
+    }
+  });
+});
+
+// The type, asserted by compiling. `npm run build` typechecks this file, so an
+// `@ts-expect-error` that stopped being an error would fail the build: a bullet
+// is a string or a text with a list of sub-bullet strings, and a sub-bullet is a
+// string, which is the whole of "one level and no more".
+describe('a bullet carries one level of sub-bullets and no more', () => {
+  it('takes a plain string or a text with sub-bullet strings', () => {
+    const bullets: Role['bullets'] = [
+      'A bullet on its own is a string.',
+      { text: 'A headline.', subBullets: ['A part of it.', 'Another part of it.'] },
+    ];
+
+    expect(bullets).toHaveLength(2);
+  });
+
+  it('refuses a sub-bullet that carries sub-bullets of its own', () => {
+    const bullets: Role['bullets'] = [
+      {
+        text: 'A headline.',
+        // @ts-expect-error a sub-bullet is a string: the second level does not compile.
+        subBullets: [{ text: 'A part of it.', subBullets: ['A part of the part.'] }],
+      },
+    ];
+
+    expect(bullets).toHaveLength(1);
   });
 });
 

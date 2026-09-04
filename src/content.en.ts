@@ -9,13 +9,17 @@
 //
 // It is condensed from `public/Fran_Menendez_CV.pdf`, which is the source of
 // truth: where the two disagree, the CV wins and this file is wrong (ADR 0001).
-// Each bullet was approved against its CV original in
-// `.scratch/site-refresh/bullet-approval.md`, which also records why anything on
-// the CV is missing here. Do not add a statement that is not in that document.
+// Every string in it is approved against its CV original in
+// `.scratch/the-reworked-cv-with-nesting/bullet-approval.md`, which also records
+// what the CV says and this file deliberately does not. Do not add a statement
+// that is not in that document. The record it replaced,
+// `.scratch/site-refresh/bullet-approval.md`, is history now rather than the
+// gate: it approved a CV two rewrites back.
 //
-// This copy was approved against `cv/en.md` at commit `36eab4d` in the
-// `professional-record` repository. Next sweep: run
-// `git -C ~/Projects/professional-record diff 36eab4d..HEAD -- cv/en.md` and
+// This copy was approved against `cv/en.md` at commit `433e72d` in the
+// `professional-record` repository, read at that repo's commit `0996591`. Next
+// sweep: run
+// `git -C ~/Projects/professional-record diff 433e72d..HEAD -- cv/en.md` and
 // bring across what it shows.
 //
 // That history begins on 2026-08-12, the day the CV changed repositories.
@@ -31,7 +35,7 @@ import type { SiteContent } from './content';
 export const en: SiteContent = {
   identity: {
     name: 'Fran Menéndez',
-    line: 'Software Engineer, 10+ years building platforms that serve millions of users, working at the AI layer: a multi-agent delivery system built and run solo, semantic search in production, and MCP tooling made the team-wide standard.',
+    line: 'Full-stack engineer, 10+ years shipping whole products end to end in TypeScript, working at the AI layer: semantic search in production, MCP tooling made the team-wide standard, and an agentic engineering workflow built and run for production delivery.',
     location: 'Zaragoza, Spain',
     mode: 'Remote',
   },
@@ -57,29 +61,59 @@ export const en: SiteContent = {
         {
           title: 'Principal Software Engineer',
           dates: 'Apr 2025 - Jul 2026',
+          // Shop is one programme on the CV and one bullet here: a headline
+          // carrying the parts it is made of, in the CV's order. The eight
+          // flat bullets that used to tell it separately read as eight
+          // unrelated pieces of work, which is the opposite of what they are.
           bullets: [
-            'Rebuilt the Shop e-commerce platform from scratch in one month solo, against a three-month multi-developer estimate. Next.js and React over Amazon’s Rainforest API and Contentful, serving hundreds of thousands of users in production.',
-            'Built semantic product matching on OpenSearch with k-NN vector similarity and BM25 text relevance, banded by confidence: the strongest matches served automatically with no human review — about 90% of throughput — the weakest discarded, and the band between them routed to a review dashboard I built in PayloadCMS. p95 query latency stayed under 50ms across 100,000+ products.',
-            'Built and ran an agentic AI development workflow for my own production delivery: four stages, eight role-scoped agents, model routing by task, and review roles barred from writing the code they audit. Used it to deliver a security hardening programme, where the independent step caught defects the implementing pass had missed; drove its practices into the team’s process.',
+            {
+              text: 'Took Shop from proposal to production: the e-commerce platform I proposed as Lead, on a $2M+ annual revenue projection, delivered to a live MVP with the team, and took to production as Principal — sole contributor on it at times.',
+              // The CV's second sentence, about arguing the build order from
+              // what the metrics showed, is left off: the first sub-bullet is
+              // that argument, and stating it twice makes the headline a
+              // preamble to its own evidence.
+              subBullets: [
+                'After the mobile-only MVP the plan was the desktop build next; I argued from Mixpanel and GA, an onboarding drop-off on a mostly mobile audience, that retention on mobile came first, and that order was adopted.',
+                'Migrated PayloadCMS from v2 to v3 for 100,000+ products with zero downtime; query response times dropped from 850ms to 34ms.',
+                'Rebuilt the Shop e-commerce platform from scratch in one month solo, against a three-month multi-developer estimate. Next.js and React over Amazon’s Rainforest API and Contentful, serving hundreds of thousands of users in production.',
+                'Built semantic product matching on OpenSearch with k-NN vector similarity and BM25 text relevance, banded by confidence: the strongest matches served automatically with no human review — about 90% of throughput — the weakest discarded, and the band between them routed to a review dashboard I built in PayloadCMS. p95 query latency stayed under 50ms across 100,000+ products.',
+                'Reworked caching for 2M+ weekly users: a cache layer and per-endpoint revalidation on the existing CDN with no added infrastructure. Reduced origin load let the pods be right-sized down, cutting resource cost per pod with no availability regression.',
+                'Extended the PayloadCMS admin with custom pages: a purge console giving editors control over the Redis query cache without an engineer, and the manual review panel for the product matcher.',
+                'Unified sign-on across five products — Bump articles, baby names, registry, shop and the native apps — so that one account replaced five separate logins.',
+                'Built session continuity across the Bump and Shop boundary: an OAuth token handoff signs users into Shop with their existing Bump account on navigation, provisioning an account just in time when none exists.',
+                // Replaces the audit bullet that counted findings. The CV
+                // stopped stating the count and the four-class taxonomy, so
+                // this says what was closed and what it was left guarded by.
+                'Hardened the public e-commerce API: closed SQL injection, access-control and PII-exposure holes, including a write-side IDOR in a shared authorisation primitive covering five collections, and left it guarded by regression tests that run in CI.',
+              ],
+            },
             'Introduced Model Context Protocol (MCP) tooling that generates production components directly from Figma at token-exact fidelity, removing the manual design-to-code step; now the team-wide standard.',
-            'Ran the API security audit and hardening programme for the public e-commerce service: eight findings across four vulnerability classes — SQL injection, over-open collection access, PII projection and identity trust — with remediation closing a write-side IDOR in a shared authorisation primitive covering five collections; built the service’s first automated test harness and an access-coverage matrix that flags any loosening of access as a diff.',
-            'Migrated PayloadCMS from v2 to v3 for 100,000+ products with zero downtime; query response times dropped from 850ms to 34ms.',
-            'Reworked caching for 2M+ weekly users: a cache layer and per-endpoint revalidation on the existing CDN with no added infrastructure. Reduced origin load let the pods be right-sized down, cutting resource cost per pod with no availability regression.',
-            'Built a custom Contentful editor app for the editorial platform (React, Contentful App SDK) with its S3 and CloudFront hosting; propagated the new content model end to end across three services with zero-downtime migrations.',
+            'Built and ran an agentic AI development workflow for my own production delivery: four stages, eight role-scoped agents, model routing by task, and review roles barred from writing the code they audit. Used it to deliver a security hardening programme, where the independent step caught defects the implementing pass had missed; drove its practices into the team’s process.',
             'Steadied the engineering team through a company restructuring, and argued build-capacity against target-attainment in the half-year OKR capacity review; adjudicated review disputes on evidence rather than seniority.',
-            'Unified sign-on across five products — Bump articles, baby names, registry, shop and the native apps — so that one account replaced five separate logins.',
-            'Built session continuity across the Bump and Shop boundary: an OAuth token handoff signs users into Shop with their existing Bump account on navigation, provisioning an account just in time when none exists.',
-            'Root-caused cross-service authentication failures across that same boundary, isolating an edge-layer fault and a hanging Cognito session call; resolved a Kubernetes-served canonical SEO incident.',
+            'Built a custom Contentful editor app for the editorial platform (React, Contentful App SDK) with its S3 and CloudFront hosting; propagated the new content model end to end across three services with zero-downtime migrations.',
+            // The incident the dropped cross-service-authentication bullet used
+            // to mention in a trailing clause. On the CV it is now its own
+            // bullet, told as what was traced and what was pinned.
+            'Traced a sitewide collapse in The Bump’s organic traffic to the site taking its own address from whichever host the request arrived on, which an ingress migration had just changed: it was telling search engines its internal origin was canonical. Pinned that identity to the brand domain where it is derived, so no later infrastructure change can move it.',
           ],
         },
         {
           title: 'Lead Software Engineer',
           dates: 'Oct 2023 - Mar 2025',
+          // The CV's order, and its argument: what he took on, the system he
+          // built for it, what that system returned, the team he ran, and the
+          // release path he fixed. The commerce platform's "proposal to a live
+          // MVP" is not here any more — the CV moved that claim into the Shop
+          // headline in the role above, where it is made once.
           bullets: [
-            'Built an A/B testing system for a platform where edge caching had made experimentation impossible: Akamai assigns a variant cookie at the edge and the app renders the matching tagged build, sticky across reloads. The platform had run no experiments in over 3 years before it; 10+ have run since. The winning variant in an ad-layout test lifted served ad impressions 23% against control.',
-            'Cut deployment time from over 2 hours to 1 minute, enabling daily deployments.',
-            'Took the integrated commerce platform from proposal to a live MVP, on a $2M+ annual revenue projection.',
+            'Took over The Bump’s web platform from the outgoing team: rebuilt their build and release tooling, environments and runbooks in-house, and sat on the hiring panel for four engineering roles, defining the technical screen, to staff the team that would own it.',
+            'Built an A/B testing system for a platform where edge caching had made experimentation impossible: Akamai assigns a variant cookie at the edge and the app renders the matching tagged build, sticky across reloads. The platform had run no experiments in over 3 years before it; 10+ have run since.',
+            // Its own statement, as on the CV: the mechanism above is worth
+            // weighing whether or not any one test won, and the result is worth
+            // reading without the mechanism ahead of it.
+            'The winning variant in an ad-layout test on that system lifted served ad impressions 23% against control; it shipped because engagement depth held at baseline in Mixpanel and GA4.',
             'Managed an 8-person cross-functional team; mentored 5 developers, resulting in 2 promotions.',
+            'Cut deployment time from over 2 hours to 1 minute, enabling daily deployments.',
           ],
         },
       ],
