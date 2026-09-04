@@ -12,6 +12,7 @@ import type React from 'react';
 import NotBuiltYet from './NotBuiltYet.throwaway';
 import VariantAEditorial from './VariantAEditorial.throwaway';
 import VariantBCleanProduct from './VariantBCleanProduct.throwaway';
+import VariantCBoldAndRaw from './VariantCBoldAndRaw.throwaway';
 
 export interface PrototypeVariant {
   /** The value of the `variant` search parameter that selects it. */
@@ -25,7 +26,7 @@ export interface PrototypeVariant {
 export const variants: PrototypeVariant[] = [
   { key: 'a', name: 'Editorial', Component: VariantAEditorial },
   { key: 'b', name: 'Clean product', Component: VariantBCleanProduct },
-  { key: 'c', name: 'Not built yet', Component: NotBuiltYet },
+  { key: 'c', name: 'Bold and raw', Component: VariantCBoldAndRaw },
   { key: 'd', name: 'Not built yet', Component: NotBuiltYet },
   { key: 'e', name: 'Not built yet', Component: NotBuiltYet },
 ];
