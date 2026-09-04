@@ -119,11 +119,16 @@ page with an 8rem margin rail carrying every date, a contents nav at the top,
 evidence set as paragraphs beside the rail, and the contact list as a ruled
 definition table at the foot. D has no rail, no rules and no nav: one 34rem
 column from the first word to the last, where the space between two blocks is
-the only thing dividing them. It leads with the person rather than the name —
-the name is a quiet line and the identity line is the largest text on the page,
-which is the opposite of A's nameplate. Its dates are captions under the thing
-they belong to instead of numbers out in a margin. Its evidence is a list hung
-off soft dashes rather than paragraphs. The Shop programme is numbered 1 to 9
-as a story told in order, where A sets it as a passage between two hairlines.
-And its section names are the smallest type on the page rather than its second
-largest.
+the only thing dividing them. It leads with the person rather than announcing
+the name: the name is the largest text on both pages, but here it is a line at
+2.25rem where A's is a centred nameplate at `clamp(2.5rem, 11vw, 5rem)` under a
+double rule, which resolves to 5rem at 1280px — so the name is set at under
+half the size — and the identity line follows it at reading size, 1.25rem, with
+nothing between the two. A sets its standfirst apart from the nameplate with a
+rule and a drop initial; here the name, the location and the identity line read
+as one opening paragraph about a person. Its dates are captions under the thing
+they belong to instead of numbers out in a margin. Its
+evidence is a list hung off soft dashes rather than paragraphs. The Shop
+programme is numbered 1 to 9 as a story told in order, where A sets it as a
+passage between two hairlines. And its section names are the smallest type on
+the page rather than its second largest.
