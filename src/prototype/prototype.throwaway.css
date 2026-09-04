@@ -1,0 +1,79 @@
+/* THROWAWAY. The plan: five variants on the existing route, switchable by
+   `variant`.
+
+   This stylesheet is imported from `prototype.throwaway.tsx` and nowhere else,
+   and that module is only ever loaded inside a `import.meta.env.DEV` branch, so
+   a production build drops the file whole.
+
+   It carries its own Tailwind build, scoped to this directory with `source('.')`,
+   because `src/index.css` excludes this directory with `@source not`. That pair
+   is what keeps every class name a variant invents out of the shipped
+   stylesheet: the site's own CSS is generated from the site's own files, and the
+   prototype's from the prototype's. */
+@import 'tailwindcss' source('.');
+
+/* Self-hosted subset, not a CDN link. A variable face, so the optical size axis
+   follows the type size on its own: the nameplate and the evidence are the same
+   family drawn twice rather than one drawing scaled. */
+@import '@fontsource-variable/newsreader/standard.css';
+@import '@fontsource-variable/newsreader/standard-italic.css';
+
+/* The site's own dark rule, repeated because this stylesheet is compiled apart
+   from `index.css`. The class on the root is the same one the pre-paint script
+   in `index.html` sets, so a variant is drawn in the theme the visitor arrived
+   in. */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* Variant A's tokens, namespaced `ed-` so they sit beside the site's palette
+   rather than over it. Light is the primary composition and dark is drawn
+   against a blued off-black rather than inverted out of the light one. */
+@theme {
+  --font-editorial: 'Newsreader Variable', Georgia, 'Times New Roman', serif;
+
+  --color-ed-paper: #f2f2ef;
+  --color-ed-ink: #16171a;
+  --color-ed-muted: #55565c;
+  --color-ed-rule: #d3d3cd;
+  --color-ed-accent: #1f3fa8;
+
+  --color-ed-paper-dark: #14151a;
+  --color-ed-ink-dark: #e8e6e0;
+  --color-ed-muted-dark: #9fa0a6;
+  --color-ed-rule-dark: #2e3037;
+  --color-ed-accent-dark: #93b0ff;
+}
+
+/* Motion dial 3: one entrance on the nameplate and nothing else that moves on
+   its own. `index.css` already flattens animations for a visitor who asks for
+   reduced motion; this says it again here so the variant honours the preference
+   on its own terms rather than on the site stylesheet's. */
+@keyframes ed-rise {
+  from {
+    opacity: 0;
+    transform: translateY(0.75rem);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.ed-rise {
+  animation: ed-rise 600ms cubic-bezier(0.2, 0.6, 0.2, 1) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ed-rise {
+    animation: none;
+  }
+}
+
+/* The site's focus ring is drawn in the site's accent, which is not this
+   variant's. The ring stays; only its colour joins the palette. */
+.ed-page :focus-visible {
+  outline-color: var(--color-ed-accent);
+}
+
+.dark .ed-page :focus-visible {
+  outline-color: var(--color-ed-accent-dark);
+}
