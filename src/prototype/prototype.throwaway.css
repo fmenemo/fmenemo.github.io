@@ -77,3 +77,78 @@
 .dark .ed-page :focus-visible {
   outline-color: var(--color-ed-accent-dark);
 }
+
+/* Variant E's face. Archivo carries a width axis in one file, so the running
+   heads and the index numbers are drawn narrow and the evidence wide out of the
+   same family: a record set in one voice at two widths, rather than two faces
+   pretending to agree. Self-hosted subset, as the bounds require. */
+@import '@fontsource-variable/archivo/standard.css';
+
+/* Variant E's tokens, namespaced `rc-`. Light is a manila stock rather than
+   paper and dark is a slate the stock was never printed on, both drawn from
+   their own values; the accent is the ink a ledger's own hand is written in,
+   which is why it is warm and why it is the only colour on the page. */
+@theme {
+  --font-record: 'Archivo Variable', ui-sans-serif, system-ui, sans-serif;
+
+  --color-rc-stock: #f4f1e9;
+  --color-rc-ink: #191713;
+  --color-rc-muted: #6a6558;
+  --color-rc-rule: #d6d0c1;
+  --color-rc-hair: #e6e1d4;
+  --color-rc-accent: #7a4a10;
+
+  --color-rc-stock-dark: #121316;
+  --color-rc-ink-dark: #e7e3d8;
+  --color-rc-muted-dark: #969185;
+  --color-rc-rule-dark: #33342f;
+  --color-rc-hair-dark: #23241f;
+  --color-rc-accent-dark: #d9a441;
+}
+
+/* The width axis, used as a device rather than as a weight: the narrow is for
+   the running heads, the field labels and the index numbers, the wide for the
+   nameplate. Set here because a font axis is not a Tailwind utility. */
+.rc-narrow {
+  font-stretch: 82%;
+}
+
+.rc-wide {
+  font-stretch: 112%;
+}
+
+/* Every figure on the page is lining and tabular, which is what lets a column
+   of dates be read down rather than across. */
+.rc-page {
+  font-variant-numeric: tabular-nums lining-nums;
+}
+
+/* Motion dial 2: nothing moves on its own and nothing moves on scroll. The one
+   moving thing is the rule under a link, drawn from the left when a pointer or
+   the keyboard reaches it, and it stops for a visitor who asks it to. */
+.rc-link {
+  background-image: linear-gradient(currentColor, currentColor);
+  background-position: 0 100%;
+  background-repeat: no-repeat;
+  background-size: 0% 1px;
+  transition: background-size 140ms linear;
+}
+
+.rc-link:hover,
+.rc-link:focus-visible {
+  background-size: 100% 1px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rc-link {
+    transition: none;
+  }
+}
+
+.rc-page :focus-visible {
+  outline-color: var(--color-rc-accent);
+}
+
+.dark .rc-page :focus-visible {
+  outline-color: var(--color-rc-accent-dark);
+}

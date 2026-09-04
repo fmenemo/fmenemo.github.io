@@ -1,0 +1,71 @@
+# Ticket #36, what was checked in a browser
+
+The prototype has no tests of its own by decision, so everything below was read
+off the running dev server (`npm run dev`, headless Chrome over the DevTools
+protocol, 2026-09-04) rather than asserted. The four screenshots beside this
+file are variant E as it stood at the commit that added them.
+
+| File | Viewport | Theme | Pixels |
+| --- | --- | --- | --- |
+| `variant-e-light-1280.png` | 1280 | light | 2560 x 9934 |
+| `variant-e-dark-1280.png` | 1280 | dark | 2560 x 9934 |
+| `variant-e-light-320.png` | 320 | light | 320 x 9313 |
+| `variant-e-dark-320.png` | 320 | dark | 320 x 9313 |
+
+Each is one continuous capture of the whole document, and the pixel height of
+each is the page's own height at that width. The 320px pair is taken at a device
+pixel ratio of 1 for the reason #32 recorded: at 2 the image is past what
+Chrome's full-page capture can hold, and what comes back restarts partway down.
+
+They are here and not on the ticket because a Sandcastle sandbox writes to the
+tracker with `GH_TOKEN` and GitHub has no API route that uploads an image to an
+issue: attachments are a web-UI upload. Posting them is the driving session's to
+do, from this directory.
+
+## The route and the switcher
+
+- `/?variant=e` renders variant E whole, with the bar at the bottom reading
+  `E / The record`.
+- Reloading `/?variant=e` comes back to variant E.
+- The arrow keys cycle and wrap: from `e`, right goes to `a` and on to `b`, and
+  left from `a` returns to `e`. Each step rewrites the URL.
+- `/` renders today's site: no switcher, no Archivo, no `rc-` class on any node,
+  and the body still set in Inter. The dynamic import never runs.
+- No console errors or warnings on either page.
+
+## Variant E
+
+- 320px: `document.documentElement.scrollWidth` is 320 and no element's right
+  edge passes the viewport, in both themes.
+- 1280px: the document holds a 72rem column and the evidence a 74ch measure.
+- Both themes are drawn from their own tokens rather than inverted: light is a
+  manila stock (`#f4f1e9`) under a warm brown hand (`#7a4a10`), dark a slate
+  (`#121316`) under amber (`#d9a441`). The page follows the class the pre-paint
+  script sets, so it opens in the theme the visitor arrived in.
+- Every figure on the page is tabular and lining, and every date, span and
+  recognition date sits in the same left column, so the numbers read down.
+- Content: all 107 strings of the English edition — every bullet, every
+  sub-bullet, every recognition and its date, the technologies, education, the
+  identity line, location, mode, the CV download, the routes and every chrome
+  label the variant uses — were read back out of `document.body.innerText` and
+  matched against `src/content.en.ts`. Nothing is missing.
+- No imagery: the page draws with type, rules and colour only. There is no
+  `img`, no SVG, no background image and no gradient.
+- Reduced motion: under `prefers-reduced-motion: reduce` no element has a
+  running animation and the one transition on the page, the rule drawn under a
+  link, reports a duration of `1e-05s`, which is the site stylesheet's own
+  flattening; the prototype stylesheet cancels it a second time on its own
+  terms.
+- The focus ring is the site's, recoloured to the variant's accent.
+- Mechanical pre-flight: no eyebrow anywhere (the running heads are the section
+  headings and carry their own numbers), one CTA intent and one label for it
+  ("Download CV", once, in the identification block), no split header, no locale
+  or time strip, no version footer, and no cards at all, equal or otherwise.
+
+## The production build
+
+`npm run build` on this branch produces a `dist/` that is byte-for-byte the
+`dist/` built from `HEAD` before this work, which is `main` at the merge of #32:
+`diff -rq` over the two trees reports no difference at all. Neither the
+switcher, nor any variant, nor Archivo, nor a single `rc-` class name is in the
+built JavaScript, CSS or HTML.
