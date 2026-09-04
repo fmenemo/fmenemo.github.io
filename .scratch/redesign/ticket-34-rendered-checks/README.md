@@ -19,12 +19,19 @@ variant A's: at 2 the 1280px capture is 22284px tall, which is past what
 Chrome's full-page capture can hold, and what comes back restarts partway down.
 #32 lost everything below independent work that way once already.
 
-They are here and not on the ticket because a Sandcastle sandbox writes to the
-tracker with `GH_TOKEN`, and GitHub has no API route that uploads an image to an
-issue: attachments are a web-UI upload against a browser session. Posting them
-is the driving session's to do, from this directory.
+The record of them, the table above and everything read beside them, is on the
+ticket: comment `5543023408` on #34, posted under `GH_TOKEN`, which also carries
+the line saying what makes this variant structurally different from variant A.
+The four image files are not on it and cannot be. GitHub's issue attachments are
+a web-UI upload against a browser session; there is no REST or GraphQL route
+that uploads an image to an issue or a comment, so `GH_TOKEN` cannot post one
+however it is spelled. Dragging the four files from this directory into that
+comment is the one step left, and it needs a browser someone is signed into.
 
 ## What makes variant C structurally different from variant A
+
+This section is the source of the line on the ticket; the two say the same
+thing, and a change to one belongs in the other.
 
 Variant A is a set document: one 54rem column centred in the window, a variable
 serif, hairline rules, and a right-aligned margin rail that every date and
