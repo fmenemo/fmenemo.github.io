@@ -459,6 +459,8 @@ Two of these were on the site until ticket #27 — the audit bullet and the
 cross-service-authentication bullet — and both are gone from `src/content.en.ts`. One more went
 with ticket #30: the Lead role's "proposal to a live MVP".
 
-The Spanish edition still carries the audit and cross-service-authentication bullets, knowingly:
-ADR 0004 condenses each edition from its own CV, and ticket #31 sweeps `/es` from the new Spanish
-PDF. That is why the guards for these roles are English-only and out of the edition table.
+The Spanish edition carried both until ticket #31 swept `/es` from the new Spanish PDF; that
+sweep's record is `bullet-approval-es.md` beside this file. The guards for these roles stay
+English-only and out of the edition table all the same: ADR 0004 condenses each edition from
+its own CV, and these assertions quote English wordings that the Spanish edition has no reason
+to reproduce.
