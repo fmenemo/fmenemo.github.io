@@ -1,0 +1,65 @@
+# Ticket #33, what was checked in a browser
+
+The prototype has no tests of its own by decision (#26, Testing Decisions), so
+everything below was read off the running dev server rather than asserted:
+Chrome headless over the DevTools protocol against `npm run dev` on 2026-09-04,
+at the commit that adds the four screenshots beside this file.
+
+| File | Viewport | Theme | Pixels |
+| --- | --- | --- | --- |
+| `variant-b-light-1280.png` | 1280 | light | 1280 x 6258 |
+| `variant-b-dark-1280.png` | 1280 | dark | 1280 x 6258 |
+| `variant-b-light-320.png` | 320 | light | 320 x 10171 |
+| `variant-b-dark-320.png` | 320 | dark | 320 x 10171 |
+
+Each is one continuous capture of the whole document at a device pixel ratio of
+1, from the name at the top of the rail to the footer, and each pixel height is
+the page's own height at that width. The ratio is 1 for the reason #32 recorded:
+a full-page capture past roughly 16,000px comes back wrapped, and evidence that
+silently loses its bottom half is worse than none. The switcher's pill is fixed
+to the bottom of the viewport, so in a full-page capture it appears once,
+partway down, over the record. That is the capture, not the design.
+
+Before each capture the page is scrolled from top to bottom and back with
+`scroll-behavior` forced to `auto`, because the sections are released by an
+`IntersectionObserver` as the reader reaches them: a capture taken without
+scrolling first shows four empty sections, which is what the first pair on this
+branch showed before they were retaken.
+
+## Variant B
+
+- `?variant=b` renders the variant whole in both themes, with the bar at the
+  bottom reading `B / Clean product`. The arrows and the arrow keys still cycle
+  through all five keys, and `b` is now a drawn page rather than the placeholder.
+- 320px: `document.documentElement.scrollWidth` is 320 in both themes, and no
+  element in the body has its right edge past the viewport. The shell's left
+  rail is a block at the top of the document at that width, with the index
+  wrapping over two rows, and nothing scrolls sideways.
+- 1280px: `scrollWidth` is 1280, the shell holds its two columns, the evidence
+  holds a 62ch measure inside them, and the role title stays pinned beside its
+  own evidence while that evidence scrolls past.
+- The rendered face is `Archivo Variable`, self-hosted from
+  `@fontsource-variable/archivo` and loaded only by the prototype stylesheet.
+- Both themes are drawn from this variant's own tokens rather than inverted out
+  of each other, and the page follows the class the pre-paint script sets.
+- Figures are set in the ink colour at a heavier weight against body text a step
+  lighter: `$2M+`, `850ms`, `34ms`, `100,000+`, `90%`, `23%`, `8-person`,
+  `2 hours`, `1 minute`. `v2`, `v3`, `S3`, `GA4`, `BM25` and `p95` are left
+  alone, which is what the lookbehind in `FIGURE` is for.
+- Reduced motion, emulated: no element is left held back, the entrance
+  animation resolves to `none`, and the switch and the reveal transitions are
+  flattened. Everything on the page is at opacity 1 without a scroll.
+- No console errors or warnings on either width or either theme. The only
+  console output is Vite's connection notice and React's DevTools suggestion.
+- The site itself is untouched: with no `variant` parameter `/` renders today's
+  page, and `npm run build` produces a `dist` containing no `pb-` class, no
+  `Archivo` reference and no variant module.
+
+## What the screenshots do not carry
+
+They are not on the ticket, and no credential this ticket is worked under can
+put them there: GitHub's issue attachments are a web-UI upload against a browser
+session, and there is no REST or GraphQL route that uploads an image to an issue
+or a comment. `GH_TOKEN` posted the comment that points here. Dragging the four
+files into that comment is the one step left, and it needs a browser someone is
+signed into.
