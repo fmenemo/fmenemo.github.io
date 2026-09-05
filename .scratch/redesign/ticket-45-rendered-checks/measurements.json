@@ -1,0 +1,178 @@
+[
+  {
+    "ed": "en",
+    "path": "/",
+    "theme": "light",
+    "width": 1280,
+    "dark": false,
+    "scrollWidth": 1280,
+    "clientWidth": 1280,
+    "recognitions": 7,
+    "technologies": 14,
+    "techColumns": 5,
+    "dateCol": 168,
+    "textCol": 344,
+    "experienceTextCol": 344,
+    "headings": [
+      "03Recognitions",
+      "04Technologies"
+    ],
+    "educationLabel": "2012 - 2017EducationComputer Engineering (Software Engineering Specialization), Universidad de ZaragozaSpanish (native), English (C1)",
+    "techFont": "\"Archivo Variable\", ui-sans-serif, system-ui, sans-serif",
+    "numerals": "lining-nums tabular-nums"
+  },
+  {
+    "ed": "en",
+    "path": "/",
+    "theme": "light",
+    "width": 320,
+    "dark": false,
+    "scrollWidth": 320,
+    "clientWidth": 320,
+    "recognitions": 7,
+    "technologies": 14,
+    "techColumns": 2,
+    "dateCol": 24,
+    "textCol": 24,
+    "experienceTextCol": 24,
+    "headings": [
+      "03Recognitions",
+      "04Technologies"
+    ],
+    "educationLabel": "2012 - 2017EducationComputer Engineering (Software Engineering Specialization), Universidad de ZaragozaSpanish (native), English (C1)",
+    "techFont": "\"Archivo Variable\", ui-sans-serif, system-ui, sans-serif",
+    "numerals": "lining-nums tabular-nums"
+  },
+  {
+    "ed": "en",
+    "path": "/",
+    "theme": "dark",
+    "width": 1280,
+    "dark": true,
+    "scrollWidth": 1280,
+    "clientWidth": 1280,
+    "recognitions": 7,
+    "technologies": 14,
+    "techColumns": 5,
+    "dateCol": 168,
+    "textCol": 344,
+    "experienceTextCol": 344,
+    "headings": [
+      "03Recognitions",
+      "04Technologies"
+    ],
+    "educationLabel": "2012 - 2017EducationComputer Engineering (Software Engineering Specialization), Universidad de ZaragozaSpanish (native), English (C1)",
+    "techFont": "\"Archivo Variable\", ui-sans-serif, system-ui, sans-serif",
+    "numerals": "lining-nums tabular-nums"
+  },
+  {
+    "ed": "en",
+    "path": "/",
+    "theme": "dark",
+    "width": 320,
+    "dark": true,
+    "scrollWidth": 320,
+    "clientWidth": 320,
+    "recognitions": 7,
+    "technologies": 14,
+    "techColumns": 2,
+    "dateCol": 24,
+    "textCol": 24,
+    "experienceTextCol": 24,
+    "headings": [
+      "03Recognitions",
+      "04Technologies"
+    ],
+    "educationLabel": "2012 - 2017EducationComputer Engineering (Software Engineering Specialization), Universidad de ZaragozaSpanish (native), English (C1)",
+    "techFont": "\"Archivo Variable\", ui-sans-serif, system-ui, sans-serif",
+    "numerals": "lining-nums tabular-nums"
+  },
+  {
+    "ed": "es",
+    "path": "/es/",
+    "theme": "light",
+    "width": 1280,
+    "dark": false,
+    "scrollWidth": 1280,
+    "clientWidth": 1280,
+    "recognitions": 7,
+    "technologies": 14,
+    "techColumns": 5,
+    "dateCol": 168,
+    "textCol": 344,
+    "experienceTextCol": 344,
+    "headings": [
+      "03Reconocimientos y premios",
+      "04Tecnologías"
+    ],
+    "educationLabel": "2012 - 2017Formación e idiomasIngeniería Informática (Especialidad en Ingeniería del Software), Universidad de ZaragozaEspañol (nativo), Inglés (avanzado, Cambridge C1)",
+    "techFont": "\"Archivo Variable\", ui-sans-serif, system-ui, sans-serif",
+    "numerals": "lining-nums tabular-nums"
+  },
+  {
+    "ed": "es",
+    "path": "/es/",
+    "theme": "light",
+    "width": 320,
+    "dark": false,
+    "scrollWidth": 320,
+    "clientWidth": 320,
+    "recognitions": 7,
+    "technologies": 14,
+    "techColumns": 2,
+    "dateCol": 24,
+    "textCol": 24,
+    "experienceTextCol": 24,
+    "headings": [
+      "03Reconocimientos y premios",
+      "04Tecnologías"
+    ],
+    "educationLabel": "2012 - 2017Formación e idiomasIngeniería Informática (Especialidad en Ingeniería del Software), Universidad de ZaragozaEspañol (nativo), Inglés (avanzado, Cambridge C1)",
+    "techFont": "\"Archivo Variable\", ui-sans-serif, system-ui, sans-serif",
+    "numerals": "lining-nums tabular-nums"
+  },
+  {
+    "ed": "es",
+    "path": "/es/",
+    "theme": "dark",
+    "width": 1280,
+    "dark": true,
+    "scrollWidth": 1280,
+    "clientWidth": 1280,
+    "recognitions": 7,
+    "technologies": 14,
+    "techColumns": 5,
+    "dateCol": 168,
+    "textCol": 344,
+    "experienceTextCol": 344,
+    "headings": [
+      "03Reconocimientos y premios",
+      "04Tecnologías"
+    ],
+    "educationLabel": "2012 - 2017Formación e idiomasIngeniería Informática (Especialidad en Ingeniería del Software), Universidad de ZaragozaEspañol (nativo), Inglés (avanzado, Cambridge C1)",
+    "techFont": "\"Archivo Variable\", ui-sans-serif, system-ui, sans-serif",
+    "numerals": "lining-nums tabular-nums"
+  },
+  {
+    "ed": "es",
+    "path": "/es/",
+    "theme": "dark",
+    "width": 320,
+    "dark": true,
+    "scrollWidth": 320,
+    "clientWidth": 320,
+    "recognitions": 7,
+    "technologies": 14,
+    "techColumns": 2,
+    "dateCol": 24,
+    "textCol": 24,
+    "experienceTextCol": 24,
+    "headings": [
+      "03Reconocimientos y premios",
+      "04Tecnologías"
+    ],
+    "educationLabel": "2012 - 2017Formación e idiomasIngeniería Informática (Especialidad en Ingeniería del Software), Universidad de ZaragozaEspañol (nativo), Inglés (avanzado, Cambridge C1)",
+    "techFont": "\"Archivo Variable\", ui-sans-serif, system-ui, sans-serif",
+    "numerals": "lining-nums tabular-nums"
+  }
+]
