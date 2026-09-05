@@ -25,7 +25,7 @@ not checked on the other.
 | `es-light-320.png` | Spanish, light, 320px, whole page |
 | `es-dark-320.png` | Spanish, dark, 320px, whole page |
 | `en-light-1280-shop-programme.png` | The Shop programme at 1280px: entry `1`, its parts `1.1` to `1.9` |
-| `en-light-320-shop-programme.png` | The same programme at 320px, where the columns stack |
+| `en-light-320-shop-programme.png` | The same programme at 320px, where the ledger columns stack and the entry numbers do not |
 
 The whole-page captures are at device pixel ratio 2 at 1280px and 1 at 320px.
 A 320px page is 9584 CSS pixels tall in English and 11146 in Spanish, and at
@@ -61,9 +61,10 @@ The two `shop-programme` captures are the one thing the whole-page shots cannot
 show at a readable size: the arc reads as one entry with its parts under it, the
 numbers hang in a column of their own, and the parts begin where their parent's
 own text begins rather than indented away from it. At 320px the ledger columns
-stack — the span, the dates and the entry numbers sit above what they label
-instead of beside it — and the numbering is what still says which part belongs
-to which entry.
+stack: an employer's span and a role's dates sit above what they label instead
+of beside it. The entry numbers do not stack — an entry is two columns at every
+width, so `1` and `1.1` stay beside their statements, which is what still says
+which part belongs to which entry once the columns above them have folded.
 
 ## Motion and the pressed state
 
