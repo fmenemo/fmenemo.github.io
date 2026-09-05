@@ -127,11 +127,11 @@ const VariantERecord: React.FC = () => {
               {identity.name}
             </h1>
 
-            {/* The identity line is the record's summary, set as one column
-                at every width; the measure is capped so that the line stays
-                readable on the widest screens. */}
+            {/* The identity line is the record's summary, one column at the
+                page's full width so that its rule lines up with the grid
+                beneath it. The container's 72rem cap is the measure. */}
             <p
-              className={`mt-6 max-w-[68ch] border-t-2 pt-6 text-[1.0625rem] leading-[1.5] ${rule}`}
+              className={`mt-6 border-t-2 pt-6 text-[1.0625rem] leading-[1.5] ${rule}`}
             >
               {identity.line}
             </p>
