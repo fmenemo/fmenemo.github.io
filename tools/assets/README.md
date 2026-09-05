@@ -39,7 +39,12 @@ the picture, not the checksum.
 
 ## What is in each file
 
-`og-image.css` holds the layout and the palette for every edition's share image. It is
+`og-image.css` holds the layout and the palette for every edition's share image, in the
+Record (ADR 0005): the running head, the nameplate at the wide end of the width axis,
+the identity line under the heavy rule, and the colophon row. Every colour in it is a
+copy of a token from `src/index.css` with the token named beside it, because a
+standalone page rendered by Chrome cannot read the app's stylesheet — the stylesheet is
+the source of truth, and a restyle follows it and re-renders. It is
 a separate file for the same reason the render is a single command: an edition-shaped
 copy of it is how a restyle reaches one card and misses the other. Each `og-image*.html`
 beside it holds its own copy and nothing else, which is also what makes the share-image
@@ -52,7 +57,9 @@ shortened. Like everything else a visitor reads it answers to that edition's CV
 translated from the English picture. If an identity line changes, change its card here
 and re-render.
 
-The favicon itself is `public/favicon.svg` and is hand-drawn, not generated. Its
+The favicon itself is `public/favicon.svg` and is hand-drawn, not generated. Its two
+colours are the Record's ink and stock, copied from the tokens for the same reason the
+card's are. Its
 letter is geometry rather than type on purpose: a favicon cannot carry a font with
 it, so text would render in whatever monospace the visitor's machine happens to have.
 `apple-touch-icon.html` screenshots that same SVG at 180x180, referencing it rather
