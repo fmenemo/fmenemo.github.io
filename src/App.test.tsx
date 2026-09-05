@@ -49,6 +49,12 @@ const editions = [
     // the paragraph without asserting the whole of it.
     identityLead: /^Full-stack engineer, 10\+ years/,
     themeToggle: /switch to (dark|light) mode/i,
+    // The theme control says what it will do next, in words rather than as an
+    // icon, so its whole visible text is asserted per edition.
+    themeControl: { toDark: 'Switch to dark mode', toLight: 'Switch to light mode' },
+    // The first link in the document, and the only one a visitor meets before
+    // the running head.
+    skipLink: 'Skip to content',
     // The selector as a visitor meets it on this edition: its own label marked,
     // the sibling's label linked, and the link named in this edition's language.
     language: {
@@ -197,6 +203,8 @@ const editions = [
     imageAlt: 'Fran Menéndez, ingeniero full-stack, Zaragoza, España.',
     identityLead: /^Ingeniero full-stack, más de 10 años/,
     themeToggle: /cambiar a modo (oscuro|claro)/i,
+    themeControl: { toDark: 'Cambiar a modo oscuro', toLight: 'Cambiar a modo claro' },
+    skipLink: 'Saltar al contenido',
     language: {
       label: 'Idioma',
       current: 'ES',
@@ -655,6 +663,146 @@ describe.each(editions)('$edition edition', (edition) => {
     // which is pictographic but renders as text.
     it('renders no emoji in the copy', () => {
       expect(renderedText(edition)).not.toMatch(/\p{Emoji_Presentation}|\uFE0F/u);
+    });
+  });
+
+  // Guard tests for ticket 42 of the redesign (the running head and the
+  // identification block). The running head replaced the masthead, which is
+  // why the section links a visitor used to find there are asserted absent
+  // from it: they are the contents index's now.
+  describe('the top of the record', () => {
+    // A `header` scoped to a `section` is not a banner landmark, but the role
+    // mapping testing-library uses maps every `header` to one, so the section
+    // headings answer to the role too. The page's banner is the one outside
+    // the main landmark, and there is exactly one of those.
+    const runningHead = () => {
+      const main = screen.getByRole('main');
+      const outside = screen.getAllByRole('banner').filter((banner) => !main.contains(banner));
+      expect(outside).toHaveLength(1);
+      return outside[0];
+    };
+
+    // The skip link is the keyboard visitor's way past the running head, so
+    // what matters is that nothing precedes it and that it lands somewhere.
+    // Both editions, because it is finish rather than English's finish.
+    it('opens on a skip link that lands on the main landmark', () => {
+      render(<App content={content} />);
+      const first = screen.getAllByRole('link')[0];
+      expect(first.textContent).toBe(edition.skipLink);
+
+      const target = first.getAttribute('href') ?? '';
+      expect(target.startsWith('#')).toBe(true);
+      expect(document.querySelector(target)).toBe(screen.getByRole('main'));
+    });
+
+    // The masthead listed two sections beside the name; the running head lists
+    // none, because the contents index below reaches all five. What is left is
+    // the name of the record and the two things a reader may change about how
+    // it is shown.
+    it('carries the name, the language selector and the theme control, and nothing else', () => {
+      render(<App content={content} />);
+      const head = runningHead();
+
+      expect(head.textContent).toContain(content.identity.name);
+      expect(within(head).getByRole('navigation', { name: edition.language.label })).toBeTruthy();
+      expect(within(head).getByRole('button', { name: edition.themeToggle })).toBeTruthy();
+
+      const toASection = within(head)
+        .queryAllByRole('link')
+        .filter((link) => link.getAttribute('href')?.startsWith('#'));
+      expect(toASection).toEqual([]);
+    });
+
+    // The toggle was an icon with its name only in an `aria-label`, so a
+    // visitor who could see the page could not read what it would do. It now
+    // says so, in the edition's own words, and the words change with the state.
+    it('says what the theme control will do, in the edition’s own words', () => {
+      render(<App content={content} />);
+      const control = () => screen.getByRole('button', { name: edition.themeToggle });
+
+      expect(control().textContent).toBe(edition.themeControl.toDark);
+      expect(control().querySelector('img, svg')).toBeNull();
+
+      fireEvent.click(control());
+      expect(control().textContent).toBe(edition.themeControl.toLight);
+    });
+
+    // The identification block is the section the nameplate is in. Found
+    // through the one `h1` rather than by its id, because the h1 is what the
+    // block is: a record identifies itself before it says anything else.
+    const identification = () => {
+      const block = screen.getByRole('heading', { level: 1 }).closest('section');
+      expect(block).not.toBeNull();
+      return block as HTMLElement;
+    };
+
+    it('states where Fran is and how he works, in fields of their own', () => {
+      render(<App content={content} />);
+      const text = identification().textContent ?? '';
+
+      expect(text).toContain(content.chrome.fields.location);
+      expect(text).toContain(content.identity.location);
+      expect(text).toContain(content.chrome.fields.mode);
+      expect(text).toContain(content.identity.mode);
+    });
+
+    it('offers every CV this edition publishes, where the reader lands', () => {
+      render(<App content={content} />);
+      const offered = within(identification())
+        .getAllByRole('link', { name: /cv/i })
+        .map((link) => link.getAttribute('href'));
+
+      expect(offered).toEqual(edition.cvs.map((cv) => cv.href));
+    });
+
+    // User story 12, resolved by the verdict on #26 in favour of the bottom:
+    // the routes live once, in the Contact section, so the bottom of the page
+    // gives a reader something the top did not. The hero used to carry the
+    // email and the LinkedIn link beside the CV, which is the assertion this
+    // replaces.
+    it('leaves email, LinkedIn and GitHub to the Contact section', () => {
+      render(<App content={content} />);
+      const hrefs = within(identification())
+        .queryAllByRole('link')
+        .map((link) => link.getAttribute('href') ?? '');
+
+      expect(hrefs.filter((href) => /^mailto:|linkedin\.com|github\.com/.test(href))).toEqual([]);
+    });
+
+    // The contents index is what the running head stopped carrying, and it is
+    // the whole of the page's navigation now: five entries, one per section,
+    // numbered as the sections number themselves.
+    it('indexes all five sections, numbered as their running heads number them', () => {
+      render(<App content={content} />);
+      const index = within(identification()).getByRole('navigation', { name: content.chrome.nav.label });
+      const entries = within(index).getAllByRole('link');
+
+      expect(entries.map((entry) => entry.getAttribute('href'))).toEqual([
+        '#experience',
+        '#independent-work',
+        '#recognitions',
+        '#technologies',
+        '#contact',
+      ]);
+
+      const labels = [
+        content.chrome.sections.experience,
+        content.chrome.sections.independentWork,
+        content.chrome.sections.recognitions,
+        content.chrome.sections.technologies,
+        content.chrome.sections.contact,
+      ];
+
+      entries.forEach((entry, position) => {
+        const number = String(position + 1).padStart(2, '0');
+        expect(entry.textContent).toBe(`${number}${labels[position]}`);
+
+        // The number is the section's own, not the index's: each section opens
+        // on it, so an index entry that drifted from the page it names fails
+        // here rather than being noticed by a reader counting.
+        const section = document.querySelector(entry.getAttribute('href') ?? '');
+        expect(section?.textContent?.startsWith(number)).toBe(true);
+      });
     });
   });
 

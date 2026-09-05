@@ -10,9 +10,9 @@ const Contact: React.FC = () => {
   const { identity, contact, chrome } = useContent();
 
   const routes = [
-    { label: chrome.contact.email, value: contact.email, href: `mailto:${contact.email}` },
-    { label: chrome.contact.linkedin, value: contact.linkedinLabel, href: contact.linkedin },
-    { label: chrome.contact.location, value: `${identity.location} / ${identity.mode}`, href: null },
+    { label: chrome.fields.email, value: contact.email, href: `mailto:${contact.email}` },
+    { label: chrome.fields.linkedin, value: contact.linkedinLabel, href: contact.linkedin },
+    { label: chrome.fields.location, value: `${identity.location} / ${identity.mode}`, href: null },
   ];
 
   return (

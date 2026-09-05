@@ -240,10 +240,9 @@ export const en: SiteContent = {
   ],
 
   chrome: {
+    skipLink: 'Skip to content',
     nav: {
       label: 'Sections',
-      experience: 'Experience',
-      contact: 'Contact',
       toDarkMode: 'Switch to dark mode',
       toLightMode: 'Switch to light mode',
     },
@@ -259,10 +258,11 @@ export const en: SiteContent = {
       technologies: 'Technologies',
       contact: 'Contact',
     },
-    contact: {
+    fields: {
       email: 'Email',
       linkedin: 'LinkedIn',
       location: 'Location',
+      mode: 'Mode',
     },
     recognitions: {
       education: 'Education',
