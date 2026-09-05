@@ -1,7 +1,7 @@
 import { cleanup, fireEvent, render, screen, within } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import App from './App';
-import type { Role } from './content';
+import type { Chrome, Role } from './content';
 import { en } from './content.en';
 import { es } from './content.es';
 // The shipped entry documents, the stylesheet holding the palette, and the
@@ -13,6 +13,10 @@ import esHtml from '../es/index.html?raw';
 import ogImageHtml from '../tools/assets/og-image.html?raw';
 import ogImageEsHtml from '../tools/assets/og-image.es.html?raw';
 import faviconSvg from '../public/favicon.svg?raw';
+// The third document, which belongs to neither edition, and the build config
+// that puts it at the root of the site.
+import notFoundHtml from '../404.html?raw';
+import viteConfig from '../vite.config.ts?raw';
 
 const SITE = 'https://fmenemo.github.io';
 
@@ -49,6 +53,12 @@ const editions = [
     // the paragraph without asserting the whole of it.
     identityLead: /^Full-stack engineer, 10\+ years/,
     themeToggle: /switch to (dark|light) mode/i,
+    // The theme control says what it will do next, in words rather than as an
+    // icon, so its whole visible text is asserted per edition.
+    themeControl: { toDark: 'Switch to dark mode', toLight: 'Switch to light mode' },
+    // The first link in the document, and the only one a visitor meets before
+    // the running head.
+    skipLink: 'Skip to content',
     // The selector as a visitor meets it on this edition: its own label marked,
     // the sibling's label linked, and the link named in this edition's language.
     language: {
@@ -197,6 +207,8 @@ const editions = [
     imageAlt: 'Fran Menéndez, ingeniero full-stack, Zaragoza, España.',
     identityLead: /^Ingeniero full-stack, más de 10 años/,
     themeToggle: /cambiar a modo (oscuro|claro)/i,
+    themeControl: { toDark: 'Cambiar a modo oscuro', toLight: 'Cambiar a modo claro' },
+    skipLink: 'Saltar al contenido',
     language: {
       label: 'Idioma',
       current: 'ES',
@@ -410,6 +422,131 @@ describe('the edition arrives from above', () => {
   });
 });
 
+// Guard test for ticket 41 (the Record's tokens and type). ADR 0002 moved the
+// palette out of eighty inline ternaries and into `@theme` tokens; the way that
+// unravels is one component reaching for a hex again because a token for what it
+// wanted did not exist. Every module the components are drawn from is read here
+// as source, not as a rendered tree, because a literal that never reaches the
+// DOM in jsdom is still a colour outside the theme block.
+//
+// This is not an assertion on a class name: it says nothing about which token a
+// component picks, only that it picks one.
+const componentSources = Object.entries(
+  import.meta.glob('./{components,pages}/*.tsx', { query: '?raw', import: 'default', eager: true }) as Record<
+    string,
+    string
+  >,
+);
+
+describe('the palette', () => {
+  it('is carried by tokens, so no component names a colour', () => {
+    // Hex triplets and the functional notations. The SVG path data in the
+    // footer is a long string of digits and letters, so the hex pattern is
+    // anchored to a `#` rather than left to float.
+    const literal = /#[0-9a-fA-F]{3,8}\b|\b(?:rgba?|hsla?|oklch|color-mix)\(/;
+
+    expect(componentSources.length).toBeGreaterThan(0);
+
+    for (const [path, source] of componentSources) {
+      expect(source, `${path} names a colour instead of reading a token`).not.toMatch(literal);
+    }
+  });
+});
+
+// Guard test for ticket 43 (the evidence as a record). The section head is the
+// primitive every section now opens on, and it replaced the section component
+// rather than sitting beside it: a section left on the old component would draw
+// a second, different head on the same page. It is a different thing from the
+// running head, which heads the page rather than a section. Read as source,
+// because a deleted module is not a thing the rendered tree can be asked about.
+describe('the section component the section head replaces', () => {
+  it('is gone, and nothing reaches for it', () => {
+    const paths = componentSources.map(([path]) => path);
+
+    expect(paths.length).toBeGreaterThan(0);
+    expect(paths).not.toContain('./components/Section.tsx');
+
+    const reaching = componentSources
+      .filter(([, source]) => /from '[^']*components\/Section'/.test(source))
+      .map(([path]) => path);
+
+    expect(reaching).toEqual([]);
+  });
+});
+
+// The hedge vocabulary, and the one reading of it, for every surface the site
+// puts in front of someone: the rendered page and the share image of each
+// edition, below, and the 404 document, which belongs to neither and is
+// guarded at the bottom of this file. Guard for the central decision of ADR
+// 0004: nothing the site shows hedges.
+//
+// If you are reading this because you tripped it, go and read ADR 0004 before
+// you edit the list. A badge, banner, tooltip or footnote saying an edition
+// is machine-translated, unreviewed, provisional or less current than the
+// other tells the Spanish reader, in Spanish, that the page they are on is
+// the unchecked copy. That hedges the credibility of the artefact in front of
+// the only person it was added for, and it is implausible on its face, since
+// Fran is a native Spanish speaker. The honest response to a Spanish edition
+// nobody has read is not to label it, it is not to ship it.
+//
+// Written as negative tests in the manner of the fabricated-content group
+// further down, and the per-edition ones run from the table, because a hedge
+// that appeared on one edition only is exactly the shape this would take.
+//
+// Both languages in every list, because a hedge is written in the language
+// of the reader it is aimed at, and the one aimed at the Spanish reader is
+// the one that costs.
+//
+// These are hedges wherever they appear. "sin revisar" and not "revisi",
+// because code review is evidence the site legitimately carries.
+const alwaysAHedge = [
+  /machine[\s-]?translat|auto(?:matic(?:ally)?|[\s-])[\s-]?translat|ai[\s-]translat/i,
+  /translated\s+from\s+the\s+english|traducido\s+del\s+ingl[eé]s/i,
+  /traduc\w*\s+(?:autom|con\s+ia|por\s+ia)|traducci[oó]n\s+(?:autom|de\s+ia)|generad\w*\s+(?:con|por)\s+ia/i,
+  /unreviewed|not\s+(?:yet\s+)?reviewed|pending\s+review/i,
+  /sin\s+revisar|sin\s+revisi[oó]n|no\s+revisad|pendiente\s+de\s+revisi[oó]n/i,
+  /work\s+in\s+progress|en\s+construcci[oó]n/i,
+];
+
+// These are only a hedge when they are said *about a version of this site*.
+// "Replaced an outdated stack" and "una plataforma más completa" are the
+// ordinary vocabulary of a CV bullet, so matching them bare would one day
+// fail a true piece of evidence under a comment telling whoever wrote it to
+// go and read ADR 0004 — which is the worst thing a guard like this can do.
+// What makes the difference is the subject, so these carry one.
+// What a hedge calls the thing it is hedging: the document, or the language
+// it is written in. "El texto en español está desactualizado" names neither
+// a version nor an edition and is a hedge all the same.
+const aboutAVersionOfTheSite =
+  /\b(?:page|version|edition|translation|copy|site|text|content|spanish|english|p[aá]gina|versi[oó]n|edici[oó]n|traducci[oó]n|copia|sitio|texto|contenido|espa[nñ]ol|ingl[eé]s)\b/i;
+
+// Both directions of the comparison. A hedge aimed at `/es` is at least as
+// likely to be written from the modest side ("no tan actual") as the
+// boastful one, and the first draft of this list only banned the boastful.
+const hedgeAboutAVersion = [
+  /out[\s-]of[\s-]date|outdated|desactualizad|obsolet/i,
+  /\b(?:more|less|not\s+as)\s+(?:up[\s-]to[\s-]date|current|complete|accurate|recent)\b/i,
+  /\b(?:m[aá]s|menos|no\s+tan)\s+(?:actual|actualizad|complet|reciente|fiable)/i,
+  /provisional/i,
+  /\bbeta\b|\bdraft\b|\bborrador\b/i,
+];
+
+// Near, not anywhere in the document: "version" appears in the theme script
+// and "página" in a heading, so a whole-text test would make every pattern
+// above unconditional again.
+const NEARBY = 60;
+
+const hedgesIn = (text: string) => [
+  ...alwaysAHedge.filter((hedge) => hedge.test(text)),
+  ...hedgeAboutAVersion.filter((hedge) =>
+    [...text.matchAll(new RegExp(hedge.source, `${hedge.flags}g`))].some((match) =>
+      aboutAVersionOfTheSite.test(
+        text.slice(Math.max(0, match.index - NEARBY), match.index + match[0].length + NEARBY)
+      )
+    )
+  ),
+];
+
 describe.each(editions)('$edition edition', (edition) => {
   const { content } = edition;
 
@@ -585,6 +722,32 @@ describe.each(editions)('$edition edition', (edition) => {
 
     // queryAllByRole with a name filter uses the accessible-name computation, so
     // anything missing from the named set has no name a screen reader can read.
+    // Guard for ticket 43, extended by ticket 45. Each section opens on a
+    // running head: its number in the accent, its name in the edition's own
+    // word, on the rule. The number is what the contents index links by, so a
+    // head that lost it would leave the index decorative.
+    //
+    // Rewritten once, for one reason: the pair of ids the guard ran over was
+    // the pair of sections that had been drawn when it was written, and the
+    // section name was picked out of the chrome by an inline conditional that
+    // a third row could not extend. The rows now carry the name, so the two
+    // sections ticket 45 draws are two more rows rather than a second test.
+    it.each([
+      ['experience', '01', (chrome: Chrome) => chrome.sections.experience],
+      ['independent-work', '02', (chrome: Chrome) => chrome.sections.independentWork],
+      ['recognitions', '03', (chrome: Chrome) => chrome.sections.recognitions],
+      ['technologies', '04', (chrome: Chrome) => chrome.sections.technologies],
+    ] as const)('opens %s on a running head with its number and its name', (id, index, nameOf) => {
+      render(<App content={content} />);
+      const section = document.getElementById(id);
+      expect(section).not.toBeNull();
+
+      const heading = within(section!).getAllByRole('heading', { level: 2 })[0];
+
+      expect(heading.textContent).toBe(nameOf(content.chrome));
+      expect(heading.parentElement?.textContent).toContain(index);
+    });
+
     it('gives every link and button an accessible name', () => {
       render(<App content={content} />);
       for (const role of ['link', 'button'] as const) {
@@ -624,6 +787,233 @@ describe.each(editions)('$edition edition', (edition) => {
     // which is pictographic but renders as text.
     it('renders no emoji in the copy', () => {
       expect(renderedText(edition)).not.toMatch(/\p{Emoji_Presentation}|\uFE0F/u);
+    });
+  });
+
+  // Guard tests for ticket 42 of the redesign (the running head and the
+  // identification block). The running head replaced the masthead, which is
+  // why the section links a visitor used to find there are asserted absent
+  // from it: they are the contents index's now.
+  describe('the top of the record', () => {
+    // A `header` scoped to a `section` is not a banner landmark, but the role
+    // mapping testing-library uses maps every `header` to one, so the section
+    // headings answer to the role too. The page's banner is the one outside
+    // the main landmark, and there is exactly one of those.
+    const runningHead = () => {
+      const main = screen.getByRole('main');
+      const outside = screen.getAllByRole('banner').filter((banner) => !main.contains(banner));
+      expect(outside).toHaveLength(1);
+      return outside[0];
+    };
+
+    // The skip link is the keyboard visitor's way past the running head, so
+    // what matters is that nothing precedes it and that it lands somewhere.
+    // Both editions, because it is finish rather than English's finish.
+    it('opens on a skip link that lands on the main landmark', () => {
+      render(<App content={content} />);
+      const first = screen.getAllByRole('link')[0];
+      expect(first.textContent).toBe(edition.skipLink);
+
+      const target = first.getAttribute('href') ?? '';
+      expect(target.startsWith('#')).toBe(true);
+      expect(document.querySelector(target)).toBe(screen.getByRole('main'));
+    });
+
+    // The masthead listed two sections beside the name; the running head lists
+    // none, because the contents index below reaches all five. What is left is
+    // the name of the record and the two things a reader may change about how
+    // it is shown.
+    it('carries the name, the language selector and the theme control, and nothing else', () => {
+      render(<App content={content} />);
+      const head = runningHead();
+
+      expect(head.textContent).toContain(content.identity.name);
+      expect(within(head).getByRole('navigation', { name: edition.language.label })).toBeTruthy();
+      expect(within(head).getByRole('button', { name: edition.themeToggle })).toBeTruthy();
+
+      const toASection = within(head)
+        .queryAllByRole('link')
+        .filter((link) => link.getAttribute('href')?.startsWith('#'));
+      expect(toASection).toEqual([]);
+    });
+
+    // The toggle was an icon with its name only in an `aria-label`, so a
+    // visitor who could see the page could not read what it would do. It now
+    // says so, in the edition's own words, and the words change with the state.
+    it('says what the theme control will do, in the edition’s own words', () => {
+      render(<App content={content} />);
+      const control = () => screen.getByRole('button', { name: edition.themeToggle });
+
+      expect(control().textContent).toBe(edition.themeControl.toDark);
+      expect(control().querySelector('img, svg')).toBeNull();
+
+      fireEvent.click(control());
+      expect(control().textContent).toBe(edition.themeControl.toLight);
+    });
+
+    // The identification block is the section the nameplate is in. Found
+    // through the one `h1` rather than by its id, because the h1 is what the
+    // block is: a record identifies itself before it says anything else.
+    const identification = () => {
+      const block = screen.getByRole('heading', { level: 1 }).closest('section');
+      expect(block).not.toBeNull();
+      return block as HTMLElement;
+    };
+
+    it('states where Fran is and how he works, in fields of their own', () => {
+      render(<App content={content} />);
+      const text = identification().textContent ?? '';
+
+      expect(text).toContain(content.chrome.fields.location);
+      expect(text).toContain(content.identity.location);
+      expect(text).toContain(content.chrome.fields.mode);
+      expect(text).toContain(content.identity.mode);
+    });
+
+    it('offers every CV this edition publishes, where the reader lands', () => {
+      render(<App content={content} />);
+      const offered = within(identification())
+        .getAllByRole('link', { name: /cv/i })
+        .map((link) => link.getAttribute('href'));
+
+      expect(offered).toEqual(edition.cvs.map((cv) => cv.href));
+    });
+
+    // User story 12, resolved by the verdict on #26 in favour of the bottom:
+    // the routes live once, in the Contact section, so the bottom of the page
+    // gives a reader something the top did not. The hero used to carry the
+    // email and the LinkedIn link beside the CV, which is the assertion this
+    // replaces.
+    it('leaves email, LinkedIn and GitHub to the Contact section', () => {
+      render(<App content={content} />);
+      const hrefs = within(identification())
+        .queryAllByRole('link')
+        .map((link) => link.getAttribute('href') ?? '');
+
+      expect(hrefs.filter((href) => /^mailto:|linkedin\.com|github\.com/.test(href))).toEqual([]);
+    });
+
+    // The contents index is what the running head stopped carrying, and it is
+    // the whole of the page's navigation now: five entries, one per section,
+    // numbered as the sections number themselves.
+    it('indexes all five sections, numbered as their running heads number them', () => {
+      render(<App content={content} />);
+      const index = within(identification()).getByRole('navigation', { name: content.chrome.nav.label });
+      const entries = within(index).getAllByRole('link');
+
+      expect(entries.map((entry) => entry.getAttribute('href'))).toEqual([
+        '#experience',
+        '#independent-work',
+        '#recognitions',
+        '#technologies',
+        '#contact',
+      ]);
+
+      const labels = [
+        content.chrome.sections.experience,
+        content.chrome.sections.independentWork,
+        content.chrome.sections.recognitions,
+        content.chrome.sections.technologies,
+        content.chrome.sections.contact,
+      ];
+
+      entries.forEach((entry, position) => {
+        const number = String(position + 1).padStart(2, '0');
+        expect(entry.textContent).toBe(`${number}${labels[position]}`);
+
+        // The number is the section's own, not the index's: each section opens
+        // on it, so an index entry that drifted from the page it names fails
+        // here rather than being noticed by a reader counting.
+        const section = document.querySelector(entry.getAttribute('href') ?? '');
+        expect(section?.textContent?.startsWith(number)).toBe(true);
+      });
+    });
+  });
+
+  // Guard tests for ticket 46 of the redesign (contact and the footer). The
+  // bottom of the record is the one place the routes to Fran live: user story
+  // 12, resolved by the verdict on #26 in favour of the bottom, so the tests
+  // that say the top does not carry them sit above and these say the bottom
+  // does.
+  describe('the bottom of the record', () => {
+    const contact = () => {
+      const section = document.getElementById('contact');
+      expect(section).not.toBeNull();
+      return section as HTMLElement;
+    };
+
+    // Each route is a field of the record — the label in the hand, the value
+    // beside it — and each one a link a visitor can open, middle-click or tab
+    // to. "GitHub" is a brand rather than chrome, so it is the same word in
+    // both editions and is asserted as a literal.
+    it('draws every route as a field, labelled and beside its value', () => {
+      render(<App content={content} />);
+      const text = contact().textContent ?? '';
+
+      expect(text).toContain(content.chrome.fields.email);
+      expect(text).toContain(content.contact.email);
+      expect(text).toContain(content.chrome.fields.linkedin);
+      expect(text).toContain(content.contact.linkedinLabel);
+      expect(text).toContain('GitHub');
+      expect(text).toContain(content.chrome.fields.location);
+      expect(text).toContain(content.identity.location);
+      expect(text).toContain(content.identity.mode);
+
+      const hrefs = within(contact())
+        .getAllByRole('link')
+        .map((link) => link.getAttribute('href'));
+
+      expect(hrefs).toContain(`mailto:${content.contact.email}`);
+      expect(hrefs).toContain(content.contact.linkedin);
+      expect(hrefs).toContain(content.contact.github);
+    });
+
+    // The other half of the assertion above the identification block makes: the
+    // top does not carry the routes, and here they are, once each and nowhere
+    // else. The footer used to carry the GitHub and LinkedIn marks, which is
+    // the duplication this counts.
+    it('carries email, LinkedIn and GitHub exactly once on the page', () => {
+      render(<App content={content} />);
+      const section = contact();
+
+      for (const route of [`mailto:${content.contact.email}`, content.contact.linkedin, content.contact.github]) {
+        const found = screen.getAllByRole('link').filter((link) => link.getAttribute('href') === route);
+        expect(found).toHaveLength(1);
+        expect(section.contains(found[0])).toBe(true);
+      }
+    });
+
+    // The fifth entry of the contents index is the reader's way to the bottom
+    // of the record, so it is checked against the section it names rather than
+    // against the string it links by.
+    it('is where the contents index’s fifth entry lands', () => {
+      render(<App content={content} />);
+      const index = screen.getByRole('navigation', { name: content.chrome.nav.label });
+      const fifth = within(index).getAllByRole('link')[4];
+
+      expect(fifth.getAttribute('href')).toBe('#contact');
+      expect(document.querySelector('#contact')).toBe(contact());
+      expect(within(contact()).getAllByRole('heading', { level: 2 })[0].textContent).toBe(
+        content.chrome.sections.contact
+      );
+    });
+
+    // The footer was a row of marks and a copyright line. It is now the record's
+    // colophon: who the record is of, and when it was last set. Asserted as the
+    // whole of its text, because "nothing else" is the point of the row.
+    it('closes on the name and the year, and nothing else', () => {
+      render(<App content={content} />);
+      const footer = screen.getByRole('contentinfo');
+      // Whitespace is stripped from both sides of the comparison rather than
+      // normalised: the two sit in separate blocks pushed apart by the layout,
+      // so what separates them on screen is space the DOM does not carry.
+      const squashed = (text: string) => text.replace(/\s+/g, '');
+
+      expect(squashed(footer.textContent ?? '')).toBe(
+        squashed(`${content.identity.name}${new Date().getFullYear()}`)
+      );
+      expect(within(footer).queryAllByRole('link')).toEqual([]);
+      expect(footer.querySelector('svg, img')).toBeNull();
     });
   });
 
@@ -759,75 +1149,9 @@ describe.each(editions)('$edition edition', (edition) => {
     });
   });
 
-  // Guard test for the central decision of ADR 0004: nothing in the UI hedges.
-  //
-  // If you are reading this because you tripped it, go and read ADR 0004 before
-  // you edit the list. A badge, banner, tooltip or footnote saying an edition
-  // is machine-translated, unreviewed, provisional or less current than the
-  // other tells the Spanish reader, in Spanish, that the page they are on is
-  // the unchecked copy. That hedges the credibility of the artefact in front of
-  // the only person it was added for, and it is implausible on its face, since
-  // Fran is a native Spanish speaker. The honest response to a Spanish edition
-  // nobody has read is not to label it, it is not to ship it.
-  //
-  // Written as a negative test in the manner of the fabricated-content group
-  // above, and run from the edition table, because a hedge that appeared on one
-  // edition only is exactly the shape this would take.
+  // The vocabulary and the reading of it are at the top of this file, shared
+  // with the 404 document's own guard at the bottom.
   describe('nothing hedges the edition', () => {
-    // Both languages in every list, because a hedge is written in the language
-    // of the reader it is aimed at, and the one aimed at the Spanish reader is
-    // the one that costs.
-    //
-    // These are hedges wherever they appear. "sin revisar" and not "revisi",
-    // because code review is evidence the site legitimately carries.
-    const alwaysAHedge = [
-      /machine[\s-]?translat|auto(?:matic(?:ally)?|[\s-])[\s-]?translat|ai[\s-]translat/i,
-      /translated\s+from\s+the\s+english|traducido\s+del\s+ingl[eé]s/i,
-      /traduc\w*\s+(?:autom|con\s+ia|por\s+ia)|traducci[oó]n\s+(?:autom|de\s+ia)|generad\w*\s+(?:con|por)\s+ia/i,
-      /unreviewed|not\s+(?:yet\s+)?reviewed|pending\s+review/i,
-      /sin\s+revisar|sin\s+revisi[oó]n|no\s+revisad|pendiente\s+de\s+revisi[oó]n/i,
-      /work\s+in\s+progress|en\s+construcci[oó]n/i,
-    ];
-
-    // These are only a hedge when they are said *about a version of this site*.
-    // "Replaced an outdated stack" and "una plataforma más completa" are the
-    // ordinary vocabulary of a CV bullet, so matching them bare would one day
-    // fail a true piece of evidence under a comment telling whoever wrote it to
-    // go and read ADR 0004 — which is the worst thing a guard like this can do.
-    // What makes the difference is the subject, so these carry one.
-    // What a hedge calls the thing it is hedging: the document, or the language
-    // it is written in. "El texto en español está desactualizado" names neither
-    // a version nor an edition and is a hedge all the same.
-    const aboutAVersionOfTheSite =
-      /\b(?:page|version|edition|translation|copy|site|text|content|spanish|english|p[aá]gina|versi[oó]n|edici[oó]n|traducci[oó]n|copia|sitio|texto|contenido|espa[nñ]ol|ingl[eé]s)\b/i;
-
-    // Both directions of the comparison. A hedge aimed at `/es` is at least as
-    // likely to be written from the modest side ("no tan actual") as the
-    // boastful one, and the first draft of this list only banned the boastful.
-    const hedgeAboutAVersion = [
-      /out[\s-]of[\s-]date|outdated|desactualizad|obsolet/i,
-      /\b(?:more|less|not\s+as)\s+(?:up[\s-]to[\s-]date|current|complete|accurate|recent)\b/i,
-      /\b(?:m[aá]s|menos|no\s+tan)\s+(?:actual|actualizad|complet|reciente|fiable)/i,
-      /provisional/i,
-      /\bbeta\b|\bdraft\b|\bborrador\b/i,
-    ];
-
-    // Near, not anywhere in the document: "version" appears in the theme script
-    // and "página" in a heading, so a whole-text test would make every pattern
-    // above unconditional again.
-    const NEARBY = 60;
-
-    const hedgesIn = (text: string) => [
-      ...alwaysAHedge.filter((hedge) => hedge.test(text)),
-      ...hedgeAboutAVersion.filter((hedge) =>
-        [...text.matchAll(new RegExp(hedge.source, `${hedge.flags}g`))].some((match) =>
-          aboutAVersionOfTheSite.test(
-            text.slice(Math.max(0, match.index - NEARBY), match.index + match[0].length + NEARBY)
-          )
-        )
-      ),
-    ];
-
     // What a visitor reads, including what only some of them read. ADR 0004
     // bans a hedge in a *tooltip* by name, and a tooltip is an attribute, which
     // `textContent` cannot see.
@@ -920,14 +1244,86 @@ describe.each(editions)('$edition edition', (edition) => {
     // Naming the entries in order is also what holds the count: an edition
     // renders the entries its row lists and no others, which is how "two in
     // English, still one in Spanish" survives the next pass.
+    // Guard for ticket 43. The record is only a record if all of it is on the
+    // page: every employer with its span and location, every role with its
+    // dates, every bullet, and every part of the one programme that has parts.
+    // Read off the content module rather than listed here, so a bullet added to
+    // an edition is covered the day it lands.
+    it('renders every employer, role, bullet and sub-bullet the content declares', () => {
+      const text = renderedText(edition);
+      const declared = content.employers.flatMap((employer) => [
+        employer.name,
+        employer.location,
+        employer.span,
+        ...employer.roles.flatMap((role) => [
+          role.title,
+          role.dates,
+          ...role.bullets.flatMap((bullet) =>
+            typeof bullet === 'string' ? [bullet] : [bullet.text, ...bullet.subBullets]
+          ),
+        ]),
+      ]);
+
+      // A content file that stopped exposing employers would otherwise leave
+      // this passing over an empty list.
+      expect(declared.length).toBeGreaterThan(20);
+
+      for (const statement of declared) {
+        expect(text).toContain(statement);
+      }
+    });
+
+    // Guard for ticket 43, and for user story 3. A bullet is a numbered entry:
+    // the index hangs in its own column and the statement sits beside it. A
+    // programme's parts carry their parent's number and their own, which is how
+    // a record says what is under what without indenting it away.
+    it('numbers every entry in a role, and every part of a programme under its parent', () => {
+      render(<App content={content} />);
+      const [role] = content.employers[0].roles;
+      const entries = [...screen.getByText(role.title).closest('div')!.querySelector('ul')!.children];
+
+      expect(entries.map((entry) => entry.firstElementChild?.textContent)).toEqual(
+        role.bullets.map((_, position) => String(position + 1))
+      );
+
+      const headline = role.bullets[0];
+      const parts = typeof headline === 'string' ? [] : headline.subBullets;
+      expect(parts.length).toBeGreaterThan(0);
+
+      const nested = [...entries[0].querySelector('ul')!.children];
+      expect(nested.map((part) => part.firstElementChild?.textContent)).toEqual(
+        parts.map((_, position) => `1.${position + 1}`)
+      );
+    });
+
+    // Guard for ticket 43. Independent work is numbered down the same left
+    // column the spans and the dates sit in, continuing the record's one
+    // numbering rather than starting a second device.
+    it('numbers each piece of independent work down the left', () => {
+      render(<App content={content} />);
+      const section = document.getElementById('independent-work');
+      expect(section).not.toBeNull();
+
+      const numbers = [...section!.querySelectorAll('article')].map(
+        (entry) => entry.firstElementChild?.textContent
+      );
+
+      expect(numbers).toEqual(edition.independentWork.map((_, position) => String(position + 1).padStart(2, '0')));
+    });
+
     it('names every piece of independent work, and links none of it', () => {
       render(<App content={content} />);
       const section = document.getElementById('independent-work');
       expect(section).not.toBeNull();
 
-      const names = [...section!.querySelectorAll('strong')].map((name) =>
-        (name.textContent ?? '').replace(/\.$/, '')
-      );
+      // Rewritten for ticket 43's layout, and for one reason: the name used to
+      // be a bold run opening a paragraph, and is now the entry's own heading
+      // beside its number. The assertion is the same one — these names, in this
+      // order, and no others — read where a reader and a screen reader now meet
+      // them.
+      const names = within(section!)
+        .getAllByRole('heading', { level: 3 })
+        .map((name) => name.textContent);
       expect(names).toEqual([...edition.independentWork]);
 
       expect(within(section!).queryAllByRole('link')).toEqual([]);
@@ -943,6 +1339,73 @@ describe.each(editions)('$edition edition', (edition) => {
       for (const date of ['May 2017', 'Sep 2017', 'Mar 2018', 'Oct 2018', 'Feb 2019']) {
         expect(text).toContain(date);
       }
+    });
+
+    // Guard for ticket 45. A recognition is one string ending in its date in
+    // parentheses, and the date is a figure like every other figure on the
+    // page: it belongs in the left column with the spans and the dates of the
+    // record above. A string that does not end that way keeps its shape and
+    // sits whole in the text column, which is what stops the split from
+    // inventing a date for a recognition that never carried one.
+    //
+    // Asserted row by row against the content rather than over the section's
+    // whole text, because the guard above already reads the text: what is new
+    // here is *where* each half of a recognition lands.
+    it('sets every recognition beside its date in the left column', () => {
+      render(<App content={content} />);
+      const section = document.getElementById('recognitions');
+      expect(section).not.toBeNull();
+
+      const rows = [...within(section!).getAllByRole('listitem')];
+      expect(rows).toHaveLength(content.recognitions.length);
+
+      expect(rows.map((row) => [row.firstElementChild?.textContent, row.lastElementChild?.textContent])).toEqual(
+        content.recognitions.map((recognition) => {
+          const match = /^(.*) \(([^()]+)\)$/.exec(recognition);
+          return match ? [match[2], match[1]] : ['', recognition];
+        })
+      );
+    });
+
+    // Guard for ticket 45. Education sits inside Recognitions rather than in a
+    // section of its own (CONTEXT.md), and all four of its fields are on the
+    // page: the years in the left column, the label, the degree and the
+    // institution, and the languages. The order assertion is what says "under
+    // Recognitions" rather than merely "in it".
+    it('renders education under the recognitions with its years, degree, institution and languages', () => {
+      render(<App content={content} />);
+      const section = document.getElementById('recognitions');
+      expect(section).not.toBeNull();
+
+      const label = within(section!).getByText(content.chrome.recognitions.education);
+      const { years, degree, institution, languages } = content.education;
+      for (const field of [years, degree, institution, languages]) {
+        expect(section!.textContent).toContain(field);
+      }
+
+      const rows = within(section!).getAllByRole('listitem');
+      const last = rows[rows.length - 1];
+      expect(last.compareDocumentPosition(label) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    });
+
+    // Guard for ticket 45. The technologies are an index rather than a set of
+    // chips: every technology once, numbered from `01`, in the order the
+    // content gives them. Numbering them is what keeps them from reading as a
+    // set of claims, and reading the numbers off the rendered rows is what
+    // catches a technology that was dropped, repeated or reordered.
+    //
+    // How many columns the index runs in is not asserted here: jsdom lays
+    // nothing out, so the grid at 320px and at 1280px is checked on the dev
+    // server and recorded on the ticket.
+    it('renders every technology once, numbered, in the index', () => {
+      render(<App content={content} />);
+      const section = document.getElementById('technologies');
+      expect(section).not.toBeNull();
+
+      const entries = within(section!).getAllByRole('listitem');
+      expect(entries.map((entry) => entry.textContent)).toEqual(
+        content.technologies.map((technology, position) => `${String(position + 1).padStart(2, '0')}${technology}`)
+      );
     });
 
     it('states where Fran is without signalling availability', () => {
@@ -1049,6 +1512,8 @@ describe.each(editions)('$edition edition', (edition) => {
     });
 
     // The old value was the accent of a palette this site no longer uses.
+    // Rewritten for the Record (#41): the two surfaces are now the manila stock
+    // and the slate, so the values the browser chrome takes moved with them.
     //
     // These two hex codes are the one place a test names a colour, which the
     // spec otherwise forbids. A `<meta>` value is not a style: it cannot be
@@ -1063,8 +1528,8 @@ describe.each(editions)('$edition edition', (edition) => {
       ]);
 
       expect(themeColors).toEqual([
-        ['(prefers-color-scheme: light)', '#ffffff'], // --color-paper
-        ['(prefers-color-scheme: dark)', '#0d0d0d'], // --color-canvas
+        ['(prefers-color-scheme: light)', '#f4f1e9'], // --color-stock
+        ['(prefers-color-scheme: dark)', '#121316'], // --color-stock-dark
       ]);
     });
 
@@ -1263,7 +1728,11 @@ describe('the Lead role says what the CV says', () => {
   const leadBullets = () => {
     render(<App content={english.content} />);
     const list = screen.getByText('Lead Software Engineer').closest('div')!.querySelector('ul')!;
-    return [...list.children].map((item) => item.textContent ?? '');
+    // Rewritten for ticket 43's layout, and for one reason: an entry now
+    // carries its index number as well as its statement, so the row's own text
+    // begins with a figure and these assertions are anchored to the first word
+    // of a sentence. The statement is read from the statement.
+    return [...list.children].map((item) => item.querySelector('p')?.textContent ?? '');
   };
 
   // The CV's order, and the argument it makes: what he took on, the system he
@@ -1336,7 +1805,14 @@ describe.each(editions)('$edition edition: the Shop programme is a list inside i
     const nested = first.querySelector('ul');
 
     expect(nested).not.toBeNull();
-    expect([...nested!.querySelectorAll('li')].map((item) => item.textContent)).toEqual([...subBullets]);
+    // Rewritten for ticket 43's layout, and for one reason: a part now carries
+    // its number, `1.1` to `1.9`, beside its statement, so the item's own text
+    // is the number and the statement together. What this test is for — the
+    // parts the content declares, all of them, in order, inside the item they
+    // belong to — is unchanged.
+    expect([...nested!.querySelectorAll('li')].map((item) => item.querySelector('p')?.textContent)).toEqual([
+      ...subBullets,
+    ]);
   });
 });
 
@@ -1533,5 +2009,145 @@ describe.each(editions)('the $edition share image stays a condensation of the id
       if (mine.includes(phrase)) continue;
       expect(shareImageCopy).not.toContain(phrase);
     }
+  });
+});
+
+// The branded 404 (#44). GitHub Pages serves this document, with a 404 status,
+// for every path under the origin it does not know, so it is the one page on
+// the site a visitor reaches without having chosen an edition.
+//
+// Read as text, the way the two entry documents are and for the same reason:
+// there is no React behind it to render, and what a visitor gets is what the
+// file says. It sits outside the edition table because it is outside the
+// editions — no row owns it, and the thing worth asserting about it is that it
+// treats the two of them alike.
+describe('the 404 document', () => {
+  const parsed = parseDocument(notFoundHtml);
+
+  // The routes out, in the order a visitor meets them, as the two things that
+  // matter about each: where it goes and what language it says is at the other
+  // end. `hreflang` is what tells a crawler, and a browser offering to
+  // translate, what it is about to fetch.
+  const routes = [...parsed.body.querySelectorAll('a[href]')].map((tag) => [
+    tag.getAttribute('href'),
+    tag.getAttribute('hreflang'),
+  ]);
+
+  it('ships at the root of the build, as a document of its own', () => {
+    // Asserted against the build config because the build output is not
+    // something a test in jsdom can see, and `404.html` in `public/` would be
+    // copied verbatim — with an unprocessed stylesheet link, so the page would
+    // arrive unstyled. Being an input is what draws it in the Record's palette.
+    expect(viteConfig).toMatch(/notFound: '404\.html'/);
+  });
+
+  // Both editions, both root-relative, both named by their own language in
+  // their own language. Neither is marked current and neither is the fallback:
+  // this is the one page with no edition to be the lesser one of, and the
+  // visitor has not been asked the question yet (ADR 0004).
+  it('offers a route to each edition, and nothing else, with the right hreflang on each', () => {
+    expect(routes).toEqual([
+      ['/', 'en'],
+      ['/es/', 'es'],
+    ]);
+  });
+
+  // `lang` as well as `hreflang`, unlike the language selector in the masthead:
+  // there the label sits in the language of the edition around it, here each
+  // label is written in the language it names, so it is also what the element's
+  // own text is in. Without it a screen reader says "Español" with English
+  // phonetics on a page that is claiming to serve both readers equally.
+  it('marks each route in the language its own label is written in', () => {
+    const labels = [...parsed.body.querySelectorAll('a[href]')].map((tag) => [
+      tag.getAttribute('lang'),
+      tag.textContent?.trim(),
+    ]);
+
+    expect(labels).toEqual([
+      ['en', 'English'],
+      ['es', 'Español'],
+    ]);
+  });
+
+  // One line, and it is in both languages because the reader's is not knowable
+  // here. The Spanish half is marked for the same reason the Spanish route is.
+  it('says the page does not exist in both languages', () => {
+    const text = parsed.body.textContent ?? '';
+    expect(text).toContain('404');
+    expect(text).toContain('This page does not exist');
+    expect(text).toContain('Esta página no existe');
+    expect([...parsed.body.querySelectorAll('[lang="es"]')].map((tag) => tag.textContent)).toContain(
+      'Esta página no existe'
+    );
+  });
+
+  // The nameplate, so a mistyped URL is still Fran's site rather than GitHub's
+  // page. One name, one spelling, accent included, as everywhere else.
+  it('wears the name, spelled the way the site spells it', () => {
+    const heading = parsed.querySelector('h1');
+    expect(heading?.textContent?.replace(/\s+/g, ' ').trim()).toBe('Fran Menéndez');
+    expect(parsed.body.textContent).not.toContain('Menendez');
+  });
+
+  // The face, the palette and the type scale arrive from the site's own
+  // stylesheet rather than from a copy: a `<style>` block here would be a
+  // second palette to keep in step, and the day it drifted the dead end would
+  // stop looking like the site it is offering a way back to. Same assertion as
+  // the share-image sources carry, for the same reason.
+  it('takes its palette and its face from the site stylesheet rather than its own', () => {
+    expect(parsed.querySelector('link[rel="stylesheet"]')?.getAttribute('href')).toBe('/src/index.css');
+    expect(parsed.querySelector('style')).toBeNull();
+    expect(parsed.querySelector('[style]')).toBeNull();
+  });
+
+  // The third copy of the pre-paint script, and the reason it is copied is the
+  // reason there is a second: it has to run before any module loads. What this
+  // catches is the entry documents getting a fix and this one not, which would
+  // give a dark-mode visitor a light flash on the one page they did not choose
+  // to be on.
+  it('sets the theme class before first paint', () => {
+    const script = [...parsed.head.querySelectorAll('script:not([src])')].map((tag) => tag.textContent).join('');
+    expect(script).toContain("localStorage.getItem('theme')");
+    expect(script).toContain('prefers-color-scheme: dark');
+    expect(script).toContain("classList.toggle('dark'");
+  });
+
+  // The same two surfaces the entry documents paint the browser chrome in, held
+  // to the same tokens by the same values. See the note on the editions'
+  // assertion for why two hex codes are written in a file that otherwise names
+  // no colour.
+  it('paints the browser chrome in the palette, per theme', () => {
+    const themeColors = [...parsed.head.querySelectorAll('meta[name="theme-color"]')].map((tag) => [
+      tag.getAttribute('media'),
+      tag.getAttribute('content'),
+    ]);
+
+    expect(themeColors).toEqual([
+      ['(prefers-color-scheme: light)', '#f4f1e9'], // --color-stock
+      ['(prefers-color-scheme: dark)', '#121316'], // --color-stock-dark
+    ]);
+  });
+
+  it('ships every asset it references at the path it references it by', () => {
+    for (const rel of ['icon', 'apple-touch-icon']) {
+      expect(publicAssets).toContain(parsed.head.querySelector(`link[rel="${rel}"]`)?.getAttribute('href'));
+    }
+  });
+
+  // A dead end that entered a search index would then be found from one.
+  it('keeps itself out of the index', () => {
+    expect(metaOf(parsed.head, 'robots')).toBe('noindex');
+  });
+
+  // The hedge guard, over the surface it matters most on: this page speaks to a
+  // Spanish reader and an English reader in the same breath, so it is the
+  // easiest place on the site to write "the Spanish version may be out of
+  // date". Text and the attributes a reader is shown, as on the editions.
+  it('renders no hedge, in its text or in an attribute a reader is shown', () => {
+    const attributes = [...parsed.querySelectorAll('[title], [alt], [aria-label]')].flatMap((element) =>
+      ['title', 'alt', 'aria-label'].map((name) => element.getAttribute(name) ?? '')
+    );
+
+    expect(hedgesIn([scraperText(notFoundHtml), ...attributes].join(' '))).toEqual([]);
   });
 });

@@ -1,19 +1,10 @@
-/* Self-hosted subset woff2 fonts (latin only). */
-@import '@fontsource/inter/latin-300.css';
-@import '@fontsource/inter/latin-400.css';
-@import '@fontsource/inter/latin-500.css';
-@import '@fontsource/inter/latin-600.css';
-@import '@fontsource/inter/latin-700.css';
-@import '@fontsource/ibm-plex-mono/latin-400.css';
-@import '@fontsource/ibm-plex-mono/latin-500.css';
+/* Self-hosted subset woff2 fonts, not a CDN link (ADR 0002). One variable face
+   for the whole page: `standard.css` carries the weight axis and the width one,
+   which is what lets the nameplate be drawn wide and the record's own hand
+   narrow without a second family. */
+@import '@fontsource-variable/archivo/standard.css';
 
 @import 'tailwindcss';
-
-/* The design prototype (#32) is compiled apart from the site: its own
-   stylesheet generates its utilities from its own directory. Without this
-   exclusion Tailwind's source detection would sweep the whole project and bake
-   every class a throwaway variant invents into the stylesheet the site ships. */
-@source not './prototype';
 
 /* Dark mode is a class on <html>, set pre-paint by the inline script in
    index.html and toggled by useDarkMode. */
@@ -22,32 +13,39 @@
 /* Design tokens: the palette, type scale and spacing rhythm live here.
    Components reference these through utilities, never through JS.
 
-   The palette is a Swiss one: paper, ink, one accent, and two greys. Each
-   colour that differs between themes has a `-dark` counterpart applied with
-   the `dark:` variant, so light stays the primary composition. */
+   The palette is the Record's. Light is a manila stock and dark is a slate the
+   stock was never printed on, each drawn from its own values rather than
+   inverted out of the other, so light stays the primary composition. The accent
+   is the ink a ledger's own hand is written in, which is why it is warm and why
+   it is the only colour on the page. Each colour that differs between themes
+   has a `-dark` counterpart applied with the `dark:` variant. */
 @theme {
-  --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
-  --font-mono: 'IBM Plex Mono', ui-monospace, monospace;
+  --font-sans: 'Archivo Variable', ui-sans-serif, system-ui, sans-serif;
 
-  /* Surfaces and text. The two surfaces are mirrored by the `theme-color`
-     meta tags in index.html, which paint the browser's own chrome and are
-     read before this stylesheet exists. Change one, change the other. */
-  --color-paper: #ffffff;
-  --color-canvas: #0d0d0d;
-  --color-ink: #111111;
-  --color-chalk: #ededed;
+  /* The two surfaces, and the ink over them. These are mirrored by the
+     `theme-color` meta tags in index.html and es/index.html, which paint the
+     browser's own chrome and are read before this stylesheet exists. Change
+     one, change the other and the assertion in src/App.test.tsx that holds the
+     three together. */
+  --color-stock: #f4f1e9;
+  --color-stock-dark: #121316;
+  --color-ink: #191713;
+  --color-ink-dark: #e7e3d8;
 
-  /* Secondary text, and the hairlines that do the dividing. */
-  --color-muted: #5f5f5f;
-  --color-muted-dark: #9a9a9a;
-  --color-rule: #d9d9d9;
-  --color-rule-dark: #2b2b2b;
+  /* Secondary text, the rule that separates one entry from the next, and the
+     hairline that divides rows within one. Two weights of division, rationed:
+     nothing on this page is boxed, banded or carded. */
+  --color-muted: #6a6558;
+  --color-muted-dark: #969185;
+  --color-rule: #d6d0c1;
+  --color-rule-dark: #33342f;
+  --color-hairline: #e6e1d4;
+  --color-hairline-dark: #23241f;
 
-  /* The one accent. Used on section numbers, the hero eyebrow, secondary
-     actions, focus rings, and link hover. The primary actions stay ink, so
-     the accent never carries more than one voice at a time. */
-  --color-accent: #cc2200;
-  --color-accent-dark: #ff5540;
+  /* One warm accent per theme: section numbers, links, the CV block and the
+     focus ring. */
+  --color-accent: #7a4a10;
+  --color-accent-dark: #d9a441;
 
   /* Type scale. */
   --text-2xs: 0.6875rem;
@@ -65,27 +63,58 @@
 
   /* Spacing rhythm: quarter-rem base unit. */
   --spacing: 0.25rem;
+}
 
-  /* One breakpoint below Tailwind's own smallest, and it exists for a single
-     measurement: below it the masthead cannot hold the name, two section
-     links, the language selector and the theme toggle on one line. See the
-     comment in Navbar.tsx for what yields there and why. */
-  --breakpoint-xs: 26.25rem;
+/* The width axis, as the page's two named settings. It is used as a device
+   rather than as a weight: narrow for the running heads, the field labels, the
+   index numbers and the controls, wide for the nameplate. A font axis is not a
+   Tailwind utility, so the two settings are declared as ones here and are the
+   only place the percentages are written. */
+@utility narrow {
+  font-stretch: 82%;
+}
+
+@utility wide {
+  font-stretch: 112%;
+}
+
+/* The link the record draws: a rule that grows from the left edge when a
+   pointer or the keyboard reaches it, and that is simply there when a finger
+   presses it, since a press arrives without a hover. `background-size` rather
+   than a border or an underline because it is the one property that can be
+   animated from one end. */
+@utility link-rule {
+  background-image: linear-gradient(currentColor, currentColor);
+  background-position: 0 100%;
+  background-repeat: no-repeat;
+  background-size: 0% 1px;
+  transition: background-size 140ms linear;
+
+  &:hover,
+  &:focus-visible,
+  &:active {
+    background-size: 100% 1px;
+  }
 }
 
 body {
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  /* Every figure on the page is lining and tabular, which is what lets a
+     column of dates be read down rather than across. Set once on the body so
+     it holds wherever a figure lands rather than wherever someone remembered
+     to ask for it. */
+  font-variant-numeric: tabular-nums lining-nums;
 }
 
 html {
   scroll-behavior: smooth;
-  /* The fixed masthead must not cover the heading an anchor lands on. */
+  /* The sticky running head must not cover the heading an anchor lands on. */
   scroll-padding-top: calc(var(--spacing) * 16);
 }
 
-/* Every interactive element gets the same visible focus ring. */
+/* Every interactive element gets the same visible focus ring, in the accent. */
 :focus-visible {
   outline: 2px solid var(--color-accent);
   outline-offset: 3px;
@@ -108,5 +137,15 @@ html {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
+  }
+
+  /* Said again in the link's own terms rather than left to the sweep above: a
+     rule that draws itself is the one moving thing on this page, so the
+     preference that stops it should be legible beside it. The rule still
+     appears, whole and at once; it does not travel. This is an unlayered rule
+     and the utility it overrules is in the utilities layer, so it wins
+     whatever the order. */
+  .link-rule {
+    transition: none;
   }
 }

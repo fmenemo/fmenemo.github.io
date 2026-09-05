@@ -3,15 +3,18 @@
        cannot carry a font with it, so text would render in whatever monospace
        the visitor's machine happens to have. Approved as option B.
 
-       The two colours are the ink and paper tokens from src/index.css. A
-       standalone SVG cannot read those tokens, so they are copied here; a
-       restyle has to follow the stylesheet rather than this file.
+       The two colours are the ink and stock tokens from src/index.css, and
+       they are the Record's (ADR 0005) rather than the Swiss ones the mark was
+       first drawn in. A standalone SVG cannot read those tokens, so they are
+       copied here; a restyle has to follow the stylesheet rather than this
+       file. The mark is also the touch icon, which is this SVG screenshotted
+       at 180x180, so the palette lands on both from here.
 
        Their token names are spelled without their leading dashes on purpose:
        a double hyphen cannot appear inside an XML comment, and an SVG that
        does not parse is not a lenient favicon, it is no favicon. -->
-  <rect width="32" height="32" fill="#111111" />
-  <g fill="#ffffff">
+  <rect width="32" height="32" fill="#191713" />
+  <g fill="#f4f1e9">
     <rect x="9" y="6" width="5" height="20" />
     <rect x="9" y="6" width="15" height="5" />
     <rect x="9" y="13.5" width="11" height="5" />

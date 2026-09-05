@@ -109,6 +109,8 @@ A visitor lands on an **identity line** stating that Fran is a Software Engineer
 
 ### Visual direction
 
+**Superseded by ADR 0005 (`docs/adr/0005-the-record-the-design-chosen-from-five-prototypes.md`).** The site's design is now the Record, chosen from five prototypes in #26. Read that ADR before this section: it says which of the rules below it keeps as written, which it makes stricter, and which it reverses — the monospace face for dates and employers, the signal-red accent, the section band and the masthead are gone. The rules are left here as they were rather than edited, because this is the record of the first decision and the ADR is the record of the second.
+
 - Swiss/structural: left-aligned, a visible grid, hairline and heavy rules as structure, a monospace face for dates and employers, one accent colour, generous whitespace.
 - No cards, no glass/backdrop-blur, no gradients, no decorative floating shapes, no scroll-triggered stagger animation.
 - Motion is limited to CSS transitions on interactive states, gated behind `prefers-reduced-motion`.

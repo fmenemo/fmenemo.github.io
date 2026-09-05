@@ -1,6 +1,8 @@
 # Redesign pass: type, hierarchy and finish
 
-Status: open
+Status: superseded by [#26](https://github.com/fmenemo/fmenemo.github.io/issues/26) and ADR 0005.
+
+This is the spec behind #16, which was merged on 2026-08-25 and reverted the next morning. Its ADR 0005 was never written, and the number is now taken by the Record (`docs/adr/0005-the-record-the-design-chosen-from-five-prototypes.md`), which reverses this pass and records the design that replaced it. The audit beside this file is still a fair account of what was wrong with the page it looked at; the proposals here are not, because the result was reverted.
 
 ## Problem Statement
 

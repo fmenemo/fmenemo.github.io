@@ -17,9 +17,17 @@ export default defineConfig({
       // The paths are relative to the project root, which Vite resolves for us:
       // spelling them absolutely would mean `@types/node` for one call to
       // `resolve`.
+      //
+      // `404.html` is the third document and belongs to neither edition:
+      // GitHub Pages serves it, with a 404 status, for any path under the
+      // origin it does not know. It is an input rather than a file in
+      // `public/` so that Vite processes the stylesheet it links, which is how
+      // it is drawn in the same palette and the same face as the site it
+      // offers a way back to.
       input: {
         en: 'index.html',
         es: 'es/index.html',
+        notFound: '404.html',
       },
     },
   },

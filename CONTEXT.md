@@ -36,6 +36,16 @@ _Avoid_: Award section, accolade
 The AI-layer thread that distinguishes Fran from other engineers with ten years of experience: production semantic search, MCP tooling, a multi-agent delivery system built and run solo. Every part of the site should be readable as supporting it.
 _Avoid_: USP, specialty, focus area
 
+### Design
+
+**The Record**:
+The design the site is drawn in, chosen from five prototypes and recorded in ADR 0005. The page is a record of a person rather than a page about one: a running head at the top edge, an identification block, numbered sections on heavy rules, figures in a fixed left column, and labelled fields on hairlines. Used as a proper name for this design, not as a synonym for the content — "the record" in a component comment means the page drawn this way.
+_Avoid_: The theme, the style, the look
+
+**The hand**:
+The one voice the page says anything about itself in: small, narrow, tracked-open uppercase, exported as `hand` from `src/styles.ts`. Running heads, field labels, index numbers, dates and the controls all wear it, so that the record's own hand is never mistaken for the record. It is a treatment, not a face: there is one face on the site, and the hand is a setting of it.
+_Avoid_: Label style, caps style, eyebrow
+
 ### Editions
 
 **Edition**:
@@ -69,5 +79,5 @@ The Spanish CV, a translation of the original. Not an authority for facts, but t
 _Avoid_: Translated CV, localised CV
 
 **Identity line**:
-The single sentence in the hero stating who Fran is. Sourced from the CV summary of its own language, never from the current job title of Principal Software Engineer. The English summary opens "Full-stack engineer with 10+ years shipping whole products end to end in TypeScript", so the English line leads on "Full-stack engineer" and keeps the summary's three AI-layer items in its order: semantic search in production, MCP tooling made the team-wide standard, an agentic engineering workflow built and run for production delivery. It does not say "Software Engineer"; restoring that would be putting the site back in front of the CV (ADR 0001, amended 2026-09-04). The Spanish summary opens "Ingeniero full-stack con más de 10 años entregando productos completos de principio a fin en TypeScript", so the Spanish line leads on "Ingeniero full-stack" and carries the same three items in the same order, in that CV's words. Neither line is a translation of the other: each is condensed from its own CV (ADR 0004).
+The single sentence in the identification block stating who Fran is. Sourced from the CV summary of its own language, never from the current job title of Principal Software Engineer. The English summary opens "Full-stack engineer with 10+ years shipping whole products end to end in TypeScript", so the English line leads on "Full-stack engineer" and keeps the summary's three AI-layer items in its order: semantic search in production, MCP tooling made the team-wide standard, an agentic engineering workflow built and run for production delivery. It does not say "Software Engineer"; restoring that would be putting the site back in front of the CV (ADR 0001, amended 2026-09-04). The Spanish summary opens "Ingeniero full-stack con más de 10 años entregando productos completos de principio a fin en TypeScript", so the Spanish line leads on "Ingeniero full-stack" and carries the same three items in the same order, in that CV's words. Neither line is a translation of the other: each is condensed from its own CV (ADR 0004).
 _Avoid_: Tagline, headline, bio

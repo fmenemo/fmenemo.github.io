@@ -8,29 +8,37 @@
    single declaration: a source that carries its own styling is defecting from
    this file, and a test in `src/App.test.tsx` fails if one does. That is also
    what makes the share-image guard there honest — it reads the body as text, so
-   with the styling out here there is nothing for it to mistake for words. */
+   with the styling out here there is nothing for it to mistake for words.
 
+   The card is the Record (ADR 0005), drawn in the page's own parts: the running
+   head over a hairline, the nameplate at the wide end of the width axis, the
+   identity line under the heavy rule, and the colophon row on the heaviest one.
+   A card has no theme, so it is the light composition, which is the primary one
+   there as it is here. */
+
+/* The site's own face, from the site's own file, so the card is set in what
+   the page is set in. One variable face carrying both axes, which is why there
+   is one rule here where there used to be three: Inter and IBM Plex Mono went
+   with the Record's tokens (#41).
+
+   Both axes are used the way the page uses them (`src/index.css`): the narrow
+   setting for the hand the record speaks about itself in, the wide one for the
+   nameplate. */
 @font-face {
-  font-family: 'Inter';
-  font-weight: 300;
-  src: url('../../node_modules/@fontsource/inter/files/inter-latin-300-normal.woff2') format('woff2');
-}
-@font-face {
-  font-family: 'Inter';
-  font-weight: 600;
-  src: url('../../node_modules/@fontsource/inter/files/inter-latin-600-normal.woff2') format('woff2');
-}
-@font-face {
-  font-family: 'IBM Plex Mono';
-  font-weight: 500;
-  src: url('../../node_modules/@fontsource/ibm-plex-mono/files/ibm-plex-mono-latin-500-normal.woff2') format('woff2');
+  font-family: 'Archivo Variable';
+  font-weight: 100 900;
+  font-stretch: 62% 125%;
+  src: url('../../node_modules/@fontsource-variable/archivo/files/archivo-latin-standard-normal.woff2') format('woff2-variations');
 }
 
-/* Every colour below is a token from src/index.css, copied because a
-   standalone page rendered by Chrome cannot read the app's stylesheet:
-   #ffffff paper, #111111 ink, #5f5f5f muted, #d9d9d9 rule, #cc2200
-   accent. The stylesheet is the source of truth; a restyle follows it
-   and re-renders per the README beside this file. */
+/* Every colour below is copied from src/index.css, because a standalone page
+   rendered by Chrome cannot read the app's stylesheet. The stylesheet is the
+   source of truth; a restyle follows it and re-renders per the README beside
+   this file.
+
+   These are the Record's light values, each one named beside its token:
+   the manila stock and the ink over it, the muted the hand is set in, the two
+   weights of rule, and the one warm accent. */
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -38,58 +46,76 @@ body {
   width: 1200px;
   height: 630px;
   overflow: hidden;
-  background: #ffffff;
-  color: #111111;
-  font-family: 'Inter', sans-serif;
+  background: #f4f1e9; /* --color-stock */
+  color: #191713; /* --color-ink */
+  font-family: 'Archivo Variable', sans-serif;
   -webkit-font-smoothing: antialiased;
+  /* Lining and tabular, as on the page: the figure in the identity line is set
+     the way the record sets every figure. */
+  font-variant-numeric: tabular-nums lining-nums;
 }
 
-/* The heavy ink rule that opens every section on the site. */
-.band { height: 10px; background: #111111; }
-
 .sheet {
-  height: 620px;
-  padding: 68px 80px 60px;
+  height: 630px;
+  padding: 52px 72px 48px;
   display: flex;
   flex-direction: column;
 }
 
-.eyebrow {
-  font-family: 'IBM Plex Mono', monospace;
+/* The hand: the small, narrow, tracked-open uppercase the record speaks about
+   itself in, at the size a 1200px card reads it at rather than the page's. */
+.hand {
+  font-stretch: 82%;
   font-weight: 500;
-  font-size: 18px;
-  letter-spacing: 0.2em;
+  font-size: 21px;
+  letter-spacing: 0.16em;
   text-transform: uppercase;
-  color: #cc2200;
 }
 
+/* The running head, as at the top edge of every leaf: what the record is,
+   over the hairline that separates it from the record itself. On the card it
+   is the address of the edition being shared, in the accent — the one colour
+   on the page, and here the one thing that is not ink or its muting. */
+.running-head {
+  padding-bottom: 14px;
+  border-bottom: 1px solid #d6d0c1; /* --color-rule */
+  color: #7a4a10; /* --color-accent */
+}
+
+/* The nameplate: the one thing set at the wide end of the width axis, and the
+   only uppercase on the card that is not the hand. */
 h1 {
-  margin-top: 38px;
-  font-size: 106px;
+  margin-top: 40px;
+  font-stretch: 112%;
+  font-size: 104px;
   font-weight: 600;
-  letter-spacing: -0.03em;
-  line-height: 0.95;
+  letter-spacing: -0.02em;
+  line-height: 0.92;
+  text-transform: uppercase;
 }
 
+/* The identity line under the heavy rule, exactly as the identification block
+   sets it: the summary of the record, in ink rather than in a secondary grey,
+   because it is the sentence the card exists to carry. */
 .identity {
-  margin-top: 34px;
-  max-width: 920px;
-  font-size: 29px;
-  font-weight: 300;
-  line-height: 1.45;
-  color: #5f5f5f;
+  margin-top: 40px;
+  padding-top: 28px;
+  border-top: 2px solid #d6d0c1; /* --color-rule */
+  max-width: 1000px;
+  font-size: 31px;
+  font-weight: 400;
+  line-height: 1.5;
 }
 
+/* The colophon: one row on the heaviest rule the card draws, in the hand and
+   muted, the place on the left and the mode on the right. The page ends this
+   way, so the card does. */
 .meta {
   margin-top: auto;
-  padding-top: 22px;
-  border-top: 1px solid #d9d9d9;
-  font-family: 'IBM Plex Mono', monospace;
-  font-weight: 500;
-  font-size: 18px;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  color: #5f5f5f;
+  padding-top: 20px;
+  border-top: 2px solid #d6d0c1; /* --color-rule */
+  display: flex;
+  justify-content: space-between;
+  gap: 24px;
+  color: #6a6558; /* --color-muted */
 }
-
-.slash { color: #d9d9d9; margin: 0 14px; }

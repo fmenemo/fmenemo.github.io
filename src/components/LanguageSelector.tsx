@@ -1,7 +1,7 @@
 import React from 'react';
 import { useContent } from '../hooks/useContent';
 import { useFragment } from '../hooks/useFragment';
-import { mastheadControl, metaVoice } from '../styles';
+import { hand, link } from '../styles';
 
 // Two short labels and a slash. No menu, no dropdown, no animation, and no
 // flag: a flag names a country, and Spanish is not Spain's alone (ADR 0004).
@@ -24,8 +24,8 @@ const LanguageSelector: React.FC = () => {
     // text out of the accessibility tree, which took the control's name with
     // it. As a named landmark it sits beside "Sections" in the list a screen
     // reader offers, which is where someone looking for their language looks.
-    <nav aria-label={language.label} className={`${metaVoice} flex items-center gap-1.5`}>
-      <span aria-current='true' className='text-ink dark:text-chalk'>
+    <nav aria-label={language.label} className={`${hand} flex items-center gap-1.5`}>
+      <span aria-current='true' className='text-ink dark:text-ink-dark'>
         {language.current}
       </span>
       <span aria-hidden='true' className='text-rule dark:text-rule-dark'>
@@ -46,7 +46,7 @@ const LanguageSelector: React.FC = () => {
         href={`${language.other.path}${fragment}`}
         hrefLang={language.other.lang}
         aria-label={`${language.other.label} ${language.other.name}`}
-        className={mastheadControl}
+        className={link}
       >
         {language.other.label}
       </a>

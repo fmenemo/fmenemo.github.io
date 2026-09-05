@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- GitHub Pages serves this document, with a 404 status, for every path
+         under the origin it does not know. That is one document for both
+         editions: it is reached before a reader has told the site anything, so
+         it cannot be `/` in disguise and cannot guess a language. It says its
+         one line in both and offers the two editions in the same treatment,
+         which is ADR 0004's rule about neither edition being the lesser one
+         applied to the one page that belongs to neither.
+
+         Static markup and no React, like the two entry documents (ADR 0003).
+         There is nothing here for a component to render: the page has no
+         content module behind it, and a document that had to boot a bundle
+         before it could say "this does not exist" would be the wrong thing at
+         the wrong moment. -->
+    <title>404 | Fran Menéndez</title>
+
+    <!-- A dead end should not enter an index and then be found from one. -->
+    <meta name="robots" content="noindex" />
+
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+
+    <!-- The browser chrome takes the surface colour of each theme, so the -->
+    <!-- address bar continues the page rather than interrupting it. The two -->
+    <!-- values are the Record's surfaces and are the same ones the entry -->
+    <!-- documents carry; the assertion in src/App.test.tsx holds all three -->
+    <!-- to the tokens in src/index.css. -->
+    <meta name="theme-color" media="(prefers-color-scheme: light)" content="#f4f1e9" />
+    <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#121316" />
+
+    <!-- The palette, the face and the utilities, from the same stylesheet the
+         site is drawn in, so this page cannot drift off the Record's tokens.
+         Vite resolves it at build time and emits the hashed asset beside the
+         two editions' own. -->
+    <link rel="stylesheet" href="/src/index.css" />
+
+    <script>
+      // Set the theme class before first paint so a dark-mode visitor never
+      // sees a light flash. Mirrors resolveTheme/applyTheme in src/theme.ts.
+      //
+      // The third copy, for the same reason there is a second: it has to run
+      // before any module loads, and a module is the only thing there would be
+      // to import. localStorage is per-origin, so a theme chosen on either
+      // edition is already in effect when a visitor lands here.
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored === 'dark' || stored === 'light'
+              ? stored
+              : window.matchMedia('(prefers-color-scheme: dark)').matches
+                ? 'dark'
+                : 'light';
+          document.documentElement.classList.toggle('dark', theme === 'dark');
+        } catch (e) {
+          /* no localStorage: leave the light default */
+        }
+      })();
+    </script>
+  </head>
+  <body class="bg-stock text-ink dark:bg-stock-dark dark:text-ink-dark">
+    <!-- The gutters and the measure are Container's, written out because this
+         document has no components: `mx-auto w-full max-w-5xl px-6 md:px-10`.
+         The left edge lands where it lands on the site a visitor is one click
+         from. -->
+    <main class="mx-auto flex min-h-screen w-full max-w-5xl flex-col justify-center px-6 py-20 md:px-10">
+      <!-- The nameplate, in the one setting of the width axis the page keeps
+           for it, sized by the viewport rather than by breakpoints, exactly as
+           the hero sets it: uppercase at the wide setting, "MENÉNDEZ" overruns
+           a 320px column at any fixed size large enough to be a nameplate at
+           1280px. One block per word, with the spaces kept between them, so the
+           accessible name is not "FranMenéndez". -->
+      <h1
+        class="wide text-[clamp(2.25rem,9.5vw,4.5rem)] leading-[0.92] font-semibold tracking-[-0.02em] uppercase"
+      >
+        <span class="block">Fran</span> <span class="block">Menéndez</span>
+      </h1>
+
+      <!-- One line, in the record's own hand, which is the treatment the page
+           uses whenever it speaks about itself rather than about Fran. The
+           status is set as an index number in the accent, the way a section
+           number is; the sentence follows it in both languages, because the
+           reader's is not knowable here. The classes are `hand` from
+           src/styles.ts, written out for the same reason the measure above is.
+
+           The slashes divide and are not read: they are the separator the
+           language selector already uses, and a screen reader saying "slash"
+           three times would be reading punctuation as a word. Each one is
+           closed up against the clause that follows it, with no whitespace
+           between: the line wraps at 320px, and a separator that could end a
+           line would leave a slash hanging in the gutter. -->
+      <p class="narrow mt-10 text-2xs tracking-[0.16em] text-muted uppercase dark:text-muted-dark">
+        <span class="text-accent dark:text-accent-dark">404</span>
+        <span aria-hidden="true" class="mx-3 text-rule dark:text-rule-dark">/</span>This page does not exist
+        <span aria-hidden="true" class="mx-3 text-rule dark:text-rule-dark">/</span><span lang="es">Esta página no existe</span>
+      </p>
+
+      <!-- A route to each edition, named by its own language in that language,
+           and carrying `hreflang` so a crawler that follows either one is told
+           what it is about to fetch. Both wear the bordered block the CV
+           download wears, and neither is marked primary: this is the one page
+           on the site with no current edition to mark, and giving one of them
+           the block and the other a plain link would answer a question the
+           visitor has not been asked yet.
+
+           `lang` as well as `hreflang` here, unlike the language selector,
+           where the label sits in the language of the edition around it. Here
+           each label *is* in the language it names, so it is also what the
+           element's own text is written in.
+
+           A plain group and not a labelled landmark, unlike the selector in
+           the masthead: a landmark needs a name, a name is a chrome string, and
+           a chrome string on this page would have to be written in one of the
+           two languages it is refusing to choose between. The two labels say
+           what they are in the language they lead to. -->
+      <div class="mt-14 flex flex-wrap items-center gap-4">
+        <a
+          href="/"
+          hreflang="en"
+          lang="en"
+          class="narrow inline-block border-2 border-accent px-4 py-2.5 text-2xs tracking-[0.16em] text-accent uppercase transition-colors hover:bg-accent hover:text-stock active:translate-y-px active:bg-accent active:text-stock dark:border-accent-dark dark:text-accent-dark dark:hover:bg-accent-dark dark:hover:text-stock-dark dark:active:bg-accent-dark dark:active:text-stock-dark"
+          >English</a
+        >
+        <a
+          href="/es/"
+          hreflang="es"
+          lang="es"
+          class="narrow inline-block border-2 border-accent px-4 py-2.5 text-2xs tracking-[0.16em] text-accent uppercase transition-colors hover:bg-accent hover:text-stock active:translate-y-px active:bg-accent active:text-stock dark:border-accent-dark dark:text-accent-dark dark:hover:bg-accent-dark dark:hover:text-stock-dark dark:active:bg-accent-dark dark:active:text-stock-dark"
+          >Español</a
+        >
+      </div>
+    </main>
+  </body>
+</html>
