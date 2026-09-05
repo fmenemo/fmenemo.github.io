@@ -13,6 +13,10 @@ import esHtml from '../es/index.html?raw';
 import ogImageHtml from '../tools/assets/og-image.html?raw';
 import ogImageEsHtml from '../tools/assets/og-image.es.html?raw';
 import faviconSvg from '../public/favicon.svg?raw';
+// The third document, which belongs to neither edition, and the build config
+// that puts it at the root of the site.
+import notFoundHtml from '../404.html?raw';
+import viteConfig from '../vite.config.ts?raw';
 
 const SITE = 'https://fmenemo.github.io';
 
@@ -441,6 +445,79 @@ describe('the palette', () => {
   });
 });
 
+// The hedge vocabulary, and the one reading of it, for every surface the site
+// puts in front of someone: the rendered page and the share image of each
+// edition, below, and the 404 document, which belongs to neither and is
+// guarded at the bottom of this file. Guard for the central decision of ADR
+// 0004: nothing the site shows hedges.
+//
+// If you are reading this because you tripped it, go and read ADR 0004 before
+// you edit the list. A badge, banner, tooltip or footnote saying an edition
+// is machine-translated, unreviewed, provisional or less current than the
+// other tells the Spanish reader, in Spanish, that the page they are on is
+// the unchecked copy. That hedges the credibility of the artefact in front of
+// the only person it was added for, and it is implausible on its face, since
+// Fran is a native Spanish speaker. The honest response to a Spanish edition
+// nobody has read is not to label it, it is not to ship it.
+//
+// Written as negative tests in the manner of the fabricated-content group
+// further down, and the per-edition ones run from the table, because a hedge
+// that appeared on one edition only is exactly the shape this would take.
+//
+// Both languages in every list, because a hedge is written in the language
+// of the reader it is aimed at, and the one aimed at the Spanish reader is
+// the one that costs.
+//
+// These are hedges wherever they appear. "sin revisar" and not "revisi",
+// because code review is evidence the site legitimately carries.
+const alwaysAHedge = [
+  /machine[\s-]?translat|auto(?:matic(?:ally)?|[\s-])[\s-]?translat|ai[\s-]translat/i,
+  /translated\s+from\s+the\s+english|traducido\s+del\s+ingl[eé]s/i,
+  /traduc\w*\s+(?:autom|con\s+ia|por\s+ia)|traducci[oó]n\s+(?:autom|de\s+ia)|generad\w*\s+(?:con|por)\s+ia/i,
+  /unreviewed|not\s+(?:yet\s+)?reviewed|pending\s+review/i,
+  /sin\s+revisar|sin\s+revisi[oó]n|no\s+revisad|pendiente\s+de\s+revisi[oó]n/i,
+  /work\s+in\s+progress|en\s+construcci[oó]n/i,
+];
+
+// These are only a hedge when they are said *about a version of this site*.
+// "Replaced an outdated stack" and "una plataforma más completa" are the
+// ordinary vocabulary of a CV bullet, so matching them bare would one day
+// fail a true piece of evidence under a comment telling whoever wrote it to
+// go and read ADR 0004 — which is the worst thing a guard like this can do.
+// What makes the difference is the subject, so these carry one.
+// What a hedge calls the thing it is hedging: the document, or the language
+// it is written in. "El texto en español está desactualizado" names neither
+// a version nor an edition and is a hedge all the same.
+const aboutAVersionOfTheSite =
+  /\b(?:page|version|edition|translation|copy|site|text|content|spanish|english|p[aá]gina|versi[oó]n|edici[oó]n|traducci[oó]n|copia|sitio|texto|contenido|espa[nñ]ol|ingl[eé]s)\b/i;
+
+// Both directions of the comparison. A hedge aimed at `/es` is at least as
+// likely to be written from the modest side ("no tan actual") as the
+// boastful one, and the first draft of this list only banned the boastful.
+const hedgeAboutAVersion = [
+  /out[\s-]of[\s-]date|outdated|desactualizad|obsolet/i,
+  /\b(?:more|less|not\s+as)\s+(?:up[\s-]to[\s-]date|current|complete|accurate|recent)\b/i,
+  /\b(?:m[aá]s|menos|no\s+tan)\s+(?:actual|actualizad|complet|reciente|fiable)/i,
+  /provisional/i,
+  /\bbeta\b|\bdraft\b|\bborrador\b/i,
+];
+
+// Near, not anywhere in the document: "version" appears in the theme script
+// and "página" in a heading, so a whole-text test would make every pattern
+// above unconditional again.
+const NEARBY = 60;
+
+const hedgesIn = (text: string) => [
+  ...alwaysAHedge.filter((hedge) => hedge.test(text)),
+  ...hedgeAboutAVersion.filter((hedge) =>
+    [...text.matchAll(new RegExp(hedge.source, `${hedge.flags}g`))].some((match) =>
+      aboutAVersionOfTheSite.test(
+        text.slice(Math.max(0, match.index - NEARBY), match.index + match[0].length + NEARBY)
+      )
+    )
+  ),
+];
+
 describe.each(editions)('$edition edition', (edition) => {
   const { content } = edition;
 
@@ -790,75 +867,9 @@ describe.each(editions)('$edition edition', (edition) => {
     });
   });
 
-  // Guard test for the central decision of ADR 0004: nothing in the UI hedges.
-  //
-  // If you are reading this because you tripped it, go and read ADR 0004 before
-  // you edit the list. A badge, banner, tooltip or footnote saying an edition
-  // is machine-translated, unreviewed, provisional or less current than the
-  // other tells the Spanish reader, in Spanish, that the page they are on is
-  // the unchecked copy. That hedges the credibility of the artefact in front of
-  // the only person it was added for, and it is implausible on its face, since
-  // Fran is a native Spanish speaker. The honest response to a Spanish edition
-  // nobody has read is not to label it, it is not to ship it.
-  //
-  // Written as a negative test in the manner of the fabricated-content group
-  // above, and run from the edition table, because a hedge that appeared on one
-  // edition only is exactly the shape this would take.
+  // The vocabulary and the reading of it are at the top of this file, shared
+  // with the 404 document's own guard at the bottom.
   describe('nothing hedges the edition', () => {
-    // Both languages in every list, because a hedge is written in the language
-    // of the reader it is aimed at, and the one aimed at the Spanish reader is
-    // the one that costs.
-    //
-    // These are hedges wherever they appear. "sin revisar" and not "revisi",
-    // because code review is evidence the site legitimately carries.
-    const alwaysAHedge = [
-      /machine[\s-]?translat|auto(?:matic(?:ally)?|[\s-])[\s-]?translat|ai[\s-]translat/i,
-      /translated\s+from\s+the\s+english|traducido\s+del\s+ingl[eé]s/i,
-      /traduc\w*\s+(?:autom|con\s+ia|por\s+ia)|traducci[oó]n\s+(?:autom|de\s+ia)|generad\w*\s+(?:con|por)\s+ia/i,
-      /unreviewed|not\s+(?:yet\s+)?reviewed|pending\s+review/i,
-      /sin\s+revisar|sin\s+revisi[oó]n|no\s+revisad|pendiente\s+de\s+revisi[oó]n/i,
-      /work\s+in\s+progress|en\s+construcci[oó]n/i,
-    ];
-
-    // These are only a hedge when they are said *about a version of this site*.
-    // "Replaced an outdated stack" and "una plataforma más completa" are the
-    // ordinary vocabulary of a CV bullet, so matching them bare would one day
-    // fail a true piece of evidence under a comment telling whoever wrote it to
-    // go and read ADR 0004 — which is the worst thing a guard like this can do.
-    // What makes the difference is the subject, so these carry one.
-    // What a hedge calls the thing it is hedging: the document, or the language
-    // it is written in. "El texto en español está desactualizado" names neither
-    // a version nor an edition and is a hedge all the same.
-    const aboutAVersionOfTheSite =
-      /\b(?:page|version|edition|translation|copy|site|text|content|spanish|english|p[aá]gina|versi[oó]n|edici[oó]n|traducci[oó]n|copia|sitio|texto|contenido|espa[nñ]ol|ingl[eé]s)\b/i;
-
-    // Both directions of the comparison. A hedge aimed at `/es` is at least as
-    // likely to be written from the modest side ("no tan actual") as the
-    // boastful one, and the first draft of this list only banned the boastful.
-    const hedgeAboutAVersion = [
-      /out[\s-]of[\s-]date|outdated|desactualizad|obsolet/i,
-      /\b(?:more|less|not\s+as)\s+(?:up[\s-]to[\s-]date|current|complete|accurate|recent)\b/i,
-      /\b(?:m[aá]s|menos|no\s+tan)\s+(?:actual|actualizad|complet|reciente|fiable)/i,
-      /provisional/i,
-      /\bbeta\b|\bdraft\b|\bborrador\b/i,
-    ];
-
-    // Near, not anywhere in the document: "version" appears in the theme script
-    // and "página" in a heading, so a whole-text test would make every pattern
-    // above unconditional again.
-    const NEARBY = 60;
-
-    const hedgesIn = (text: string) => [
-      ...alwaysAHedge.filter((hedge) => hedge.test(text)),
-      ...hedgeAboutAVersion.filter((hedge) =>
-        [...text.matchAll(new RegExp(hedge.source, `${hedge.flags}g`))].some((match) =>
-          aboutAVersionOfTheSite.test(
-            text.slice(Math.max(0, match.index - NEARBY), match.index + match[0].length + NEARBY)
-          )
-        )
-      ),
-    ];
-
     // What a visitor reads, including what only some of them read. ADR 0004
     // bans a hedge in a *tooltip* by name, and a tooltip is an attribute, which
     // `textContent` cannot see.
@@ -1566,5 +1577,145 @@ describe.each(editions)('the $edition share image stays a condensation of the id
       if (mine.includes(phrase)) continue;
       expect(shareImageCopy).not.toContain(phrase);
     }
+  });
+});
+
+// The branded 404 (#44). GitHub Pages serves this document, with a 404 status,
+// for every path under the origin it does not know, so it is the one page on
+// the site a visitor reaches without having chosen an edition.
+//
+// Read as text, the way the two entry documents are and for the same reason:
+// there is no React behind it to render, and what a visitor gets is what the
+// file says. It sits outside the edition table because it is outside the
+// editions — no row owns it, and the thing worth asserting about it is that it
+// treats the two of them alike.
+describe('the 404 document', () => {
+  const parsed = parseDocument(notFoundHtml);
+
+  // The routes out, in the order a visitor meets them, as the two things that
+  // matter about each: where it goes and what language it says is at the other
+  // end. `hreflang` is what tells a crawler, and a browser offering to
+  // translate, what it is about to fetch.
+  const routes = [...parsed.body.querySelectorAll('a[href]')].map((tag) => [
+    tag.getAttribute('href'),
+    tag.getAttribute('hreflang'),
+  ]);
+
+  it('ships at the root of the build, as a document of its own', () => {
+    // Asserted against the build config because the build output is not
+    // something a test in jsdom can see, and `404.html` in `public/` would be
+    // copied verbatim — with an unprocessed stylesheet link, so the page would
+    // arrive unstyled. Being an input is what draws it in the Record's palette.
+    expect(viteConfig).toMatch(/notFound: '404\.html'/);
+  });
+
+  // Both editions, both root-relative, both named by their own language in
+  // their own language. Neither is marked current and neither is the fallback:
+  // this is the one page with no edition to be the lesser one of, and the
+  // visitor has not been asked the question yet (ADR 0004).
+  it('offers a route to each edition, and nothing else, with the right hreflang on each', () => {
+    expect(routes).toEqual([
+      ['/', 'en'],
+      ['/es/', 'es'],
+    ]);
+  });
+
+  // `lang` as well as `hreflang`, unlike the language selector in the masthead:
+  // there the label sits in the language of the edition around it, here each
+  // label is written in the language it names, so it is also what the element's
+  // own text is in. Without it a screen reader says "Español" with English
+  // phonetics on a page that is claiming to serve both readers equally.
+  it('marks each route in the language its own label is written in', () => {
+    const labels = [...parsed.body.querySelectorAll('a[href]')].map((tag) => [
+      tag.getAttribute('lang'),
+      tag.textContent?.trim(),
+    ]);
+
+    expect(labels).toEqual([
+      ['en', 'English'],
+      ['es', 'Español'],
+    ]);
+  });
+
+  // One line, and it is in both languages because the reader's is not knowable
+  // here. The Spanish half is marked for the same reason the Spanish route is.
+  it('says the page does not exist in both languages', () => {
+    const text = parsed.body.textContent ?? '';
+    expect(text).toContain('404');
+    expect(text).toContain('This page does not exist');
+    expect(text).toContain('Esta página no existe');
+    expect([...parsed.body.querySelectorAll('[lang="es"]')].map((tag) => tag.textContent)).toContain(
+      'Esta página no existe'
+    );
+  });
+
+  // The nameplate, so a mistyped URL is still Fran's site rather than GitHub's
+  // page. One name, one spelling, accent included, as everywhere else.
+  it('wears the name, spelled the way the site spells it', () => {
+    const heading = parsed.querySelector('h1');
+    expect(heading?.textContent?.replace(/\s+/g, ' ').trim()).toBe('Fran Menéndez');
+    expect(parsed.body.textContent).not.toContain('Menendez');
+  });
+
+  // The face, the palette and the type scale arrive from the site's own
+  // stylesheet rather than from a copy: a `<style>` block here would be a
+  // second palette to keep in step, and the day it drifted the dead end would
+  // stop looking like the site it is offering a way back to. Same assertion as
+  // the share-image sources carry, for the same reason.
+  it('takes its palette and its face from the site stylesheet rather than its own', () => {
+    expect(parsed.querySelector('link[rel="stylesheet"]')?.getAttribute('href')).toBe('/src/index.css');
+    expect(parsed.querySelector('style')).toBeNull();
+    expect(parsed.querySelector('[style]')).toBeNull();
+  });
+
+  // The third copy of the pre-paint script, and the reason it is copied is the
+  // reason there is a second: it has to run before any module loads. What this
+  // catches is the entry documents getting a fix and this one not, which would
+  // give a dark-mode visitor a light flash on the one page they did not choose
+  // to be on.
+  it('sets the theme class before first paint', () => {
+    const script = [...parsed.head.querySelectorAll('script:not([src])')].map((tag) => tag.textContent).join('');
+    expect(script).toContain("localStorage.getItem('theme')");
+    expect(script).toContain('prefers-color-scheme: dark');
+    expect(script).toContain("classList.toggle('dark'");
+  });
+
+  // The same two surfaces the entry documents paint the browser chrome in, held
+  // to the same tokens by the same values. See the note on the editions'
+  // assertion for why two hex codes are written in a file that otherwise names
+  // no colour.
+  it('paints the browser chrome in the palette, per theme', () => {
+    const themeColors = [...parsed.head.querySelectorAll('meta[name="theme-color"]')].map((tag) => [
+      tag.getAttribute('media'),
+      tag.getAttribute('content'),
+    ]);
+
+    expect(themeColors).toEqual([
+      ['(prefers-color-scheme: light)', '#f4f1e9'], // --color-stock
+      ['(prefers-color-scheme: dark)', '#121316'], // --color-stock-dark
+    ]);
+  });
+
+  it('ships every asset it references at the path it references it by', () => {
+    for (const rel of ['icon', 'apple-touch-icon']) {
+      expect(publicAssets).toContain(parsed.head.querySelector(`link[rel="${rel}"]`)?.getAttribute('href'));
+    }
+  });
+
+  // A dead end that entered a search index would then be found from one.
+  it('keeps itself out of the index', () => {
+    expect(metaOf(parsed.head, 'robots')).toBe('noindex');
+  });
+
+  // The hedge guard, over the surface it matters most on: this page speaks to a
+  // Spanish reader and an English reader in the same breath, so it is the
+  // easiest place on the site to write "the Spanish version may be out of
+  // date". Text and the attributes a reader is shown, as on the editions.
+  it('renders no hedge, in its text or in an attribute a reader is shown', () => {
+    const attributes = [...parsed.querySelectorAll('[title], [alt], [aria-label]')].flatMap((element) =>
+      ['title', 'alt', 'aria-label'].map((name) => element.getAttribute(name) ?? '')
+    );
+
+    expect(hedgesIn([scraperText(notFoundHtml), ...attributes].join(' '))).toEqual([]);
   });
 });
