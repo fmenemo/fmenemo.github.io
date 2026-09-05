@@ -1,7 +1,7 @@
 import { cleanup, fireEvent, render, screen, within } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import App from './App';
-import type { Role } from './content';
+import type { Chrome, Role } from './content';
 import { en } from './content.en';
 import { es } from './content.es';
 // The shipped entry documents, the stylesheet holding the palette, and the
@@ -722,23 +722,29 @@ describe.each(editions)('$edition edition', (edition) => {
 
     // queryAllByRole with a name filter uses the accessible-name computation, so
     // anything missing from the named set has no name a screen reader can read.
-    // Guard for ticket 43. Each section opens on a running head: its number in
-    // the accent, its name in the edition's own word, on the rule. The number
-    // is what the contents index links by, so a head that lost it would leave
-    // the index decorative.
+    // Guard for ticket 43, extended by ticket 45. Each section opens on a
+    // running head: its number in the accent, its name in the edition's own
+    // word, on the rule. The number is what the contents index links by, so a
+    // head that lost it would leave the index decorative.
+    //
+    // Rewritten once, for one reason: the pair of ids the guard ran over was
+    // the pair of sections that had been drawn when it was written, and the
+    // section name was picked out of the chrome by an inline conditional that
+    // a third row could not extend. The rows now carry the name, so the two
+    // sections ticket 45 draws are two more rows rather than a second test.
     it.each([
-      ['experience', '01'],
-      ['independent-work', '02'],
-    ])('opens %s on a running head with its number and its name', (id, index) => {
+      ['experience', '01', (chrome: Chrome) => chrome.sections.experience],
+      ['independent-work', '02', (chrome: Chrome) => chrome.sections.independentWork],
+      ['recognitions', '03', (chrome: Chrome) => chrome.sections.recognitions],
+      ['technologies', '04', (chrome: Chrome) => chrome.sections.technologies],
+    ] as const)('opens %s on a running head with its number and its name', (id, index, nameOf) => {
       render(<App content={content} />);
       const section = document.getElementById(id);
       expect(section).not.toBeNull();
 
-      const name =
-        id === 'experience' ? content.chrome.sections.experience : content.chrome.sections.independentWork;
       const heading = within(section!).getAllByRole('heading', { level: 2 })[0];
 
-      expect(heading.textContent).toBe(name);
+      expect(heading.textContent).toBe(nameOf(content.chrome));
       expect(heading.parentElement?.textContent).toContain(index);
     });
 
@@ -1246,6 +1252,73 @@ describe.each(editions)('$edition edition', (edition) => {
       for (const date of ['May 2017', 'Sep 2017', 'Mar 2018', 'Oct 2018', 'Feb 2019']) {
         expect(text).toContain(date);
       }
+    });
+
+    // Guard for ticket 45. A recognition is one string ending in its date in
+    // parentheses, and the date is a figure like every other figure on the
+    // page: it belongs in the left column with the spans and the dates of the
+    // record above. A string that does not end that way keeps its shape and
+    // sits whole in the text column, which is what stops the split from
+    // inventing a date for a recognition that never carried one.
+    //
+    // Asserted row by row against the content rather than over the section's
+    // whole text, because the guard above already reads the text: what is new
+    // here is *where* each half of a recognition lands.
+    it('sets every recognition beside its date in the left column', () => {
+      render(<App content={content} />);
+      const section = document.getElementById('recognitions');
+      expect(section).not.toBeNull();
+
+      const rows = [...within(section!).getAllByRole('listitem')];
+      expect(rows).toHaveLength(content.recognitions.length);
+
+      expect(rows.map((row) => [row.firstElementChild?.textContent, row.lastElementChild?.textContent])).toEqual(
+        content.recognitions.map((recognition) => {
+          const match = /^(.*) \(([^()]+)\)$/.exec(recognition);
+          return match ? [match[2], match[1]] : ['', recognition];
+        })
+      );
+    });
+
+    // Guard for ticket 45. Education sits inside Recognitions rather than in a
+    // section of its own (CONTEXT.md), and all four of its fields are on the
+    // page: the years in the left column, the label, the degree and the
+    // institution, and the languages. The order assertion is what says "under
+    // Recognitions" rather than merely "in it".
+    it('renders education under the recognitions with its years, degree, institution and languages', () => {
+      render(<App content={content} />);
+      const section = document.getElementById('recognitions');
+      expect(section).not.toBeNull();
+
+      const label = within(section!).getByText(content.chrome.recognitions.education);
+      const { years, degree, institution, languages } = content.education;
+      for (const field of [years, degree, institution, languages]) {
+        expect(section!.textContent).toContain(field);
+      }
+
+      const rows = within(section!).getAllByRole('listitem');
+      const last = rows[rows.length - 1];
+      expect(last.compareDocumentPosition(label) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    });
+
+    // Guard for ticket 45. The technologies are an index rather than a set of
+    // chips: every technology once, numbered from `01`, in the order the
+    // content gives them. Numbering them is what keeps them from reading as a
+    // set of claims, and reading the numbers off the rendered rows is what
+    // catches a technology that was dropped, repeated or reordered.
+    //
+    // How many columns the index runs in is not asserted here: jsdom lays
+    // nothing out, so the grid at 320px and at 1280px is checked on the dev
+    // server and recorded on the ticket.
+    it('renders every technology once, numbered, in the index', () => {
+      render(<App content={content} />);
+      const section = document.getElementById('technologies');
+      expect(section).not.toBeNull();
+
+      const entries = within(section!).getAllByRole('listitem');
+      expect(entries.map((entry) => entry.textContent)).toEqual(
+        content.technologies.map((technology, position) => `${String(position + 1).padStart(2, '0')}${technology}`)
+      );
     });
 
     it('states where Fran is without signalling availability', () => {
