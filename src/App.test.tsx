@@ -924,6 +924,93 @@ describe.each(editions)('$edition edition', (edition) => {
     });
   });
 
+  // Guard tests for ticket 46 of the redesign (contact and the footer). The
+  // bottom of the record is the one place the routes to Fran live: user story
+  // 12, resolved by the verdict on #26 in favour of the bottom, so the tests
+  // that say the top does not carry them sit above and these say the bottom
+  // does.
+  describe('the bottom of the record', () => {
+    const contact = () => {
+      const section = document.getElementById('contact');
+      expect(section).not.toBeNull();
+      return section as HTMLElement;
+    };
+
+    // Each route is a field of the record — the label in the hand, the value
+    // beside it — and each one a link a visitor can open, middle-click or tab
+    // to. "GitHub" is a brand rather than chrome, so it is the same word in
+    // both editions and is asserted as a literal.
+    it('draws every route as a field, labelled and beside its value', () => {
+      render(<App content={content} />);
+      const text = contact().textContent ?? '';
+
+      expect(text).toContain(content.chrome.fields.email);
+      expect(text).toContain(content.contact.email);
+      expect(text).toContain(content.chrome.fields.linkedin);
+      expect(text).toContain(content.contact.linkedinLabel);
+      expect(text).toContain('GitHub');
+      expect(text).toContain(content.chrome.fields.location);
+      expect(text).toContain(content.identity.location);
+      expect(text).toContain(content.identity.mode);
+
+      const hrefs = within(contact())
+        .getAllByRole('link')
+        .map((link) => link.getAttribute('href'));
+
+      expect(hrefs).toContain(`mailto:${content.contact.email}`);
+      expect(hrefs).toContain(content.contact.linkedin);
+      expect(hrefs).toContain(content.contact.github);
+    });
+
+    // The other half of the assertion above the identification block makes: the
+    // top does not carry the routes, and here they are, once each and nowhere
+    // else. The footer used to carry the GitHub and LinkedIn marks, which is
+    // the duplication this counts.
+    it('carries email, LinkedIn and GitHub exactly once on the page', () => {
+      render(<App content={content} />);
+      const section = contact();
+
+      for (const route of [`mailto:${content.contact.email}`, content.contact.linkedin, content.contact.github]) {
+        const found = screen.getAllByRole('link').filter((link) => link.getAttribute('href') === route);
+        expect(found).toHaveLength(1);
+        expect(section.contains(found[0])).toBe(true);
+      }
+    });
+
+    // The fifth entry of the contents index is the reader's way to the bottom
+    // of the record, so it is checked against the section it names rather than
+    // against the string it links by.
+    it('is where the contents index’s fifth entry lands', () => {
+      render(<App content={content} />);
+      const index = screen.getByRole('navigation', { name: content.chrome.nav.label });
+      const fifth = within(index).getAllByRole('link')[4];
+
+      expect(fifth.getAttribute('href')).toBe('#contact');
+      expect(document.querySelector('#contact')).toBe(contact());
+      expect(within(contact()).getAllByRole('heading', { level: 2 })[0].textContent).toBe(
+        content.chrome.sections.contact
+      );
+    });
+
+    // The footer was a row of marks and a copyright line. It is now the record's
+    // colophon: who the record is of, and when it was last set. Asserted as the
+    // whole of its text, because "nothing else" is the point of the row.
+    it('closes on the name and the year, and nothing else', () => {
+      render(<App content={content} />);
+      const footer = screen.getByRole('contentinfo');
+      // Whitespace is stripped from both sides of the comparison rather than
+      // normalised: the two sit in separate blocks pushed apart by the layout,
+      // so what separates them on screen is space the DOM does not carry.
+      const squashed = (text: string) => text.replace(/\s+/g, '');
+
+      expect(squashed(footer.textContent ?? '')).toBe(
+        squashed(`${content.identity.name}${new Date().getFullYear()}`)
+      );
+      expect(within(footer).queryAllByRole('link')).toEqual([]);
+      expect(footer.querySelector('svg, img')).toBeNull();
+    });
+  });
+
   // Guard tests for ticket 05 of the Spanish edition (both CVs on the Spanish
   // edition). Running from the table is what pins the asymmetry: each row states
   // the whole list, so an edition quietly growing or losing a download fails

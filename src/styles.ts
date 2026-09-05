@@ -26,15 +26,6 @@ export const link =
 export const action = `${hand} inline-block border-2 border-accent px-4 py-2.5 text-accent transition-colors hover:bg-accent hover:text-stock active:translate-y-px active:bg-accent active:text-stock dark:border-accent-dark dark:text-accent-dark dark:hover:bg-accent-dark dark:hover:text-stock-dark dark:active:bg-accent-dark dark:active:text-stock-dark`;
 
 /**
- * A control that draws no text of its own, so it has no rule to draw: the theme
- * toggle's icon and the footer's two marks. It answers in colour alone, which
- * is why the pressed state goes past the hover one to the ink rather than
- * stopping at the accent.
- */
-export const control =
-  'text-muted transition-colors hover:text-accent active:text-ink dark:text-muted-dark dark:hover:text-accent-dark dark:active:text-ink-dark';
-
-/**
  * The measure the evidence is set to. The page's own width is wide enough at
  * 1280px to run a statement past the point an eye finds the next line, so the
  * text column of the record is capped in characters rather than left to the
