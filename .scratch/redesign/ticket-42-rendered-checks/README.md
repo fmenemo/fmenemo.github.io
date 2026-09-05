@@ -44,7 +44,12 @@ to a smear. The `-320-top.png` four are the first viewport of the same four
 | `en-light-1280-focus-theme.png` | The focus ring on the theme control, with the rule drawn under it |
 | `en-light-1280-hover-cv.png` | The CV block filled with the accent under a pointer |
 | `en-light-1280-hover-index.png` | The rule drawn across a hovered contents-index row |
-| `en-light-1280-scrolled.png` | The running head still at the top edge, 1600px down the page |
+| `en-light-1280-scrolled.png` | The running head still at the top edge, 1600px down the page: the whole 1280x900 viewport, over the Principal role's evidence |
+
+The scrolled shot is the whole viewport rather than a clip. A `clip` is measured
+against the document, so clipping the top of a scrolled page photographs the top
+of the page and not what the visitor is looking at — which is how the first pass
+of this shot came out showing the nameplate and no running head at all.
 
 ## Measured out of the live page
 
@@ -68,6 +73,13 @@ Keyboard, English edition:
   `#main` and moves focus to the `main` element.
 - The third Tab lands on the theme control, which reads "Switch to dark mode"
   in light and "Switch to light mode" in dark.
+
+## Where this is recorded
+
+These checks are recorded on the ticket as the criterion asks, at
+<https://github.com/fmenemo/fmenemo.github.io/issues/42#issuecomment-5551730838>.
+The pointer is here so that the record is reachable from the branch rather than
+only from GitHub.
 
 ## Not photographed, and why
 
