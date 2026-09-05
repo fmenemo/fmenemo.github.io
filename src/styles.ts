@@ -33,3 +33,20 @@ export const action = `${hand} inline-block border-2 border-accent px-4 py-2.5 t
  */
 export const control =
   'text-muted transition-colors hover:text-accent active:text-ink dark:text-muted-dark dark:hover:text-accent-dark dark:active:text-ink-dark';
+
+/**
+ * The measure the evidence is set to. The page's own width is wide enough at
+ * 1280px to run a statement past the point an eye finds the next line, so the
+ * text column of the record is capped in characters rather than left to the
+ * container: the left columns hold the figures, and this holds the prose.
+ */
+export const evidence = 'max-w-[74ch] text-[0.9375rem] leading-[1.55]';
+
+/**
+ * The two-column setting the record is laid out in: a fixed left column for the
+ * figures a reader scans down — a span, a role's dates, an entry's number — and
+ * everything else beside it. Fixed rather than fractional, so that the columns
+ * of two different sections line up on the same vertical, and stacked below the
+ * breakpoint where 320px cannot hold both.
+ */
+export const ledger = 'grid gap-x-6 gap-y-1 sm:grid-cols-[9.5rem_minmax(0,1fr)]';

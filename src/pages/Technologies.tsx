@@ -1,5 +1,6 @@
 import React from 'react';
-import Section from '../components/Section';
+import Container from '../components/Container';
+import SectionHead from '../components/SectionHead';
 import { useContent } from '../hooks/useContent';
 
 // CONTEXT.md avoids the word "skill": a skill is a claim, a technology is a
@@ -11,9 +12,12 @@ const Technologies: React.FC = () => {
   const { technologies, chrome } = useContent();
 
   return (
-    <Section id='technologies' index='04' title={chrome.sections.technologies}>
-      <p className='max-w-3xl text-sm leading-loose text-muted dark:text-muted-dark'>{technologies.join(' / ')}</p>
-    </Section>
+    <section id='technologies'>
+      <Container className='pb-16 md:pb-24'>
+        <SectionHead index='04'>{chrome.sections.technologies}</SectionHead>
+        <p className='mt-8 max-w-3xl text-sm leading-loose text-muted dark:text-muted-dark'>{technologies.join(' / ')}</p>
+      </Container>
+    </section>
   );
 };
 

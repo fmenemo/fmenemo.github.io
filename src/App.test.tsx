@@ -449,6 +449,27 @@ describe('the palette', () => {
   });
 });
 
+// Guard test for ticket 43 (the evidence as a record). The section head is the
+// primitive every section now opens on, and it replaced the section component
+// rather than sitting beside it: a section left on the old component would draw
+// a second, different head on the same page. It is a different thing from the
+// running head, which heads the page rather than a section. Read as source,
+// because a deleted module is not a thing the rendered tree can be asked about.
+describe('the section component the section head replaces', () => {
+  it('is gone, and nothing reaches for it', () => {
+    const paths = componentSources.map(([path]) => path);
+
+    expect(paths.length).toBeGreaterThan(0);
+    expect(paths).not.toContain('./components/Section.tsx');
+
+    const reaching = componentSources
+      .filter(([, source]) => /from '[^']*components\/Section'/.test(source))
+      .map(([path]) => path);
+
+    expect(reaching).toEqual([]);
+  });
+});
+
 describe.each(editions)('$edition edition', (edition) => {
   const { content } = edition;
 
@@ -624,6 +645,26 @@ describe.each(editions)('$edition edition', (edition) => {
 
     // queryAllByRole with a name filter uses the accessible-name computation, so
     // anything missing from the named set has no name a screen reader can read.
+    // Guard for ticket 43. Each section opens on a running head: its number in
+    // the accent, its name in the edition's own word, on the rule. The number
+    // is what the contents index links by, so a head that lost it would leave
+    // the index decorative.
+    it.each([
+      ['experience', '01'],
+      ['independent-work', '02'],
+    ])('opens %s on a running head with its number and its name', (id, index) => {
+      render(<App content={content} />);
+      const section = document.getElementById(id);
+      expect(section).not.toBeNull();
+
+      const name =
+        id === 'experience' ? content.chrome.sections.experience : content.chrome.sections.independentWork;
+      const heading = within(section!).getAllByRole('heading', { level: 2 })[0];
+
+      expect(heading.textContent).toBe(name);
+      expect(heading.parentElement?.textContent).toContain(index);
+    });
+
     it('gives every link and button an accessible name', () => {
       render(<App content={content} />);
       for (const role of ['link', 'button'] as const) {
@@ -1099,14 +1140,86 @@ describe.each(editions)('$edition edition', (edition) => {
     // Naming the entries in order is also what holds the count: an edition
     // renders the entries its row lists and no others, which is how "two in
     // English, still one in Spanish" survives the next pass.
+    // Guard for ticket 43. The record is only a record if all of it is on the
+    // page: every employer with its span and location, every role with its
+    // dates, every bullet, and every part of the one programme that has parts.
+    // Read off the content module rather than listed here, so a bullet added to
+    // an edition is covered the day it lands.
+    it('renders every employer, role, bullet and sub-bullet the content declares', () => {
+      const text = renderedText(edition);
+      const declared = content.employers.flatMap((employer) => [
+        employer.name,
+        employer.location,
+        employer.span,
+        ...employer.roles.flatMap((role) => [
+          role.title,
+          role.dates,
+          ...role.bullets.flatMap((bullet) =>
+            typeof bullet === 'string' ? [bullet] : [bullet.text, ...bullet.subBullets]
+          ),
+        ]),
+      ]);
+
+      // A content file that stopped exposing employers would otherwise leave
+      // this passing over an empty list.
+      expect(declared.length).toBeGreaterThan(20);
+
+      for (const statement of declared) {
+        expect(text).toContain(statement);
+      }
+    });
+
+    // Guard for ticket 43, and for user story 3. A bullet is a numbered entry:
+    // the index hangs in its own column and the statement sits beside it. A
+    // programme's parts carry their parent's number and their own, which is how
+    // a record says what is under what without indenting it away.
+    it('numbers every entry in a role, and every part of a programme under its parent', () => {
+      render(<App content={content} />);
+      const [role] = content.employers[0].roles;
+      const entries = [...screen.getByText(role.title).closest('div')!.querySelector('ul')!.children];
+
+      expect(entries.map((entry) => entry.firstElementChild?.textContent)).toEqual(
+        role.bullets.map((_, position) => String(position + 1))
+      );
+
+      const headline = role.bullets[0];
+      const parts = typeof headline === 'string' ? [] : headline.subBullets;
+      expect(parts.length).toBeGreaterThan(0);
+
+      const nested = [...entries[0].querySelector('ul')!.children];
+      expect(nested.map((part) => part.firstElementChild?.textContent)).toEqual(
+        parts.map((_, position) => `1.${position + 1}`)
+      );
+    });
+
+    // Guard for ticket 43. Independent work is numbered down the same left
+    // column the spans and the dates sit in, continuing the record's one
+    // numbering rather than starting a second device.
+    it('numbers each piece of independent work down the left', () => {
+      render(<App content={content} />);
+      const section = document.getElementById('independent-work');
+      expect(section).not.toBeNull();
+
+      const numbers = [...section!.querySelectorAll('article')].map(
+        (entry) => entry.firstElementChild?.textContent
+      );
+
+      expect(numbers).toEqual(edition.independentWork.map((_, position) => String(position + 1).padStart(2, '0')));
+    });
+
     it('names every piece of independent work, and links none of it', () => {
       render(<App content={content} />);
       const section = document.getElementById('independent-work');
       expect(section).not.toBeNull();
 
-      const names = [...section!.querySelectorAll('strong')].map((name) =>
-        (name.textContent ?? '').replace(/\.$/, '')
-      );
+      // Rewritten for ticket 43's layout, and for one reason: the name used to
+      // be a bold run opening a paragraph, and is now the entry's own heading
+      // beside its number. The assertion is the same one — these names, in this
+      // order, and no others — read where a reader and a screen reader now meet
+      // them.
+      const names = within(section!)
+        .getAllByRole('heading', { level: 3 })
+        .map((name) => name.textContent);
       expect(names).toEqual([...edition.independentWork]);
 
       expect(within(section!).queryAllByRole('link')).toEqual([]);
@@ -1444,7 +1557,11 @@ describe('the Lead role says what the CV says', () => {
   const leadBullets = () => {
     render(<App content={english.content} />);
     const list = screen.getByText('Lead Software Engineer').closest('div')!.querySelector('ul')!;
-    return [...list.children].map((item) => item.textContent ?? '');
+    // Rewritten for ticket 43's layout, and for one reason: an entry now
+    // carries its index number as well as its statement, so the row's own text
+    // begins with a figure and these assertions are anchored to the first word
+    // of a sentence. The statement is read from the statement.
+    return [...list.children].map((item) => item.querySelector('p')?.textContent ?? '');
   };
 
   // The CV's order, and the argument it makes: what he took on, the system he
@@ -1517,7 +1634,14 @@ describe.each(editions)('$edition edition: the Shop programme is a list inside i
     const nested = first.querySelector('ul');
 
     expect(nested).not.toBeNull();
-    expect([...nested!.querySelectorAll('li')].map((item) => item.textContent)).toEqual([...subBullets]);
+    // Rewritten for ticket 43's layout, and for one reason: a part now carries
+    // its number, `1.1` to `1.9`, beside its statement, so the item's own text
+    // is the number and the statement together. What this test is for — the
+    // parts the content declares, all of them, in order, inside the item they
+    // belong to — is unchanged.
+    expect([...nested!.querySelectorAll('li')].map((item) => item.querySelector('p')?.textContent)).toEqual([
+      ...subBullets,
+    ]);
   });
 });
 

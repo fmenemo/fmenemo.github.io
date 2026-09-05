@@ -1,5 +1,6 @@
 import React from 'react';
-import Section from '../components/Section';
+import Container from '../components/Container';
+import SectionHead from '../components/SectionHead';
 import { useContent } from '../hooks/useContent';
 import { hand, link } from '../styles';
 
@@ -16,28 +17,31 @@ const Contact: React.FC = () => {
   ];
 
   return (
-    <Section id='contact' index='05' title={chrome.sections.contact}>
-      <dl className='border-t border-hairline dark:border-hairline-dark'>
-        {routes.map((route) => (
-          <div key={route.label} className='grid gap-1 border-b border-hairline py-6 sm:grid-cols-4 sm:gap-8 dark:border-hairline-dark'>
-            <dt className={`${hand} text-muted dark:text-muted-dark`}>{route.label}</dt>
-            <dd className='sm:col-span-3'>
-              {route.href ? (
-                <a
-                  href={route.href}
-                  {...(route.href.startsWith('http') ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
-                  className={link}
-                >
-                  {route.value}
-                </a>
-              ) : (
-                <span>{route.value}</span>
-              )}
-            </dd>
-          </div>
-        ))}
-      </dl>
-    </Section>
+    <section id='contact'>
+      <Container className='pb-16 md:pb-24'>
+        <SectionHead index='05'>{chrome.sections.contact}</SectionHead>
+        <dl className='mt-8 border-t border-hairline dark:border-hairline-dark'>
+          {routes.map((route) => (
+            <div key={route.label} className='grid gap-1 border-b border-hairline py-6 sm:grid-cols-4 sm:gap-8 dark:border-hairline-dark'>
+              <dt className={`${hand} text-muted dark:text-muted-dark`}>{route.label}</dt>
+              <dd className='sm:col-span-3'>
+                {route.href ? (
+                  <a
+                    href={route.href}
+                    {...(route.href.startsWith('http') ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
+                    className={link}
+                  >
+                    {route.value}
+                  </a>
+                ) : (
+                  <span>{route.value}</span>
+                )}
+              </dd>
+            </div>
+          ))}
+        </dl>
+      </Container>
+    </section>
   );
 };
 
