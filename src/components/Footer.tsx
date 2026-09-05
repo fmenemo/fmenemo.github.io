@@ -1,6 +1,6 @@
 import React from 'react';
 import { useContent } from '../hooks/useContent';
-import { metaVoice } from '../styles';
+import { control, hand } from '../styles';
 import Container from './Container';
 
 const githubIcon =
@@ -22,9 +22,9 @@ const Footer: React.FC = () => {
   ];
 
   return (
-    <footer className='border-t border-rule dark:border-rule-dark'>
+    <footer className='border-t-2 border-rule dark:border-rule-dark'>
       <Container className='py-10'>
-        <div className={`flex flex-wrap items-center justify-between gap-6 ${metaVoice} text-muted dark:text-muted-dark`}>
+        <div className={`flex flex-wrap items-center justify-between gap-6 ${hand} text-muted dark:text-muted-dark`}>
           <p>
             &copy; {currentYear} {identity.name}
           </p>
@@ -36,7 +36,7 @@ const Footer: React.FC = () => {
                 href={link.href}
                 target='_blank'
                 rel='noopener noreferrer'
-                className='transition-colors hover:text-accent dark:hover:text-accent-dark'
+                className={control}
               >
                 <span className='sr-only'>{link.name}</span>
                 <svg className='h-4 w-4' fill='currentColor' viewBox='0 0 24 24' aria-hidden='true'>

@@ -1,7 +1,7 @@
 import React from 'react';
 import Section from '../components/Section';
 import { useContent } from '../hooks/useContent';
-import { metaVoice } from '../styles';
+import { hand } from '../styles';
 
 // One compact line of awards, never a card grid (CONTEXT.md). Education sits
 // under it as a second line for the same reason: cheap, verifiable, and not
@@ -23,7 +23,7 @@ const Recognitions: React.FC = () => {
       </ul>
 
       <dl className='mt-12 grid gap-2 border-t border-rule pt-6 sm:grid-cols-4 sm:gap-8 dark:border-rule-dark'>
-        <dt className={`${metaVoice} text-muted dark:text-muted-dark`}>{chrome.recognitions.education}</dt>
+        <dt className={`${hand} text-muted dark:text-muted-dark`}>{chrome.recognitions.education}</dt>
         <dd className='text-sm leading-relaxed sm:col-span-3'>
           {education.degree}, {education.institution}, {education.years}
           <span className='mt-1 block text-muted dark:text-muted-dark'>{education.languages}</span>

@@ -22,7 +22,7 @@ const IndependentWork: React.FC = () => {
       <div className='max-w-2xl space-y-6'>
         {independentWork.map((entry) => (
           <p key={entry.name} className='leading-relaxed text-muted dark:text-muted-dark'>
-            <strong className='font-semibold text-ink dark:text-chalk'>{entry.name}.</strong> {entry.description}
+            <strong className='font-semibold text-ink dark:text-ink-dark'>{entry.name}.</strong> {entry.description}
           </p>
         ))}
       </div>

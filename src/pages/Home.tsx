@@ -1,7 +1,7 @@
 import React, { Fragment } from 'react';
 import Container from '../components/Container';
 import { useContent } from '../hooks/useContent';
-import { accentAction, metaVoice, primaryAction } from '../styles';
+import { action, hand, link } from '../styles';
 
 // The hero states who Fran is and puts the CV one click away. It carries no
 // availability signalling and no greeting: a reader who arrived already knowing
@@ -12,7 +12,12 @@ const Home: React.FC = () => {
   return (
     <section id='home'>
       <Container className='pt-28 pb-20 md:pt-40 md:pb-28'>
-        <h1 className='text-5xl leading-[0.95] font-semibold tracking-tight sm:text-6xl md:text-7xl'>
+        {/* The nameplate is the one thing on the page set at the wide end of the
+            width axis, and it is sized by the viewport rather than by
+            breakpoints: uppercase at the wide setting, "MENÉNDEZ" overruns a
+            320px column at any fixed size large enough to be a nameplate at
+            1280px. */}
+        <h1 className='wide text-[clamp(2.25rem,9.5vw,4.5rem)] leading-[0.92] font-semibold tracking-[-0.02em] uppercase'>
           {/* One block per word, with the spaces kept between them: without them
               the accessible name of the heading is "FranMenéndez". They collapse
               visually because each span is a block. */}
@@ -37,20 +42,20 @@ const Home: React.FC = () => {
               key={cv.href}
               href={cv.href}
               download={cv.href.replace(/^.*\//, '')}
-              className={index === 0 ? primaryAction : accentAction}
+              className={index === 0 ? action : `${hand} ${link}`}
             >
               {cv.label}
             </a>
           ))}
-          <a href={`mailto:${contact.email}`} className={accentAction}>
+          <a href={`mailto:${contact.email}`} className={`${hand} ${link}`}>
             {contact.email}
           </a>
-          <a href={contact.linkedin} target='_blank' rel='noopener noreferrer' className={accentAction}>
+          <a href={contact.linkedin} target='_blank' rel='noopener noreferrer' className={`${hand} ${link}`}>
             {contact.linkedinLabel}
           </a>
         </div>
 
-        <p className={`mt-16 border-t border-rule pt-4 ${metaVoice} text-muted dark:border-rule-dark dark:text-muted-dark`}>
+        <p className={`mt-16 border-t-2 border-rule pt-4 ${hand} text-muted dark:border-rule-dark dark:text-muted-dark`}>
           {identity.location}
           <span className='mx-3 text-rule dark:text-rule-dark'>/</span>
           {identity.mode}

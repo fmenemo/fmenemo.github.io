@@ -1,5 +1,5 @@
 import React from 'react';
-import { metaVoice } from '../styles';
+import { hand } from '../styles';
 import Container from './Container';
 
 // The page is one editorial grid: a fixed measure, left-aligned, with the
@@ -8,19 +8,19 @@ import Container from './Container';
 
 interface SectionProps {
   id: string;
-  /** The two-digit section number set in the accent, as metadata. */
+  /** The two-digit section number set in the accent, in the hand. */
   index: string;
   title: string;
   children: React.ReactNode;
 }
 
 const Section: React.FC<SectionProps> = ({ id, index, title, children }) => (
-  <section id={id} className='border-t-2 border-ink dark:border-chalk'>
+  <section id={id} className='border-t-2 border-rule dark:border-rule-dark'>
     <Container className='py-20 md:py-28'>
       <div className='grid gap-10 md:grid-cols-12'>
         <header className='md:col-span-3'>
-          <p className={`${metaVoice} text-accent dark:text-accent-dark`}>{index}</p>
-          <h2 className='mt-2 text-xl font-semibold tracking-tight'>{title}</h2>
+          <p className={`${hand} text-accent dark:text-accent-dark`}>{index}</p>
+          <h2 className={`${hand} mt-2 text-muted dark:text-muted-dark`}>{title}</h2>
         </header>
         <div className='md:col-span-9'>{children}</div>
       </div>

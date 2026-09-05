@@ -21,7 +21,7 @@ function App({ content }: { content: SiteContent }) {
 
   return (
     <ContentContext value={content}>
-      <div className='min-h-screen bg-paper text-ink dark:bg-canvas dark:text-chalk'>
+      <div className='min-h-screen bg-stock text-ink dark:bg-stock-dark dark:text-ink-dark'>
         <Navbar />
         <main>
           <Home />

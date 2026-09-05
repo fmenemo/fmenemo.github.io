@@ -27,8 +27,8 @@ fi
 root="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 cd "$root"
 
-if [ ! -d node_modules/@fontsource ]; then
-  echo "node_modules/@fontsource is missing: run npm install first." >&2
+if [ ! -d node_modules/@fontsource-variable ]; then
+  echo "node_modules/@fontsource-variable is missing: run npm install first." >&2
   echo "The share images use the site's own font files, so without them the" >&2
   echo "cards would render in whatever Chrome falls back to." >&2
   exit 1
