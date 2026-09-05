@@ -9,12 +9,6 @@
 
 @import 'tailwindcss';
 
-/* The design prototype (#32) is compiled apart from the site: its own
-   stylesheet generates its utilities from its own directory. Without this
-   exclusion Tailwind's source detection would sweep the whole project and bake
-   every class a throwaway variant invents into the stylesheet the site ships. */
-@source not './prototype';
-
 /* Dark mode is a class on <html>, set pre-paint by the inline script in
    index.html and toggled by useDarkMode. */
 @custom-variant dark (&:where(.dark, .dark *));
