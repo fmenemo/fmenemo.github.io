@@ -7,14 +7,22 @@ states a link and a control answer in.
 Chrome 1280x900 and an emulated 320x900 at DPR 2, `npm run dev`, both editions,
 the theme set through the same `localStorage` key the pre-paint script reads.
 
+Both editions are photographed at all four theme-by-width combinations, not at a
+sample of them. Two of the Spanish four were missing on the first pass, which is
+the shape this file exists to make visible: the Spanish edition is a document of
+its own and not a mode of the English one (ADR 0004), so a combination checked
+on one edition is not checked on the other.
+
 | File | What it is |
 | --- | --- |
 | `en-light-1280.png` | English, light, 1280px, whole page |
 | `en-dark-1280.png` | English, dark, 1280px, whole page |
 | `en-light-320.png` | English, light, 320px, whole page |
 | `en-dark-320.png` | English, dark, 320px, whole page |
+| `es-light-1280.png` | Spanish, light, 1280px, whole page |
 | `es-dark-1280.png` | Spanish, dark, 1280px, whole page |
 | `es-light-320.png` | Spanish, light, 320px, whole page |
+| `es-dark-320.png` | Spanish, dark, 320px, whole page |
 | `en-light-1280-hover-cv.png` | The CV block under a pointer: the accent fills it |
 | `en-light-1280-hover-link.png` | The email link under a pointer: the rule is drawn under it |
 | `en-light-1280-focus-ring.png` | The second tab stop: the accent ring, and the rule drawn under the focused link |
