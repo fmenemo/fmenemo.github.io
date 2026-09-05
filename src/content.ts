@@ -151,16 +151,26 @@ export interface OtherEdition {
 }
 
 export interface Chrome {
-  // The nav labels are separate from the section headings below rather than
-  // reused from them, and the two are free to differ. They coincide in English
-  // and will not in Spanish: the CV's heading is "Experiencia profesional",
-  // which the masthead cannot carry and still stay one line at every width.
+  /**
+   * The first link in the document, and the one a keyboard visitor meets
+   * before the running head. It names where it goes rather than what it skips,
+   * because the running head is not a thing a reader has a name for.
+   */
+  skipLink: string;
+  // The masthead's own labels for two sections are gone with the masthead: the
+  // contents index names all five sections, and it names them with the section
+  // headings below, so there is no second vocabulary for an edition to keep in
+  // step. What is left here is the name of that index and the words the theme
+  // control says.
   nav: {
-    /** The accessible name of the section navigation itself. */
+    /** The accessible name of the contents index in the identification block. */
     label: string;
-    experience: string;
-    contact: string;
-    /** Accessible names for the theme toggle, by what it will do next. */
+    /**
+     * What the theme control will do next, said in words rather than drawn as
+     * an icon. It is the control's visible text and therefore its accessible
+     * name, so an edition that left one of these out would ship a button that
+     * says nothing.
+     */
     toDarkMode: string;
     toLightMode: string;
   };
@@ -184,11 +194,18 @@ export interface Chrome {
     technologies: string;
     contact: string;
   };
-  /** The labels down the left of the contact list, not the values beside them. */
-  contact: {
+  /**
+   * The labels in the hand that sit to the left of a field's value, wherever a
+   * field is drawn: `location` and `mode` in the identification block at the
+   * top, `email` and `linkedin` in the Contact section at the bottom. They are
+   * one group because they are one treatment; the values beside them are not
+   * chrome and are not here.
+   */
+  fields: {
     email: string;
     linkedin: string;
     location: string;
+    mode: string;
   };
   recognitions: {
     education: string;

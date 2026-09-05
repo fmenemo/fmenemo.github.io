@@ -266,12 +266,9 @@ export const es: SiteContent = {
   ],
 
   chrome: {
+    skipLink: 'Saltar al contenido',
     nav: {
       label: 'Secciones',
-      // Not the section heading below: "Experiencia profesional" cannot sit in
-      // the masthead and keep it one line at every width.
-      experience: 'Experiencia',
-      contact: 'Contacto',
       toDarkMode: 'Cambiar a modo oscuro',
       toLightMode: 'Cambiar a modo claro',
     },
@@ -292,10 +289,11 @@ export const es: SiteContent = {
       technologies: 'Tecnologías',
       contact: 'Contacto',
     },
-    contact: {
+    fields: {
       email: 'Email',
       linkedin: 'LinkedIn',
       location: 'Ubicación',
+      mode: 'Modalidad',
     },
     recognitions: {
       education: 'Formación e idiomas',

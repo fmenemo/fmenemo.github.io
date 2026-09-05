@@ -1,8 +1,9 @@
 import Footer from './components/Footer';
-import Navbar from './components/Navbar';
+import RunningHead from './components/RunningHead';
 import type { SiteContent } from './content';
 import { ContentContext } from './hooks/useContent';
 import { useFragmentLanding } from './hooks/useFragment';
+import { hand } from './styles';
 import Contact from './pages/Contact';
 import Experience from './pages/Experience';
 import Home from './pages/Home';
@@ -22,8 +23,29 @@ function App({ content }: { content: SiteContent }) {
   return (
     <ContentContext value={content}>
       <div className='min-h-screen bg-stock text-ink dark:bg-stock-dark dark:text-ink-dark'>
-        <Navbar />
-        <main>
+        {/* The first link in the document, and the whole of what a keyboard
+            visitor needs to get past the running head. It is out of sight
+            until it is focused, and then it is drawn as the page's one object
+            over the top-left corner, so it does not push the running head
+            down when it appears. It sits a layer above the running head: the
+            head is sticky and opaque and comes after this in the document, so
+            at the same layer it paints over the link a visitor has just
+            focused. */}
+        <a
+          href='#main'
+          className={`sr-only focus:not-sr-only focus:absolute focus:top-3 focus:left-3 focus:z-[60] focus:border-2 focus:border-accent focus:bg-stock focus:px-4 focus:py-2.5 focus:text-accent dark:focus:border-accent-dark dark:focus:bg-stock-dark dark:focus:text-accent-dark ${hand}`}
+        >
+          {content.chrome.skipLink}
+        </a>
+
+        <RunningHead />
+        {/* The landmark the skip link lands on: `main` already, and now named,
+            because a fragment needs an id to resolve against. It is made
+            programmatically focusable so that following the link moves the
+            keyboard as well as the viewport — a landmark that cannot take
+            focus leaves the next Tab back at the top of the running head,
+            which is the thing the visitor just asked to skip. */}
+        <main id='main' tabIndex={-1}>
           <Home />
           <Experience />
           <IndependentWork />
