@@ -1,69 +1,100 @@
 import React from 'react';
-import Section from '../components/Section';
+import Container from '../components/Container';
+import RunningHead from '../components/RunningHead';
+import type { Bullet } from '../content';
 import { useContent } from '../hooks/useContent';
-import { hand } from '../styles';
+import { evidence, hand, ledger } from '../styles';
 
 // Employers are the structure; roles sit under them. A promotion at one
 // employer renders as two roles under one name (CONTEXT.md), which is what
 // makes the progression legible without repeating the employer.
+//
+// The section is drawn as the record it is: the spans and the dates down the
+// left column, the names and the statements beside them, and one rule between
+// one employer and the next. Nothing here is banded, boxed or carded.
+
+const isNested = (bullet: Bullet): bullet is Exclude<Bullet, string> => typeof bullet !== 'string';
+
+// An entry of the record: its number, hanging in a narrow column of its own,
+// and the statement beside it. A part of a programme is the same entry with a
+// two-part number, `1.4`, so a reader can see what is under what without the
+// text moving away from the column its parent's text is in.
+const Entry: React.FC<{ index: string; children: React.ReactNode }> = ({ index, children }) => (
+  <li className='grid grid-cols-[2.25rem_minmax(0,1fr)] gap-x-3 sm:grid-cols-[2.75rem_minmax(0,1fr)]'>
+    <span className={`${hand} pt-[0.35rem] text-muted dark:text-muted-dark`}>{index}</span>
+    <div className='min-w-0'>{children}</div>
+  </li>
+);
+
 const Experience: React.FC = () => {
   const { employers, chrome } = useContent();
 
   return (
-    <Section id='experience' index='01' title={chrome.sections.experience}>
-      <div className='space-y-16'>
-        {employers.map((employer) => (
-          <article key={employer.name}>
-            <header className='flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1 border-b border-rule pb-2 dark:border-rule-dark'>
-              <h3 className='narrow text-xl font-semibold tracking-[0.01em] uppercase'>{employer.name}</h3>
-              <p className={`${hand} text-muted dark:text-muted-dark`}>
-                {employer.location}
-                <span className='mx-3 text-rule dark:text-rule-dark'>/</span>
-                {employer.span}
-              </p>
-            </header>
+    <section id='experience'>
+      <Container className='pb-16 md:pb-24'>
+        <RunningHead index='01'>{chrome.sections.experience}</RunningHead>
 
-            {employer.roles.map((role) => (
-              <div key={role.title + role.dates} className='mt-8'>
-                <h4 className='flex flex-wrap items-baseline gap-x-4 gap-y-1'>
-                  <span className='font-medium'>{role.title}</span>
-                  <span className={`${hand} text-accent dark:text-accent-dark`}>{role.dates}</span>
-                </h4>
-
-                <ul className='mt-4 space-y-3'>
-                  {role.bullets.map((bullet) => {
-                    const text = typeof bullet === 'string' ? bullet : bullet.text;
-                    const subBullets = typeof bullet === 'string' ? [] : bullet.subBullets;
-
-                    return (
-                      <li
-                        key={text}
-                        className='border-l border-hairline pl-4 text-sm leading-relaxed text-muted dark:border-hairline-dark dark:text-muted-dark'
-                      >
-                        {text}
-                        {/* A list inside the item it belongs to, so a screen
-                            reader announces the parts as parts of the programme
-                            above them rather than as more bullets. The treatment
-                            is the minimum that reads on this design — indented,
-                            marked, and otherwise the same voice; the redesign
-                            decides how nesting looks. */}
-                        {subBullets.length > 0 && (
-                          <ul className='mt-3 list-disc space-y-2 pl-5 marker:text-rule dark:marker:text-rule-dark'>
-                            {subBullets.map((subBullet) => (
-                              <li key={subBullet}>{subBullet}</li>
-                            ))}
-                          </ul>
-                        )}
-                      </li>
-                    );
-                  })}
-                </ul>
+        <div className='mt-8 space-y-10'>
+          {employers.map((employer, employerIndex) => (
+            <article
+              key={employer.name}
+              className={employerIndex > 0 ? 'border-t border-rule pt-10 dark:border-rule-dark' : ''}
+            >
+              <div className={ledger}>
+                <p className={`${hand} pt-[0.45rem] text-muted dark:text-muted-dark`}>{employer.span}</p>
+                <div className='min-w-0'>
+                  <h3 className='narrow text-[1.375rem] leading-tight font-semibold tracking-[0.01em] uppercase sm:text-[1.625rem]'>
+                    {employer.name}
+                  </h3>
+                  <p className={`${hand} mt-1.5 text-muted dark:text-muted-dark`}>{employer.location}</p>
+                </div>
               </div>
-            ))}
-          </article>
-        ))}
-      </div>
-    </Section>
+
+              <div className='mt-7 space-y-8'>
+                {employer.roles.map((role) => (
+                  <div key={role.title + role.dates} className={`${ledger} gap-y-2`}>
+                    <p className={`${hand} pt-[0.35rem] text-muted dark:text-muted-dark`}>{role.dates}</p>
+
+                    <div className='min-w-0'>
+                      <h4 className='text-[1.0625rem] leading-snug font-semibold'>{role.title}</h4>
+
+                      <ul className='mt-3 space-y-2.5'>
+                        {role.bullets.map((bullet, bulletIndex) =>
+                          isNested(bullet) ? (
+                            <Entry key={bullet.text} index={`${bulletIndex + 1}`}>
+                              <p className={`${evidence} font-medium`}>{bullet.text}</p>
+
+                              {/* The programme's parts, numbered under it and
+                                  inside it: a list within the item they belong
+                                  to, so a screen reader announces them as parts
+                                  of the arc above them rather than as more
+                                  bullets. They start where their parent's own
+                                  text starts, so the record still reads down
+                                  one edge and the numbers do the nesting. */}
+                              <ul className='mt-2.5 space-y-2.5'>
+                                {bullet.subBullets.map((part, partIndex) => (
+                                  <Entry key={part} index={`${bulletIndex + 1}.${partIndex + 1}`}>
+                                    <p className={evidence}>{part}</p>
+                                  </Entry>
+                                ))}
+                              </ul>
+                            </Entry>
+                          ) : (
+                            <Entry key={bullet} index={`${bulletIndex + 1}`}>
+                              <p className={evidence}>{bullet}</p>
+                            </Entry>
+                          )
+                        )}
+                      </ul>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </article>
+          ))}
+        </div>
+      </Container>
+    </section>
   );
 };
 
