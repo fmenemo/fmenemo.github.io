@@ -410,6 +410,37 @@ describe('the edition arrives from above', () => {
   });
 });
 
+// Guard test for ticket 41 (the Record's tokens and type). ADR 0002 moved the
+// palette out of eighty inline ternaries and into `@theme` tokens; the way that
+// unravels is one component reaching for a hex again because a token for what it
+// wanted did not exist. Every module the components are drawn from is read here
+// as source, not as a rendered tree, because a literal that never reaches the
+// DOM in jsdom is still a colour outside the theme block.
+//
+// This is not an assertion on a class name: it says nothing about which token a
+// component picks, only that it picks one.
+const componentSources = Object.entries(
+  import.meta.glob('./{components,pages}/*.tsx', { query: '?raw', import: 'default', eager: true }) as Record<
+    string,
+    string
+  >,
+);
+
+describe('the palette', () => {
+  it('is carried by tokens, so no component names a colour', () => {
+    // Hex triplets and the functional notations. The SVG path data in the
+    // footer is a long string of digits and letters, so the hex pattern is
+    // anchored to a `#` rather than left to float.
+    const literal = /#[0-9a-fA-F]{3,8}\b|\b(?:rgba?|hsla?|oklch|color-mix)\(/;
+
+    expect(componentSources.length).toBeGreaterThan(0);
+
+    for (const [path, source] of componentSources) {
+      expect(source, `${path} names a colour instead of reading a token`).not.toMatch(literal);
+    }
+  });
+});
+
 describe.each(editions)('$edition edition', (edition) => {
   const { content } = edition;
 
@@ -1049,6 +1080,8 @@ describe.each(editions)('$edition edition', (edition) => {
     });
 
     // The old value was the accent of a palette this site no longer uses.
+    // Rewritten for the Record (#41): the two surfaces are now the manila stock
+    // and the slate, so the values the browser chrome takes moved with them.
     //
     // These two hex codes are the one place a test names a colour, which the
     // spec otherwise forbids. A `<meta>` value is not a style: it cannot be
@@ -1063,8 +1096,8 @@ describe.each(editions)('$edition edition', (edition) => {
       ]);
 
       expect(themeColors).toEqual([
-        ['(prefers-color-scheme: light)', '#ffffff'], // --color-paper
-        ['(prefers-color-scheme: dark)', '#0d0d0d'], // --color-canvas
+        ['(prefers-color-scheme: light)', '#f4f1e9'], // --color-stock
+        ['(prefers-color-scheme: dark)', '#121316'], // --color-stock-dark
       ]);
     });
 

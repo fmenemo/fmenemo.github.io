@@ -1,7 +1,7 @@
 import React from 'react';
 import { useContent } from '../hooks/useContent';
 import { useDarkMode } from '../hooks/useDarkMode';
-import { mastheadControl, metaVoice } from '../styles';
+import { control, hand, link } from '../styles';
 import Container from './Container';
 import LanguageSelector from './LanguageSelector';
 
@@ -42,16 +42,16 @@ const Navbar: React.FC = () => {
   //
   // The labels are the edition's; the anchors are English in every edition, so
   // that a fragment carries across the language selector unchanged (ADR 0004).
-  const navLinks = [
+  const sections = [
     { name: chrome.nav.experience, href: '#experience' },
     { name: chrome.nav.contact, href: '#contact' },
   ];
 
   return (
-    <header className='fixed inset-x-0 top-0 z-50 border-b border-rule bg-paper dark:border-rule-dark dark:bg-canvas'>
+    <header className='fixed inset-x-0 top-0 z-50 border-b border-rule bg-stock dark:border-rule-dark dark:bg-stock-dark'>
       <Container>
         <div className='flex h-14 items-center justify-between gap-4'>
-          <a href='#home' className='font-mono text-sm font-medium tracking-[0.2em] text-ink dark:text-chalk'>
+          <a href='#home' className={`${hand} ${link}`}>
             FM
           </a>
 
@@ -70,13 +70,9 @@ const Navbar: React.FC = () => {
                 reader who cannot see that the other edition exists has no way
                 to find it. */}
             <nav aria-label={chrome.nav.label} className='hidden items-center gap-4 xs:flex sm:gap-8'>
-              {navLinks.map((link) => (
-                <a
-                  key={link.name}
-                  href={link.href}
-                  className={`${metaVoice} ${mastheadControl}`}
-                >
-                  {link.name}
+              {sections.map((section) => (
+                <a key={section.name} href={section.href} className={`${hand} ${link}`}>
+                  {section.name}
                 </a>
               ))}
             </nav>
@@ -87,7 +83,7 @@ const Navbar: React.FC = () => {
               type='button'
               onClick={toggleDarkMode}
               aria-label={isDarkMode ? chrome.nav.toLightMode : chrome.nav.toDarkMode}
-              className={`-mr-1 p-1 ${mastheadControl}`}
+              className={`-mr-1 p-1 ${control}`}
             >
               {isDarkMode ? <SunIcon /> : <MoonIcon />}
             </button>
