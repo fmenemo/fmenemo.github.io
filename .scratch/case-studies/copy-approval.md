@@ -195,12 +195,12 @@ under them. A reply in the session, or a comment on #54 saying the same thing,
 counts too. The boxes are the record either way. An agent ticking a box is not
 a signature.
 
-- E1: - [ ] Approved, as written - [ ] Changed, with the edit written here:
-- E1-ES: - [ ] Approved, as written - [ ] Changed, with the edit written here:
-- E2: - [ ] Approved, as written - [ ] Changed, with the edit written here:
+- E1: - [x] Approved, as written - [ ] Changed, with the edit written here:
+- E1-ES: - [x] Approved, as written - [ ] Changed, with the edit written here:
+- E2: - [x] Approved, as written - [ ] Changed, with the edit written here:
 
-Signed by:
-Date:
+Signed by: Fran Menendez
+Date: 2026-09-30
 
 ### Where the ask has got to
 
@@ -212,3 +212,5 @@ Date:
   wording, so E1 and E1-ES are the CV word for word. On E2 he decided the site
   takes the harness sentence, and #58 was amended to land it. E1, E1-ES and E2
   are unsigned, and #54 stays open until they are signed.
+- **2026-09-30:** Fran signed E1, E1-ES and E2 **approved**, as written, in the
+  same session. #58 transcribes all three word for word.
