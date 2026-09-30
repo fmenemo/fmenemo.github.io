@@ -5,8 +5,9 @@ site does not already carry is approved here against its source before a Ticket
 transcribes it. **Nothing here lands in code until Fran signs its part.** The
 Tickets that build from this record transcribe what is signed and draft nothing.
 
-- **Part 1** is #54's: ebroceram's Independent work entry, which #58
-  transcribes. Prepared 2026-09-30.
+- **Part 1** is #54's: ebroceram's Independent work entry and the harness
+  sentence that credits it, both of which #58 transcribes. Prepared
+  2026-09-30.
 - #55 adds the parts after it: the case study's copy, the Portfolio index row's
   line and the video's text description, each against the source document.
 
@@ -60,7 +61,7 @@ those figures.
 | **a quote *started* with no signal stays on the tablet and sends itself once the network is back** | **Partly** | It waits in IndexedDB (`src/lib/base-del-aparato.ts:81`) and sends by itself on the `online` event (`src/components/sin-red.tsx:43-53`, `src/lib/envio-de-las-pendientes.ts:57-87`). That holds only for a quote someone has already pressed "Crear proforma" on: a draft never sends by itself (line 64). It sends only while the app is open. While the setting that allows real proformas from the app is off, what it sends becomes a test proforma. The entry, like the CV, says nothing about that |
 | a failing visual regression run stops the deploy script | Yes | `scripts/desplegar.ts:102-111` returns before `vercel --prod` runs. The code documents two exceptions: a failure on the iPad alone does not block (`e2e/bateria/sin-bloquear.ts:43-55`), and a manual `vercel --prod` skips the script (`desplegar.ts:26-28`). Neither makes the sentence untrue |
 
-### D1. The CV corrects its two overstatements first
+### D1. Whether the CV corrects its two overstatements first
 
 Under ADR 0001 the site says nothing its CV does not, so the site can't correct
 the two rows above on its own. The CV has to change first, and it carries the
@@ -91,8 +92,12 @@ follows the link to the case study, can see is not what the app does.
 
 - [ ] Correct the CV first, as above
 - [ ] Correct it with other words: write them here:
-- [ ] Keep the CV's wording, overstatements included, and sign E1 and E1-ES
+- [x] Keep the CV's wording, overstatements included, and sign E1 and E1-ES
   against the CV as it stands
+
+**Decided:** Fran answered in the session on 2026-09-30, and kept the CV's
+wording. The two rows above stay as the record of what the check found. E1
+and E1-ES are the CV as it stands.
 
 ### E1. The entry, English
 
@@ -104,15 +109,14 @@ follows the link to the case study, can see is not what the app does.
   script.
 - **Site now:** nothing.
 - **Proposed:** name **ebroceram**. The description is the CV's entry word for
-  word as it stands after D1, with the name moved out into the entry's name, as
-  the rendered CV sets it. With D1's correction, it reads:
+  word, with the name moved out into the entry's name, as the rendered CV sets
+  it:
 
   > A tablet app built solo for EBROCERAM S.L., a ceramic tile outlet in
-  > Zaragoza. It makes quotes on the warehouse floor and offers to round each
-  > tile line up to whole boxes. It also keeps stock and a public stock
-  > catalogue. A quote created with no signal stays on the tablet and sends
-  > itself once the network is back. A failing visual regression run stops the
-  > deploy script.
+  > Zaragoza. It makes quotes on the warehouse floor and rounds every line up to
+  > whole boxes of tile. It also keeps stock and a public stock catalogue. A
+  > quote started with no signal stays on the tablet and sends itself once the
+  > network is back. A failing visual regression run stops the deploy script.
 
 - Note: nothing is condensed. The five short sentences run about as long as the
   two entries beside it. Like the CV, it carries no figure and no link. The link
@@ -129,25 +133,38 @@ follows the link to the case study, can see is not what the app does.
   script de despliegue.
 - **Site now:** nada.
 - **Proposed:** name **ebroceram**. The description is the Spanish CV's entry
-  word for word as it stands after D1, taken from its own CV as ADR 0004 has it
-  and not translated from E1. It is filled in here from the corrected render
-  once the translation step has run.
+  word for word, taken from its own CV as ADR 0004 has it and not translated
+  from E1:
 
-### Not in #54: the harness entry's new sentence
+  > Una app para tablet construida en solitario para EBROCERAM S.L., un outlet
+  > de baldosas cerámicas en Zaragoza. Hace presupuestos a pie de almacén y
+  > redondea cada línea al alza hasta cajas completas de baldosa. También lleva
+  > el stock y un catálogo público de existencias. Un presupuesto empezado sin
+  > cobertura se queda en la tablet y se envía solo en cuanto vuelve la red. Una
+  > ejecución de regresión visual fallida detiene el script de despliegue.
 
-In `0f298a5` the CV's harness paragraph gained "It delivered most of ebroceram,
-above." ("Entregó la mayor parte de ebroceram (véase arriba)."). The tracker
-bears it out: it held 241 issues on 2026-09-30, and 200 distinct
-`sandcastle/issue-*` branches are merged at `c891c41`. `0f298a5`'s message
-counted 197 of 241 on 2026-09-29. The two counts are not reconciled, and both
-are most.
+### E2. The harness entry credits ebroceram
 
-The site's harness entry has never carried that sentence, and no Ticket lands
-it: #54 is ebroceram's entry, and #58 transcribes that entry only. Whether the
-site takes the sentence belongs to #58's scope, so it is raised here and not put
-for signature. If the site does take it, name the subject: on the site, the
-sentence before it ends on "a finding returns to the session that wrote the
-code", so a bare "It" reads as the finding.
+In `0f298a5` the CV's harness paragraph gained one sentence. The site's harness
+entry is condensed from that paragraph and has never carried it. On
+2026-09-30, Fran decided in the session that the site takes it and that #58
+lands it. #58 was amended to say so.
+
+- **CV (EN):** It delivered most of ebroceram, above.
+- **CV (ES):** Entregó la mayor parte de ebroceram (véase arriba).
+- **Proposed (EN):** appended to the site's harness description: "The harness
+  delivered most of ebroceram, above."
+- **Proposed (ES):** appended to the site's harness description: "El harness
+  entregó la mayor parte de ebroceram (véase arriba)."
+- Note: the proposal names the subject where the CV leaves it as "It", or
+  implied in Spanish. On the site, the sentence before it ends on "a finding
+  returns to the session that wrote the code as a bounded retry rather than a
+  rewrite", so a bare "It" (or a bare "Entregó") would read as the finding.
+  "Above" holds, because ebroceram sits directly above the harness in the order
+  below. The tracker bears out "most": it held 241 issues on 2026-09-30, and 200
+  distinct `sandcastle/issue-*` branches are merged at `c891c41`. `0f298a5`'s
+  message counted 197 of 241 on 2026-09-29. The two counts are not reconciled,
+  and both are most.
 
 ### The order, settled by #58
 
@@ -160,25 +177,27 @@ holds while nothing sits between them. The site's order is therefore:
 2. ebroceram
 3. Multi-agent delivery harness
 
-ebroceram and the harness keep the CV's relative order. Nothing here asks you to
+ebroceram and the harness keep the CV's relative order, and ebroceram sits
+directly above the harness sentence that credits it. Nothing here asks you to
 decide the order again.
 
 ### Screened
 
-The entry names no customer and states no price, cost, margin, sales figure,
+Neither E1, E1-ES nor E2 names a customer and states no price, cost, margin, sales figure,
 supplier contact or bank detail, in either language. EBROCERAM S.L. is the
 client, not one of its customers, and Fran has the business's permission to
 name it (#53, Further Notes).
 
 ### Signature
 
-Mark D1 now. Once E1 and E1-ES stand beside the CV they answer to, mark one
-line below for each, then fill in the two lines under them. A reply in the
-session, or a comment on #54 saying the same thing, counts too. The boxes are
-the record either way. An agent ticking a box is not a signature.
+For each of E1, E1-ES and E2, mark one line below, then fill in the two lines
+under them. A reply in the session, or a comment on #54 saying the same thing,
+counts too. The boxes are the record either way. An agent ticking a box is not
+a signature.
 
 - E1: - [ ] Approved, as written - [ ] Changed, with the edit written here:
 - E1-ES: - [ ] Approved, as written - [ ] Changed, with the edit written here:
+- E2: - [ ] Approved, as written - [ ] Changed, with the edit written here:
 
 Signed by:
 Date:
@@ -187,5 +206,9 @@ Date:
 
 - **2026-09-30:** drafted on `sandcastle/issue-54`, forked from `spec/53`. Every
   statement was checked at ebroceram `c891c41`, and the CV repo's gates were
-  run again at `0f298a5`. The check found the two overstatements, so D1 comes
-  before E1 and E1-ES. Nothing is signed, and #54 stays open.
+  run again at `0f298a5`. The check found the two overstatements and put them
+  as D1.
+- **2026-09-30:** Fran answered in the session. On D1 he kept the CV's
+  wording, so E1 and E1-ES are the CV word for word. On E2 he decided the site
+  takes the harness sentence, and #58 was amended to land it. E1, E1-ES and E2
+  are unsigned, and #54 stays open until they are signed.
