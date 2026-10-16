@@ -12,4 +12,4 @@ The default five-role vocabulary, applied as GitHub labels. See `docs/agents/tri
 
 ### Domain docs
 
-Single-context: `CONTEXT.md` plus `docs/adr/` at the repo root. See `docs/agents/domain.md`.
+Single-context: `GLOSSARY.md` plus `docs/adr/` at the repo root. See `docs/agents/domain.md`.
