@@ -31,9 +31,10 @@ export type ClosingLink = {
  *
  * The Home repository's harness holds the same nine, because it writes the
  * links this reads. It holds its own copy rather than importing this one: what
- * an action publishes is what a consumer runs, and a consumer runs none of the
- * harness. A guard there reads both copies whole — these words, the matching
- * rule and the commit shape above — and fails where they have drifted.
+ * an action publishes is what a repository holding a copy runs, and that
+ * repository runs none of the harness. A guard there reads both copies whole —
+ * these words, the matching rule and the commit shape above — and fails where
+ * they have drifted.
  */
 export const CLOSING_KEYWORDS = [
   "close",
@@ -59,8 +60,8 @@ export const CLOSING_KEYWORDS = [
  * link, and this action only reads one: a repository whose Tickets are files
  * installs no workflow to close them, and a workflow that read `Settles #44` as
  * a close would close whichever issue happened to be #44. So what is here is
- * GitHub's grammar alone, which is the whole of what a consumer runs
- * (ADR-0017).
+ * GitHub's grammar alone, which is the whole of what a repository holding a
+ * copy runs (ADR-0017).
  */
 export type LinkGrammar = {
   /** Every word this grammar closes a Ticket on, lower-cased. */
