@@ -14,7 +14,7 @@ Because this repo uses GitHub Issues, a "label" is a real GitHub label, applied 
 
 When a skill mentions a role (e.g. "apply the AFK-ready triage label"), use the corresponding label string from this table.
 
-Edit the right-hand column to match whatever vocabulary you actually use.
+Edit the "Label in our tracker" column to match whatever vocabulary you actually use.
 
 ## What `/to-spec` applies
 
