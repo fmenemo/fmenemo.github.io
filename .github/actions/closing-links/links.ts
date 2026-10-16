@@ -90,8 +90,12 @@ export const GITHUB_GRAMMAR: LinkGrammar = {
  * grammar the Run's tracker calls for. The rest is the matching rule, and the
  * rule is what both sides have to spell the same way — `boundary.test.ts` reads
  * this declaration beside the harness's and fails where the two have drifted.
+ *
+ * It is exported for a repository holding a copy, which can build a pattern for
+ * a keyword of its own out of the same rule and keep its copy the same as this
+ * one: professional-record's commit trailer check reads `Refs #78` this way.
  */
-function closingLinkPattern(grammar: LinkGrammar, issue: string): string {
+export function closingLinkPattern(grammar: LinkGrammar, issue: string): string {
   return String.raw`\b(${grammar.keywords.join("|")})\b(?::[ \t]*|[ \t]+)#(${issue})`;
 }
 
